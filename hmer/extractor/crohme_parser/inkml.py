@@ -2,9 +2,11 @@ import os
 import numpy as np
 from xml.etree import ElementTree as ET
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from PIL import Image, ImageDraw
 
 from constants import ink_xmlns
+from utils import plt_draw_bbox
 
 
 class BaseTrait(object):
@@ -158,12 +160,13 @@ class Ink(BaseTrait):
 
         self._parsed = True
 
-    def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2):
+    def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2, draw_bbox=False, **draw_bbox_kwargs):
         """
         Convert Ink object to image using matplotlib
         :param linewidth:
         :param write_simplified_label:
         :param output_path: path to write image and label. please provide path without suffix.
+        :param draw_bbox: whether to plot bbox or not
         :return:
         """
         assert self._parsed, "Please parse the file before furthur operation!"
@@ -174,14 +177,13 @@ class Ink(BaseTrait):
             else:
                 fout.write(self._label)
 
-        plt.gca().invert_yaxis()
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.axes().get_xaxis().set_visible(False)
-        plt.axes().get_yaxis().set_visible(False)
-        plt.axes().spines['top'].set_visible(False)
-        plt.axes().spines['right'].set_visible(False)
-        plt.axes().spines['bottom'].set_visible(False)
-        plt.axes().spines['left'].set_visible(False)
+        fig, ax = plt.subplots()
+        ax.invert_yaxis()
+        ax.set_aspect('equal', adjustable='box')
+        ax.xaxis.set_visible(False)
+        ax.yaxis.set_visible(False)
+        for spine_type in ['left', 'right', 'top', 'bottom']:
+            ax.spines[spine_type].set_visible(False)
 
         if self._trace_groups is not None:
             for group in self._trace_groups:
@@ -189,16 +191,17 @@ class Ink(BaseTrait):
                     data = np.array(trace.coords)
                     x, y = zip(*data)
                     plt.plot(x, y, linewidth=linewidth, c='black')
+                if draw_bbox:
+                    plt_draw_bbox(group.bbox, ax=ax, **draw_bbox_kwargs)
         else:
             for trace in self._traces:
                 data = np.array(trace.coords)
                 x, y = zip(*data)
                 plt.plot(x, y, linewidth=linewidth, c='black')
+                if draw_bbox:
+                    plt_draw_bbox(trace.bbox, ax=ax, **draw_bbox_kwargs)
         plt.savefig(output_path + '.png', bbox_inches='tight', dpi=100)
         plt.gcf().clear()
-
-    def draw(self):
-        pass
 
 
 if __name__ == '__main__':
