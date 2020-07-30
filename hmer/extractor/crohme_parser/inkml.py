@@ -2,6 +2,7 @@ import os
 import numpy as np
 from xml.etree import ElementTree as ET
 import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw
 
 from constants import ink_xmlns
 
@@ -32,39 +33,48 @@ class Trace(BaseTrait):
         self._coords = [
             [round(float(axis_coord) * 10000) for axis_coord in coord.strip().split(' ')]
             for coord in element.text.strip().split(',')]
+        self._bounding_box = [list(np.min(self._coords, axis=0)), list(np.max(self._coords, axis=0))]
 
     @property
     def coords(self):
         return self._coords
 
+    @property
+    def bbox(self):
+        return self._bounding_box
+
 
 class TraceGroup(BaseTrait):
-    def __init__(self, element, namespace):
+    def __init__(self, element, namespace, traces_to_ref):
         """
         Represent a trace group with id, label and trace indices
         :param element: xml.etree.ElementTree.Element object represent trace group information
         :param namespace:
+        :param traces_to_ref: List of traces for reference
         """
         self._namespace = namespace
         self._id = int(element.get([k for k in element.attrib.keys() if k.endswith('id')][0]))
         self._label = element.find(namespace + "annotation").text
 
-        self._traces_idx = traces_idx = []
+        traces_idx = []
         for trace_view in element.findall(namespace + "traceView"):
             trace_data_ref = int(trace_view.get('traceDataRef'))
             traces_idx.append(trace_data_ref)
+
+        self._traces = [traces_to_ref[idx] for idx in traces_idx]
+        self._bounding_box = [coord for trace in self._traces for coord in trace.bbox]
 
     @property
     def label(self):
         return self._label
 
     @property
-    def traces_idx(self):
-        return
+    def traces(self):
+        return self._traces
 
-    def get_traces(self, traces_to_ref):
-        for idx in self._traces_idx:
-            yield traces_to_ref[idx]
+    @property
+    def bbox(self):
+        return self._bounding_box
 
 
 class Ink(BaseTrait):
@@ -133,7 +143,7 @@ class Ink(BaseTrait):
 
         if trace_group_wrapper is not None:
             trace_groups = [
-                TraceGroup(trace_group_element, self._namespace)
+                TraceGroup(trace_group_element, self._namespace, self._traces)
                 for trace_group_element in trace_group_wrapper.findall(self._namespace + "traceGroup")]
 
             trace_groups.sort(key=lambda group: group.id)
@@ -146,9 +156,10 @@ class Ink(BaseTrait):
 
         self._parsed = True
 
-    def convert_to_img(self, output_path, write_simplified_label=False):
+    def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2):
         """
-        Convert Ink object to image
+        Convert Ink object to image using matplotlib
+        :param linewidth:
         :param write_simplified_label:
         :param output_path: path to write image and label. please provide path without suffix.
         :return:
@@ -172,20 +183,20 @@ class Ink(BaseTrait):
 
         if self._trace_groups is not None:
             for group in self._trace_groups:
-                traces = group.get_traces(self._traces)
-                for trace in traces:
+                for trace in group.traces:
                     data = np.array(trace.coords)
                     x, y = zip(*data)
-                    plt.plot(x, y, linewidth=2, c='black')
+                    plt.plot(x, y, linewidth=linewidth, c='black')
         else:
             for trace in self._traces:
                 data = np.array(trace.coords)
                 x, y = zip(*data)
-                plt.plot(x, y, linewidth=2, c='black')
+                plt.plot(x, y, linewidth=linewidth, c='black')
         plt.savefig(output_path + '.png', bbox_inches='tight', dpi=100)
         plt.gcf().clear()
 
 
 if __name__ == '__main__':
-    ink = Ink("/home/lap13639/Workplace/git/github/master-thesis/hmer/data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation002.inkml")
-    ink.convert_to_img("test")
+    ink = Ink("/home/lap13639/Workplace/git/github/master-thesis/hmer/data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
+    ink.convert_to_img("test", linewidth=1)
+
