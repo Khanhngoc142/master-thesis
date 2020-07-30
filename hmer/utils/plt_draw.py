@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 
+def plt_clear():
+    plt.gcf().clear()
+
+
+def plt_savefig(output_path, bbox_inches='tight', dpi=100, **kwargs):
+    plt.savefig(output_path + '.png', bbox_inches=bbox_inches, dpi=dpi, **kwargs)
+
+
 def plt_setup(**kwargs):
     """
     Prepare the canvas (figure and axis/axes) to draw
@@ -47,7 +55,7 @@ def plt_draw_bbox(bbox, ax=None, scale=None, linewidth=2, color='r'):
         assert isinstance(scale, (float, int)) \
                or (isinstance(scale, np.ndarray)
                    and (
-                               scale.dtype == float or scale.dtype == int)), "Scale must be of type: int, float, numpy array of int or float"
+                           scale.dtype == float or scale.dtype == int)), "Scale must be of type: int, float, numpy array of int or float"
         new_size = size * scale
         shift = (new_size - size) / 2
         root_point = root_point - shift

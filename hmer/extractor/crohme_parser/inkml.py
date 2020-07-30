@@ -1,12 +1,9 @@
-import os
 import numpy as np
-from xml.etree import ElementTree as ET
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from PIL import Image, ImageDraw
 
-from constants import ink_xmlns
-from utils.plt_draw import plt_setup, plt_draw_bbox, plt_trace_coords
+from xml.etree import ElementTree as ET
+
+from constants import ink_xmlns, simplified_lbl_sep
+from utils import plt_draw
 
 
 class BaseTrait(object):
@@ -110,7 +107,7 @@ class Ink(BaseTrait):
         return self._label
 
     @property
-    def simplified_label(self):
+    def simplified_lbl(self):
         return self._simplified_label
 
     @property
@@ -154,7 +151,7 @@ class Ink(BaseTrait):
 
             self._trace_groups = trace_groups
 
-            self._simplified_label = ''.join([
+            self._simplified_label = simplified_lbl_sep.join([
                 group.label
                 for group in trace_groups
             ])
@@ -178,24 +175,24 @@ class Ink(BaseTrait):
             else:
                 fout.write(self._label)
 
-        fig, ax = plt_setup()
+        fig, ax = plt_draw.plt_setup()
 
         if self._trace_groups is not None:
             for group in self._trace_groups:
                 for trace in group.traces:
-                    plt_trace_coords(trace.coords, ax)
+                    plt_draw.plt_trace_coords(trace.coords, ax)
                 if draw_bbox:
-                    plt_draw_bbox(group.bbox, ax=ax, **draw_bbox_kwargs)
+                    plt_draw.plt_draw_bbox(group.bbox, ax=ax, **draw_bbox_kwargs)
         else:
             for trace in self._traces:
-                plt_trace_coords(trace.coords, ax)
+                plt_draw.plt_trace_coords(trace.coords, ax)
                 if draw_bbox:
-                    plt_draw_bbox(trace.bbox, ax=ax, **draw_bbox_kwargs)
-        plt.savefig(output_path + '.png', bbox_inches='tight', dpi=100)
-        plt.gcf().clear()
+                    plt_draw.plt_draw_bbox(trace.bbox, ax=ax, **draw_bbox_kwargs)
+        plt_draw.plt_savefig(output_path + '.png')
+        plt_draw.plt_clear()
 
 
 if __name__ == '__main__':
-    ink = Ink("/home/lap13639/Workplace/git/github/master-thesis/hmer/data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
+    ink = Ink("../../data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
     ink.convert_to_img("test", write_simplified_label=True)
 
