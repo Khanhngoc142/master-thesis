@@ -6,7 +6,7 @@ import matplotlib.patches as patches
 from PIL import Image, ImageDraw
 
 from constants import ink_xmlns
-from utils import plt_draw_bbox
+from utils.plt_draw import plt_setup, plt_draw_bbox, plt_trace_coords
 
 
 class BaseTrait(object):
@@ -178,27 +178,17 @@ class Ink(BaseTrait):
             else:
                 fout.write(self._label)
 
-        fig, ax = plt.subplots()
-        ax.invert_yaxis()
-        ax.set_aspect('equal', adjustable='box')
-        ax.xaxis.set_visible(False)
-        ax.yaxis.set_visible(False)
-        for spine_type in ['left', 'right', 'top', 'bottom']:
-            ax.spines[spine_type].set_visible(False)
+        fig, ax = plt_setup()
 
         if self._trace_groups is not None:
             for group in self._trace_groups:
                 for trace in group.traces:
-                    data = np.array(trace.coords)
-                    x, y = zip(*data)
-                    plt.plot(x, y, linewidth=linewidth, c='black')
+                    plt_trace_coords(trace.coords, ax)
                 if draw_bbox:
                     plt_draw_bbox(group.bbox, ax=ax, **draw_bbox_kwargs)
         else:
             for trace in self._traces:
-                data = np.array(trace.coords)
-                x, y = zip(*data)
-                plt.plot(x, y, linewidth=linewidth, c='black')
+                plt_trace_coords(trace.coords, ax)
                 if draw_bbox:
                     plt_draw_bbox(trace.bbox, ax=ax, **draw_bbox_kwargs)
         plt.savefig(output_path + '.png', bbox_inches='tight', dpi=100)
