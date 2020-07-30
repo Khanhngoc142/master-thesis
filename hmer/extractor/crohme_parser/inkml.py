@@ -150,7 +150,8 @@ class Ink(BaseTrait):
                 TraceGroup(trace_group_element, self._namespace, self._traces)
                 for trace_group_element in trace_group_wrapper.findall(self._namespace + "traceGroup")]
 
-            trace_groups.sort(key=lambda group: group.id)
+            trace_groups.sort(key=lambda group: group.bbox[0][0])
+
             self._trace_groups = trace_groups
 
             self._simplified_label = ''.join([
@@ -206,5 +207,5 @@ class Ink(BaseTrait):
 
 if __name__ == '__main__':
     ink = Ink("/home/lap13639/Workplace/git/github/master-thesis/hmer/data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
-    ink.convert_to_img("test", linewidth=10)
+    ink.convert_to_img("test", write_simplified_label=True)
 
