@@ -62,7 +62,9 @@ class TraceGroup(BaseTrait):
             traces_idx.append(trace_data_ref)
 
         self._traces = [traces_to_ref[idx] for idx in traces_idx]
+
         self._bounding_box = [coord for trace in self._traces for coord in trace.bbox]
+        self._bounding_box = [list(np.min(self._bounding_box, axis=0)), list(np.max(self._bounding_box, axis=0))]
 
     @property
     def label(self):
@@ -195,8 +197,11 @@ class Ink(BaseTrait):
         plt.savefig(output_path + '.png', bbox_inches='tight', dpi=100)
         plt.gcf().clear()
 
+    def draw(self):
+        pass
+
 
 if __name__ == '__main__':
     ink = Ink("/home/lap13639/Workplace/git/github/master-thesis/hmer/data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
-    ink.convert_to_img("test", linewidth=1)
+    ink.convert_to_img("test", linewidth=10)
 
