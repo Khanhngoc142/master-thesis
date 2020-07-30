@@ -12,7 +12,6 @@ class InkAugmentor(object):
         for _ in range(n):
             while True:
                 indices = sorted([random.randint(0, len(trace_groups) - 1) for _ in range(2)])
-                print(indices)
                 if indices[1] - indices[0] > 1:
                     break
             aug_trace_groups = trace_groups[indices[0]:indices[1]]
