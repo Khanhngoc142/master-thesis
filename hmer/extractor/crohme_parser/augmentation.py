@@ -21,6 +21,16 @@ class InkAugmentor(object):
             ])
             yield label, aug_trace_groups
 
+    @staticmethod
+    def elastic_augment(img):
+        """
+        Elastic augment an image
+        :param img: input image of type. 2d or 3d np.ndarray
+        :return: augmented image
+        """
+        # TODO: implement this please
+        return img
+
 
 if __name__ == '__main__':
     demo_ink = inkml.Ink("../../data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
