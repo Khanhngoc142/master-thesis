@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from xml.etree import ElementTree as ET
@@ -32,6 +33,13 @@ class Trace(BaseTrait):
         self._coords = [
             [round(float(axis_coord) * 10000) for axis_coord in coord.strip().split(' ')]
             for coord in element.text.strip().split(',')]
+        if len(self._coords[0]) == 2:
+            pass
+        elif len(self._coords[0]) == 3:
+            # for data in CROHME2013 MfrDB dataset have coords with 3 elements
+            # with the first element seems not very useful so we might as well eliminate it
+            self._coords = [[coord[0], coord[1]] for coord in self._coords]
+
         self._bounding_box = [list(np.min(self._coords, axis=0)), list(np.max(self._coords, axis=0))]
 
     @property
@@ -52,7 +60,18 @@ class TraceGroup(BaseTrait):
         :param traces_to_ref: List of traces for reference
         """
         self._namespace = namespace
-        self._id = int(element.get([k for k in element.attrib.keys() if k.endswith('id')][0]))
+        """
+        :Note
+        There are basically 2 (known) types of trace group id
+        - a number. i.e. 1,2,3,....
+        - list of number separate by colons. i.e. 0:, 1:2:3,...
+        So there will be 2 ways of assigning id:
+        - simply convert to int
+        - generate a number id from 
+        """
+        _id = element.get([k for k in element.attrib.keys() if k.endswith('id')][0])
+        self._id = TraceGroup._gen_id(_id, sep=':')
+
         self._label = element.find(namespace + "annotation").text
 
         traces_idx = []
@@ -76,6 +95,16 @@ class TraceGroup(BaseTrait):
     @property
     def bbox(self):
         return self._bounding_box
+
+    @staticmethod
+    def _gen_id(id_lst, sep=':'):
+        if sep not in id_lst:
+            return int(id_lst)
+        else:
+            # id_lst = id_lst.strip(sep).split(sep)
+            # id_scale = 10 ** int(max(map(lambda s: len(s), id_lst)))
+            # return sum([(id_scale ** i) * int(_id) for i, _id in enumerate(id_lst)])
+            return int(id_lst.replace(':', ''))
 
 
 class Ink(BaseTrait):
@@ -158,16 +187,20 @@ class Ink(BaseTrait):
 
         self._parsed = True
 
-    def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2, draw_bbox=False, **draw_bbox_kwargs):
+    def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2, color='b', draw_bbox=False,
+                       **draw_bbox_kwargs):
         """
         Convert Ink object to image using matplotlib
-        :param linewidth:
-        :param write_simplified_label:
         :param output_path: path to write image and label. please provide path without suffix.
+        :param write_simplified_label:
+        :param linewidth:
+        :param color:
         :param draw_bbox: whether to plot bbox or not
         :return:
         """
         assert self._parsed, "Please parse the file before furthur operation!"
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        plt_draw.plt_clear()
         # write label
         with open(output_path + '.label.txt', 'w+') as fout:
             if write_simplified_label:
@@ -180,19 +213,26 @@ class Ink(BaseTrait):
         if self._trace_groups is not None:
             for group in self._trace_groups:
                 for trace in group.traces:
-                    plt_draw.plt_trace_coords(trace.coords, ax)
+                    plt_draw.plt_trace_coords(trace.coords, ax=ax, linewidth=linewidth, c=color)
                 if draw_bbox:
                     plt_draw.plt_draw_bbox(group.bbox, ax=ax, **draw_bbox_kwargs)
         else:
             for trace in self._traces:
-                plt_draw.plt_trace_coords(trace.coords, ax)
+                plt_draw.plt_trace_coords(trace.coords, ax=ax, linewidth=linewidth, c=color)
                 if draw_bbox:
                     plt_draw.plt_draw_bbox(trace.bbox, ax=ax, **draw_bbox_kwargs)
         plt_draw.plt_savefig(output_path + '.png')
-        plt_draw.plt_clear()
+
+
+def parse_inkml_dir(data_dir_abs_path):
+    if os.path.isdir(data_dir_abs_path):
+        for inkml_file in os.listdir(data_dir_abs_path):
+            if inkml_file.endswith('.inkml'):
+                inkml_file_abs_path = os.path.join(data_dir_abs_path, inkml_file)
+                print("Parsing: {}".format(inkml_file_abs_path))
+                yield Ink(inkml_file_abs_path)
 
 
 if __name__ == '__main__':
     ink = Ink("../../data/CROHME_full_v2/CROHME2013_data/TrainINKML/HAMEX/formulaire001-equation003.inkml")
     ink.convert_to_img("test", write_simplified_label=True)
-
