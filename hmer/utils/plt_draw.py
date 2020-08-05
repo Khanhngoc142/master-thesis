@@ -15,7 +15,7 @@ def plt_setup(**kwargs):
     """
     Prepare the canvas (figure and axis/axes) to draw
     :param kwargs: plt.subplots args
-    :return:
+    :return: fig, ax
     """
     fig, ax = plt.subplots(**kwargs)
     ax.invert_yaxis()
@@ -32,8 +32,23 @@ def plt_trace_coords(coords, ax=None, linewidth=2, c='black'):
     data = np.array(coords)
     x, y = zip(*data)
     if ax is None:
-        ax = plt.gca()
+        fig, ax = plt_setup()
     ax.plot(x, y, linewidth=linewidth, c=c)
+    return ax
+
+
+def plt_draw_traces(traces, ax=None, linewidth=2, c='black'):
+    """
+    draw a list of traces
+    :param traces: list of list of coordinates
+    :param ax:
+    :param linewidth:
+    :param c:
+    :return:
+    """
+    for trace in traces:
+        ax = plt_trace_coords(trace, ax=ax, linewidth=linewidth, c=c)
+    return ax
 
 
 def plt_draw_bbox(bbox, ax=None, scale=None, linewidth=2, color='r'):
