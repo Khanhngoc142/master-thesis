@@ -111,7 +111,6 @@ class TraceGroup(BaseTrait):
         return [trace.coords for trace in self._traces]
 
 
-
 class Ink(BaseTrait):
     def __init__(self, file_path, namespace=ink_xmlns):
         f"""
