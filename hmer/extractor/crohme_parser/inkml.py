@@ -106,6 +106,11 @@ class TraceGroup(BaseTrait):
             # return sum([(id_scale ** i) * int(_id) for i, _id in enumerate(id_lst)])
             return int(id_lst.replace(':', ''))
 
+    @property
+    def trace_coords(self):
+        return [trace.coords for trace in self._traces]
+
+
 
 class Ink(BaseTrait):
     def __init__(self, file_path, namespace=ink_xmlns):
@@ -186,6 +191,10 @@ class Ink(BaseTrait):
             ])
 
         self._parsed = True
+
+    @property
+    def trace_coords(self):
+        return [trace_coords for group in self._trace_groups for trace_coords in group.trace_coords]
 
     def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2, color='b', draw_bbox=False,
                        **draw_bbox_kwargs):
