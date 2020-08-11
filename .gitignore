@@ -1,3 +1,7 @@
 .idea/
 hmer/data/CROHME_full_v2/
 /hmer/extractor/crohme-data-extractor/data
+.ipynb_checkpoints
+__pycache__
+/hmer/extractor/crohme_parser/demo-outputs/
+/hmer/demo-outputs/
