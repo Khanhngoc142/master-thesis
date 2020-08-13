@@ -2,8 +2,9 @@ import os
 import random
 import warnings
 
-from .inkml import Ink
-from .extract import Extractor
+from extractor.crohme_parser.inkml import Ink
+from extractor.crohme_parser.extract import Extractor
+from utils.fs import get_source_root
 
 
 class Symbol(object):
@@ -138,6 +139,7 @@ class Library(object):
 
 def build_library(data_versions="2013", crohme_package=os.path.join("data", "CROHME_full_v2"), datasets="train",
                   target_coord_range=(0, 1)):
+    crohme_package = os.path.join(get_source_root(), crohme_package)
     lib = Library()
     extractor = Extractor(data_versions, crohme_package)
     for ink in extractor.parse_inkmls_iterator(datasets=datasets):
