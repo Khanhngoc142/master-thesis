@@ -5,7 +5,7 @@ import warnings
 from extractor.crohme_parser.inkml import Ink
 from extractor.crohme_parser.extract import Extractor
 from utils.fs import get_source_root
-from utils.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, scale_trace_group
+from utils.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, scale_trace_group, scale2height_trace_group, scale2width_trace_group, scale_trace_group_v2
 
 
 class Symbol(object):
@@ -76,10 +76,11 @@ class Library(object):
             '!': (1, 0),
             '(': (1.1, 0),
             ')': (1.1, 0),
-            '+': (0.6, 0.3),
-            ',': (0.3, 0.8),
-            '-': (0.6, 0.3),
-            '.': (0.3, 0.6),
+            '+': (0.7, 0.35),
+            '-': (0.7, 0.45),
+            '=': (0.7, 0.4),
+            ',': (0.1, 0.8),
+            '.': (0.1, 0.8),
             '/': (1, 0),
             '0': (1, 0),
             '1': (1, 0),
@@ -91,7 +92,6 @@ class Library(object):
             '7': (1, 0),
             '8': (1, 0),
             '9': (1, 0),
-            '=': (0.6, 0.3),
             'A': (1, 0),
             'B': (1, 0),
             'C': (1, 0),
@@ -147,32 +147,32 @@ class Library(object):
             '\\{': (1, 0),
             '\\}': (1, 0),
             ']': (1.1, 0),
-            'a': (0.8, 0.2),
+            'a': (0.6, 0.4),
             'b': (1, 0),
-            'c': (0.8, 0.2),
+            'c': (0.6, 0.4),
             'd': (1, 0),
-            'e': (0.8, 0.2),
+            'e': (0.6, 0.4),
             'f': (1.2, 0),
-            'g': (1.1, 0.5),
+            'g': (1.2, 0.4),
             'h': (1, 0),
-            'i': (0.8, 0.2),
-            'j': (1.2, 0.5),
+            'i': (0.6, 0.4),
+            'j': (1.4, 0.4),
             'k': (1, 0),
             'l': (1, 0),
-            'm': (1, 0.4),
-            'n': (0.8, 0.4),
-            'o': (0.8, 0.2),
-            'p': (1.1, 0.6),
-            'q': (1.1, 0.6),
-            'r': (0.8, 0.2),
-            's': (0.8, 0.2),
-            't': (0.9, 0.1),
-            'u': (0.8, 0.2),
-            'v': (0.8, 0.2),
-            'w': (0.8, 0.2),
-            'x': (0.8, 0.2),
-            'y': (1.1, 0.6),
-            'z': (0.8, 0.2),
+            'm': (0.6, 0.4),
+            'n': (0.6, 0.4),
+            'o': (0.6, 0.4),
+            'p': (1.2, 0.4),
+            'q': (1.2, 0.4),
+            'r': (0.6, 0.4),
+            's': (0.6, 0.4),
+            't': (0.8, 0.2),
+            'u': (0.6, 0.4),
+            'v': (0.6, 0.4),
+            'w': (0.6, 0.4),
+            'x': (0.6, 0.4),
+            'y': (1.2, 0.4),
+            'z': (0.6, 0.4),
             '|': (1.1, 0),
         }
 
@@ -254,12 +254,19 @@ class Library(object):
                 _, cur_symbol = self.get_sample_of_symbol(e)
                 cur_scale, cur_yshift = self._font_metric[e]
                 if cur_scale != 1:
-                    _, cur_symbol = scale_trace_group(cur_symbol, cur_scale)
+                    if e in '-+=':  # special characters need to be handle differently
+                        _, cur_symbol = scale2width_trace_group(cur_symbol, cur_scale)
+                    elif e in ',.':
+                        _, cur_symbol = scale_trace_group_v2(cur_symbol, cur_scale)
+                    else:
+                        _, cur_symbol = scale2height_trace_group(cur_symbol, cur_scale)
+                xrandom, yrandom = 0.2, 0  # TODO: implement some random shift
                 if last_symbol_bbox is not None:
-                    xmax = last_symbol_bbox[2]
+                    xshift = last_symbol_bbox[2]
                     # ymax = last_symbol_bbox[3]  # TODO: do something with this?
-                    xrandom, yrandom = 0.2, 0  # TODO: implement some random shift
-                    cur_symbol = shift_trace_group_coords(cur_symbol, xshift=xmax + xrandom, yshift=cur_yshift + yrandom)
+                else:
+                    xshift = 0
+                cur_symbol = shift_trace_group_coords(cur_symbol, xshift=xshift + xrandom, yshift=cur_yshift + yrandom)
                 last_symbol_bbox = get_trace_group_bbox(cur_symbol)
                 gen_equation.append(cur_symbol)
             else:
