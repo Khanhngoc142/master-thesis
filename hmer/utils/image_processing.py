@@ -1,6 +1,52 @@
 import numpy as np
 
 
+def get_equation_bbox(equation):
+    """
+    Get bounding box of equation
+    :param equation: 4-layer list. represents an equation
+    :return: xmin, ymin, xmax, ymax
+    """
+    coords = [coord for trace_group in equation for trace in trace_group for coord in trace]
+    xmin, ymin = np.min(coords, axis=0)
+    xmax, ymax = np.max(coords, axis=0)
+    return xmin, ymin, xmax, ymax
+
+
+def get_equation_bbox_size(equation):
+    xmin, ymin, xmax, ymax = get_equation_bbox(equation)
+    return xmax - xmin, ymax - ymin
+
+
+def shift_equation(equation, xshift, yshift):
+    return [[[[coord[0] + xshift, coord[1] + yshift] for coord in trace] for trace in trace_group] for trace_group in equation]
+
+
+def scale_equation(equation, scale, new_xorigin=0, new_yorigin=0):
+    """
+    Scale the whole equation
+    :param equation: 4-layer list. represents an equation
+    :param scale: scale
+    :param new_xorigin: new origin for equation
+    :param new_yorigin: new origin for equation
+    :return: 4-layer list
+    """
+    if scale == 1:
+        return equation
+
+    xmin, ymin, xmax, ymax = get_equation_bbox(equation)
+
+    output = []
+    for trace_group in equation:
+        out_trace_group = []
+        for trace in trace_group:
+            coords = [[new_xorigin + (coord[0] - xmin) * scale, new_yorigin + (coord[1] - ymin) * scale]
+                      for coord in trace]
+            out_trace_group.append(coords)
+        output.append(out_trace_group)
+    return output
+
+
 def get_trace_group_bbox(trace_group_coords):
     """
     Get bounding box of a set of a trace group coordinates

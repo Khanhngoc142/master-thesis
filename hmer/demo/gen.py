@@ -41,14 +41,23 @@ def demo_linear_equation(lib, num):
     return fig, axes
 
 
+def demo_equation_w_subsup(lib, num):
+    demo_eq = ['x', '_', ['1'], '^', ['2'], '+', 'x', '_', ['2'], '^', ['3']]
+    fig, axes = plt.subplots(nrows=num)
+    for i in range(num):
+        ax = axes[i]
+        ax.invert_yaxis()
+        ax.set_aspect('equal', adjustable='box')
+        gen_eq = lib.generate_equation_traces(demo_eq)
+        plt_draw_traces([trace for trace_group in gen_eq for trace in trace_group], ax=ax)
+    return fig, axes
+
+
 if __name__ == "__main__":
     root_path = get_source_root()
 
     demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
 
-    # update font metrics
-    dummy_lib = library.Library()
-    demo_lib._font_metric = dummy_lib._font_metric
-
-    demo_linear_equation(demo_lib, 5)
+    # demo_linear_equation(demo_lib, 5)
+    demo_equation_w_subsup(demo_lib, 5)
     plt.show()

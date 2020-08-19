@@ -5,7 +5,9 @@ import warnings
 from extractor.crohme_parser.inkml import Ink
 from extractor.crohme_parser.extract import Extractor
 from utils.fs import get_source_root
-from utils.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, scale_trace_group, scale2height_trace_group, scale2width_trace_group, scale_trace_group_v2
+from utils.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, \
+    scale_trace_group, scale2height_trace_group, scale2width_trace_group, scale_trace_group_v2, scale_equation, get_equation_bbox_size, shift_equation, get_equation_bbox
+from extractor.crohme_parser.fonts import StandardFont
 
 
 class Symbol(object):
@@ -72,109 +74,6 @@ class Symbol(object):
 class Library(object):
     def __init__(self):
         self._lib = {}
-        self._font_metric = {  # font metric: symbols -> (standard_scale, standard_y_shift)
-            '!': (1, 0),
-            '(': (1.1, 0),
-            ')': (1.1, 0),
-            '+': (0.7, 0.35),
-            '-': (0.7, 0.45),
-            '=': (0.7, 0.4),
-            ',': (0.1, 0.8),
-            '.': (0.1, 0.8),
-            '/': (1, 0),
-            '0': (1, 0),
-            '1': (1, 0),
-            '2': (1, 0),
-            '3': (1, 0),
-            '4': (1, 0),
-            '5': (1, 0),
-            '6': (1, 0),
-            '7': (1, 0),
-            '8': (1, 0),
-            '9': (1, 0),
-            'A': (1, 0),
-            'B': (1, 0),
-            'C': (1, 0),
-            'E': (1, 0),
-            'F': (1, 0),
-            'G': (1, 0),
-            'H': (1, 0),
-            'I': (1, 0),
-            'L': (1, 0),
-            'M': (1, 0),
-            'N': (1, 0),
-            'P': (1, 0),
-            'R': (1, 0),
-            'S': (1, 0),
-            'T': (1, 0),
-            'V': (1, 0),
-            'X': (1, 0),
-            'Y': (1, 0),
-            '[': (1.1, 0),
-            # '\\Delta': (,),
-            # '\\alpha': (,),
-            # '\\beta': (,),
-            # '\\cos': (,),
-            # '\\div': (,),
-            # '\\exists': (,),
-            # '\\forall': (,),
-            # '\\gamma': (,),
-            # '\\geq': (,),
-            # '\\gt': (,),
-            # '\\in': (,),
-            # '\\infty': (,),
-            # '\\int': (,),
-            # '\\lambda': (,),
-            # '\\ldots': (,),
-            # '\\leq': (,),
-            # '\\lim': (,),
-            # '\\log': (,),
-            # '\\lt': (,),
-            # '\\mu': (,),
-            # '\\neq': (,),
-            # '\\phi': (,),
-            # '\\pi': (,),
-            # '\\pm': (,),
-            # '\\prime': (,),
-            # '\\rightarrow': (,),
-            # '\\sigma': (,),
-            # '\\sin': (,),
-            # '\\sqrt': (,),
-            # '\\sum': (,),
-            # '\\tan': (,),
-            # '\\theta': (,),
-            # '\\times': (,),
-            '\\{': (1, 0),
-            '\\}': (1, 0),
-            ']': (1.1, 0),
-            'a': (0.6, 0.4),
-            'b': (1, 0),
-            'c': (0.6, 0.4),
-            'd': (1, 0),
-            'e': (0.6, 0.4),
-            'f': (1.2, 0),
-            'g': (1.2, 0.4),
-            'h': (1, 0),
-            'i': (0.6, 0.4),
-            'j': (1.4, 0.4),
-            'k': (1, 0),
-            'l': (1, 0),
-            'm': (0.6, 0.4),
-            'n': (0.6, 0.4),
-            'o': (0.6, 0.4),
-            'p': (1.2, 0.4),
-            'q': (1.2, 0.4),
-            'r': (0.6, 0.4),
-            's': (0.6, 0.4),
-            't': (0.8, 0.2),
-            'u': (0.6, 0.4),
-            'v': (0.6, 0.4),
-            'w': (0.6, 0.4),
-            'x': (0.6, 0.4),
-            'y': (1.2, 0.4),
-            'z': (0.6, 0.4),
-            '|': (1.1, 0),
-        }
 
     @property
     def symbols(self):
@@ -240,19 +139,25 @@ class Library(object):
                 group_traces.append(coords)
             self.add_sample_to_symbol(lbl, group_traces)
 
-    def generate_equation_traces(self, equation, scale=1):
+    def generate_equation_traces(self, equation):
         """
         Generate euation traces from random sample
-        :param scale:
         :param equation:
         :return: list of list of traces
         """
         gen_equation = []
-        last_symbol_bbox = None
+        last_symbol_xmax = None
+        subscript_flag = superscript_flag = False
         for e in equation:
             if isinstance(e, str):
+                if e == '^':
+                    superscript_flag = True
+                    continue
+                elif e == '_':
+                    subscript_flag = True
+                    continue
                 _, cur_symbol = self.get_sample_of_symbol(e)
-                cur_scale, cur_yshift = self._font_metric[e]
+                cur_scale, cur_yshift = StandardFont.font_metric[e]
                 if cur_scale != 1:
                     if e in '-+=':  # special characters need to be handle differently
                         _, cur_symbol = scale2width_trace_group(cur_symbol, cur_scale)
@@ -261,17 +166,34 @@ class Library(object):
                     else:
                         _, cur_symbol = scale2height_trace_group(cur_symbol, cur_scale)
                 xrandom, yrandom = 0.2, 0  # TODO: implement some random shift
-                if last_symbol_bbox is not None:
-                    xshift = last_symbol_bbox[2]
-                    # ymax = last_symbol_bbox[3]  # TODO: do something with this?
+                if last_symbol_xmax is not None:
+                    xshift = last_symbol_xmax
                 else:
                     xshift = 0
                 cur_symbol = shift_trace_group_coords(cur_symbol, xshift=xshift + xrandom, yshift=cur_yshift + yrandom)
-                last_symbol_bbox = get_trace_group_bbox(cur_symbol)
+                last_symbol_xmax = get_trace_group_bbox(cur_symbol)[2]
                 gen_equation.append(cur_symbol)
-            else:
-                pass
-
+            elif isinstance(e, list):
+                child_eq = self.generate_equation_traces(e)
+                if subscript_flag or superscript_flag:
+                    child_eq = scale_equation(child_eq, StandardFont.child_equation_scale)
+                if last_symbol_xmax is not None:
+                    xshift = last_symbol_xmax
+                else:
+                    xshift = 0
+                xrandom, yrandom = 0, 0
+                yshift = 0
+                if superscript_flag:
+                    _, child_eq_h = get_equation_bbox_size(child_eq)
+                    yshift = StandardFont.sup_equation_yshift - child_eq_h
+                    superscript_flag = False
+                elif subscript_flag:
+                    yshift = StandardFont.sub_equation_yshift
+                    subscript_flag = False
+                child_eq = shift_equation(child_eq, xshift + xrandom, yshift + yrandom)
+                last_symbol_xmax = get_equation_bbox(child_eq)[2]
+                for trace_group in child_eq:
+                    gen_equation.append(trace_group)
         return gen_equation
 
 
