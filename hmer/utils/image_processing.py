@@ -1,35 +1,73 @@
 import numpy as np
 
 
-def scale_traces(traces_data, box_size=(0, 1)):
+def get_trace_group_bbox(trace_group_coords):
+    """
+    Get bounding box of a set of a trace group coordinates
+    :param trace_group_coords: 3-layer list. represents a trace group
+    :return: xmin, ymin, xmax, ymax
+    """
+    coords = [coord for trace in trace_group_coords for coord in trace]
+    xmin, ymin = np.min(coords, axis=0)
+    xmax, ymax = np.max(coords, axis=0)
+    return xmin, ymin, xmax, ymax
+
+
+def get_trace_group_bbox_size(trace_group_coords):
+    xmin, ymin, xmax, ymax = get_trace_group_bbox(trace_group_coords)
+    return xmax - xmin, ymax - ymin
+
+
+def shift_trace_group_coords(trace_group_coords, xshift=0, yshift=0):
+    """
+    shift coordinates of trace group by some amount
+    :param trace_group_coords: 3-layer list. represents a trace group
+    :param xshift:
+    :param yshift:
+    :return: 3-layer list
+    """
+    return [[[coord[0] + xshift, coord[1] + yshift] for coord in trace] for trace in trace_group_coords]
+
+
+def compute_scale_trace_group_bbox(trace_group_bbox, box_size):
+    xmin, ymin, xmax, ymax = trace_group_bbox
+    w, h = xmax - xmin, ymax - ymin
+    largest_side = max(w, h)
+    scale = box_size / largest_side
+    return scale
+
+
+def compute_scale_trace_group_coords(trace_group_data, box_size):
+    """
+    compute scale of a trace group
+    :param trace_group_data: 3-layer list. represents a trace group
+    :param box_size: int. length of one side of desired square box.
+    :return: float
+    """
+    return compute_scale_trace_group_bbox(get_trace_group_bbox(trace_group_data), box_size)
+
+
+def centerize_trace_group_coords(trace_group_data):
+    w, h = get_trace_group_bbox_size(trace_group_data)
+    return [[[coord[0] - w/2, coord[1] - h/2] for coord in trace] for trace in trace_group_data]
+
+
+def scale_trace_group(trace_group_data, box_size=1):
     """
     Scale coordinates of an equantion or a trace groups or a trace to given range
-    :param traces_data: list of list of coordinates, which is a 3D list [[[x,y]]]
-    :param box_size:
-    :return: a new traces_data
+    :param trace_group_data: 3-layer list. represents a trace group.
+    :param box_size: int. size of box with origin at 0
+    :return: 3-layer list. a new trace_group_data
     """
-    if isinstance(box_size, (list, tuple)):
-        assert len(box_size) == 2, "target box_size must be tuple/list of 2 int/float or a single float"
-    else:
-        assert isinstance(box_size, (float, int)), "target box_size must be tuple/list of 2 int/float or a single float"
-        box_size = (0, box_size)
-    # flatten into a list of coordinates
-    flatten_traces_data = np.array([coord for trace in traces_data for coord in trace])
-    xmin, ymin = np.min(flatten_traces_data, axis=0)
-    xmax, ymax = np.max(flatten_traces_data, axis=0)
-
-    # compute scale
-    xdiff = xmax - xmin
-    ydiff = ymax - ymin
-    diff = max(xdiff, ydiff)
-    target_diff = box_size[1] - box_size[0]
-    scale = target_diff / diff
+    xmin, ymin, xmax, ymax = get_trace_group_bbox(trace_group_data)
+    scale = compute_scale_trace_group_bbox((xmin, ymin, xmax, ymax), box_size)
+    w, h = xmax - xmin, ymax - ymin
 
     # compute new x, y origins
-    xorigin = (box_size[1] - xdiff * scale) / 2
-    yorigin = (box_size[1] - ydiff * scale) / 2
+    xorigin = (box_size - w * scale) / 2
+    yorigin = (box_size - h * scale) / 2
     new_traces_data = []
-    for trace in traces_data:
+    for trace in trace_group_data:
         coords = [[xorigin + (coord[0] - xmin) * scale, yorigin + (coord[1] - ymin) * scale]
                   for coord in trace]
         new_traces_data.append(coords)
@@ -83,7 +121,8 @@ def local_vertical_shrink(trace_coord, alpha=10):
     """
     new_trace_coord = []
     for coord in trace_coord:
-        new_x = coord[0] * (np.sin((np.pi / 2.0 - np.deg2rad(alpha))) - coord[0] * np.sin(np.deg2rad(alpha)) / 1000000.0)
+        new_x = coord[0] * (
+                    np.sin((np.pi / 2.0 - np.deg2rad(alpha))) - coord[0] * np.sin(np.deg2rad(alpha)) / 1000000.0)
         new_y = coord[1]
         new_trace_coord.append([new_x, new_y])
 
@@ -99,14 +138,15 @@ def local_horizontal_shrink(trace_coord, alpha=10):
     """
     new_trace_coord = []
     for coord in trace_coord:
-        new_y = coord[1] * (np.sin((np.pi / 2.0 - np.deg2rad(alpha))) - coord[1] * np.sin(np.deg2rad(alpha)) / 1000000.0)
+        new_y = coord[1] * (
+                    np.sin((np.pi / 2.0 - np.deg2rad(alpha))) - coord[1] * np.sin(np.deg2rad(alpha)) / 1000000.0)
         new_x = coord[0]
         new_trace_coord.append([new_x, new_y])
 
     return new_trace_coord
 
 
-def local_shrink(i,trace_coord, alpha=10):
+def local_shrink(i, trace_coord, alpha=10):
     # i = np.random.uniform(0, 1)
     return local_vertical_shrink(trace_coord, alpha) if i >= 0.5 else local_horizontal_shrink(
         trace_coord, alpha)
@@ -176,7 +216,7 @@ def local_horizontal_perspective(trace_coord, alpha=10):
     return new_trace_coord
 
 
-def local_perspective(i,trace_coord, alpha=10):
+def local_perspective(i, trace_coord, alpha=10):
     """
 
     :param trace_coord:
