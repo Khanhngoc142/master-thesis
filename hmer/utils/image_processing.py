@@ -339,3 +339,55 @@ def local_perspective_rotation(i, trace_coord, alpha=10, beta=10):
     """
     perspective_coords = local_perspective(1, trace_coord, alpha)
     return local_rotation(perspective_coords, beta)
+
+
+def local_scale(trace_coord, k=0.7):
+    """
+
+    :param trace_coord:
+    :param k: scale factor
+    :return:
+    """
+    return [[k * coord[0], k * coord[1]] for coord in trace_coord]
+
+
+def geometric_local_model(trace_coord, random_model, i, alpha, beta):
+    """
+
+    :param random_model:
+    :param i:
+    :param alpha:
+    :param beta:
+    :param gamma:
+    :param k:
+    :return:
+    """
+
+    if random_model == 1:
+        return local_sheer(i, trace_coord, alpha)
+    elif random_model == 2:
+        return local_shrink(i, trace_coord, alpha)
+    elif random_model == 3:
+        return local_shrink_rotation(i, trace_coord, alpha, beta)
+    elif random_model == 4:
+        return local_vertical_perspective(trace_coord, alpha)
+    else:
+        return local_perspective_rotation(i, trace_coord, alpha, beta)
+
+
+def geometric_global_transform(trace_coord, random_model, i, alpha, beta, gamma, k):
+    """
+
+    :param trace_coord:
+    :param random_model:
+    :param i:
+    :param alpha:
+    :param beta:
+    :param gamma:
+    :param k:
+    :return:
+    """
+
+    local_transformed_coord = geometric_local_model(trace_coord,random_model,i, alpha, beta)
+    tmp_coord_1 = local_scale(local_transformed_coord,k)
+    return local_rotation(tmp_coord_1, gamma)
