@@ -4,6 +4,8 @@ from extractor.crohme_parser import library, inkml
 from utils.plt_draw import plt_draw_traces, plt_setup
 from utils.fs import get_source_root, load_object, save_object
 import random
+import sys
+from extractor.crohme_parser.fonts import StandardFont
 
 
 def sample_list(lst):
@@ -56,8 +58,24 @@ def demo_equation_w_subsup(lib, num):
 if __name__ == "__main__":
     root_path = get_source_root()
 
-    demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
+    lib = demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
 
     # demo_linear_equation(demo_lib, 5)
-    demo_equation_w_subsup(demo_lib, 5)
+    # demo_equation_w_subsup(demo_lib, 5)
+
+    num = 2
+    # demo_eq = ['\\lim', '_', ['x', '\\rightarrow'] + list('100')]
+    # demo_eq = "x \\rightarrow 1 0 0".split()
+    # demo_eq = ['\\sum'] + list('abc+def-ghi=jkl') + ['\\times'] + list('mnop') + ['\\rightarrow'] + list('xyz')
+    demo_eq = ['\\lim', '_', ['k', '\\rightarrow'] + list('100'), '\\sum', '_', list('x=0'), '^', ['k'], 'p', '_', ['i'], 'x', '_', ['i']]
+    # demo_eq = list(StandardFont.font_metric.keys())
+
+    fig, axes = plt.subplots(nrows=num)
+    for i in range(num):
+        ax = axes[i]
+        ax.invert_yaxis()
+        ax.set_aspect('equal', adjustable='box')
+        gen_eq = lib.generate_equation_traces(demo_eq)
+        plt_draw_traces([trace for trace_group in gen_eq for trace in trace_group], ax=ax)
     plt.show()
+    # sys.exit()

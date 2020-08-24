@@ -6,8 +6,30 @@ from extractor.crohme_parser.inkml import Ink
 from extractor.crohme_parser.extract import Extractor
 from utils.fs import get_source_root
 from utils.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, \
-    scale_trace_group, scale2height_trace_group, scale2width_trace_group, scale_trace_group_v2, scale_equation, get_equation_bbox_size, shift_equation, get_equation_bbox
+    scale_trace_group, scale2height_trace_group, scale2width_trace_group, scale_trace_group_v2, scale_equation, \
+    get_equation_bbox_size, shift_equation, get_equation_bbox, get_trace_group_bbox_size
 from extractor.crohme_parser.fonts import StandardFont
+from enum import Enum, auto
+
+
+class EquationFlag(Enum):
+    SUPSCRIPT = auto()
+    SUBSCRIPT = auto()
+    LIM = auto()
+    LIMLOWER = auto()
+    SUM = auto()
+    SUMUPPER = auto()
+    SUMLOWER = auto()
+
+
+def get_scaledown_flag():
+    return [
+        EquationFlag.SUPSCRIPT,
+        EquationFlag.SUBSCRIPT,
+        EquationFlag.LIMLOWER,
+        EquationFlag.SUMUPPER,
+        EquationFlag.SUMLOWER,
+    ]
 
 
 class Symbol(object):
@@ -146,54 +168,138 @@ class Library(object):
         :return: list of list of traces
         """
         gen_equation = []
-        last_symbol_xmax = None
-        subscript_flag = superscript_flag = False
+        last_symbol_bbox = None
+        flag = None
         for e in equation:
+            # handle symbols
             if isinstance(e, str):
                 if e == '^':
-                    superscript_flag = True
+                    if flag is None:
+                        flag = EquationFlag.SUPSCRIPT
+                    elif flag is EquationFlag.SUM:
+                        flag = EquationFlag.SUMUPPER
                     continue
                 elif e == '_':
-                    subscript_flag = True
+                    if flag is None:
+                        flag = EquationFlag.SUBSCRIPT
+                    elif flag is EquationFlag.LIM:
+                        flag = EquationFlag.LIMLOWER
+                    elif flag is EquationFlag.SUM:
+                        flag = EquationFlag.SUMLOWER
                     continue
+
                 _, cur_symbol = self.get_sample_of_symbol(e)
                 cur_scale, cur_yshift = StandardFont.font_metric[e]
-                if cur_scale != 1:
-                    if e in '-+=':  # special characters need to be handle differently
-                        _, cur_symbol = scale2width_trace_group(cur_symbol, cur_scale)
-                    elif e in ',.':
-                        _, cur_symbol = scale_trace_group_v2(cur_symbol, cur_scale)
-                    else:
-                        _, cur_symbol = scale2height_trace_group(cur_symbol, cur_scale)
-                xrandom, yrandom = 0.2, 0  # TODO: implement some random shift
-                if last_symbol_xmax is not None:
-                    xshift = last_symbol_xmax
+
+                # there are different scale tragetries depending on which characters
+                # scale by width
+                if e in list('-+='):
+                    _, cur_symbol = scale2width_trace_group(cur_symbol, cur_scale)
+                # scale by max side
+                elif e in list(',.') + [
+                    '\\rightarrow', '\\times', '\\div',
+                    '\\sum', '\\exists', '\\forall',
+                    '\\geq', '\\gt', '\\leq', '\\lt', '\\neq'
+                ]:
+                    _, cur_symbol = scale_trace_group_v2(cur_symbol, cur_scale)
+                # scale by height. Default
+                else:
+                    _, cur_symbol = scale2height_trace_group(cur_symbol, cur_scale)
+
+                xrandom, yrandom = 0, 0  # TODO: implement some random shift
+
+                # xshift
+                if last_symbol_bbox is not None:
+                    xshift = last_symbol_bbox[2] + StandardFont.symbol_gap
                 else:
                     xshift = 0
+                # special case shift y to center at cur_yshift
+                if e in list('+-=') + [
+                    '\\rightarrow', '\\times', '\\div',
+                    '\\geq', '\\gt', '\\leq', '\\lt', '\\neq'
+                ]:
+                    _, h = get_trace_group_bbox_size(cur_symbol)
+                    cur_yshift -= h / 2
+
+                # shift
                 cur_symbol = shift_trace_group_coords(cur_symbol, xshift=xshift + xrandom, yshift=cur_yshift + yrandom)
-                last_symbol_xmax = get_trace_group_bbox(cur_symbol)[2]
+
+                # update info var
+                last_symbol_bbox = get_trace_group_bbox(cur_symbol)
                 gen_equation.append(cur_symbol)
+
+                # reset flag
+                if e == '\\lim':
+                    flag = EquationFlag.LIM
+                elif e == '\\sum':
+                    flag = EquationFlag.SUM
+                else:
+                    flag = None
+            # handle child equations
             elif isinstance(e, list):
                 child_eq = self.generate_equation_traces(e)
-                if subscript_flag or superscript_flag:
-                    child_eq = scale_equation(child_eq, StandardFont.child_equation_scale)
-                if last_symbol_xmax is not None:
-                    xshift = last_symbol_xmax
+
+                # scale child equation
+                if flag in [EquationFlag.SUPSCRIPT, EquationFlag.SUBSCRIPT, ]:
+                    child_eq = scale_equation(child_eq, StandardFont.supsub_equation_scale)
+                elif flag in [EquationFlag.LIMLOWER, EquationFlag.SUMUPPER, EquationFlag.SUMLOWER]:
+                    child_eq = scale_equation(child_eq, StandardFont.lowerupper_equation_scale)
+
+                # x shift
+                # center child symbol to center of last symbol, last_symbol_bbox is always not None in THIS case
+                if flag in [EquationFlag.LIMLOWER, EquationFlag.SUMLOWER, EquationFlag.SUMUPPER]:
+                    child_xmin, child_ymin, child_xmax, child_ymax = get_equation_bbox(child_eq)
+                    child_w = child_xmax - child_xmin
+                    last_symbol_w = last_symbol_bbox[2] - last_symbol_bbox[0]
+                    # upperlower center
+                    if flag in [EquationFlag.SUMUPPER, ]:
+                        xshift = last_symbol_bbox[0] - StandardFont.upperlower_xshift_center(child_w, last_symbol_w)
+                    # upperlower leftalign. Default
+                    else:
+                        xshift = last_symbol_bbox[0] - StandardFont.upperlower_xshift_leftalign(child_w, last_symbol_w)
+                elif last_symbol_bbox is not None:
+                    xshift = last_symbol_bbox[
+                                 2] + StandardFont.symbol_gap  # 0.2 is meant to create some space between 2 symbol
                 else:
                     xshift = 0
-                xrandom, yrandom = 0, 0
+
+                # yshift
                 yshift = 0
-                if superscript_flag:
+                # simple superscript
+                if flag is EquationFlag.SUPSCRIPT:
                     _, child_eq_h = get_equation_bbox_size(child_eq)
                     yshift = StandardFont.sup_equation_yshift - child_eq_h
-                    superscript_flag = False
-                elif subscript_flag:
+                # simple subscript
+                elif flag is EquationFlag.SUBSCRIPT:
                     yshift = StandardFont.sub_equation_yshift
-                    subscript_flag = False
+                elif flag in [EquationFlag.LIMLOWER, EquationFlag.SUMLOWER]:
+                    yshift = last_symbol_bbox[3] + StandardFont.lower_equation_yshift
+                elif flag in [EquationFlag.SUMUPPER]:
+                    _, child_eq_h = get_equation_bbox_size(child_eq)
+                    yshift = last_symbol_bbox[1] - StandardFont.upper_equation_yshift - child_eq_h
+
+                # distabilize position
+                xrandom, yrandom = 0, 0
+
+                # shift equation
                 child_eq = shift_equation(child_eq, xshift + xrandom, yshift + yrandom)
-                last_symbol_xmax = get_equation_bbox(child_eq)[2]
+
+                # update info var
+                # in some special cases we maintain the last_symbol_bbox
+                if flag in [EquationFlag.LIMLOWER, EquationFlag.SUMUPPER, EquationFlag.SUMLOWER]:
+                    last_symbol_bbox = [min(*child_parent_bbox_pair) if i < 2 else max(*child_parent_bbox_pair) for
+                                        i, child_parent_bbox_pair in
+                                        enumerate(zip(get_equation_bbox(child_eq), last_symbol_bbox))]
+                else:
+                    last_symbol_bbox = get_equation_bbox(child_eq)
                 for trace_group in child_eq:
                     gen_equation.append(trace_group)
+
+                # reset flag
+                if flag in [EquationFlag.SUMUPPER, EquationFlag.SUMLOWER]:
+                    flag = EquationFlag.SUM
+                else:
+                    flag = None
         return gen_equation
 
 
