@@ -55,27 +55,34 @@ def demo_equation_w_subsup(lib, num):
     return fig, axes
 
 
-if __name__ == "__main__":
-    root_path = get_source_root()
-
-    lib = demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
-
-    # demo_linear_equation(demo_lib, 5)
-    # demo_equation_w_subsup(demo_lib, 5)
-
-    num = 2
-    # demo_eq = ['\\lim', '_', ['x', '\\rightarrow'] + list('100')]
-    # demo_eq = "x \\rightarrow 1 0 0".split()
-    # demo_eq = ['\\sum'] + list('abc+def-ghi=jkl') + ['\\times'] + list('mnop') + ['\\rightarrow'] + list('xyz')
-    demo_eq = ['\\lim', '_', ['k', '\\rightarrow'] + list('100'), '\\sum', '_', list('x=0'), '^', ['k'], 'p', '_', ['i'], 'x', '_', ['i']]
-    # demo_eq = list(StandardFont.font_metric.keys())
-
+def demo_custom_equation(lib, eq, num):
     fig, axes = plt.subplots(nrows=num)
     for i in range(num):
         ax = axes[i]
         ax.invert_yaxis()
         ax.set_aspect('equal', adjustable='box')
-        gen_eq = lib.generate_equation_traces(demo_eq)
+        gen_eq = lib.generate_equation_traces(eq)
         plt_draw_traces([trace for trace_group in gen_eq for trace in trace_group], ax=ax)
+
+    return fig, axes
+
+
+if __name__ == "__main__":
+    root_path = get_source_root()
+
+    demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
+
+    # demo_linear_equation(demo_lib, 5)
+    # demo_equation_w_subsup(demo_lib, 5)
+
+    # demo_eq = ['\\lim', '_', ['x', '\\rightarrow'] + list('100')]
+    # demo_eq = "x \\rightarrow 1 0 0".split()
+    # demo_eq = ['\\sum'] + list('abc+def-ghi=jkl') + ['\\times'] + list('mnop') + ['\\rightarrow'] + list('xyz')
+    # demo_eq = ['\\lim', '_', ['k', '\\rightarrow'] + list('100'), '\\sum', '_', list('x=0'), '^', ['k'], 'p', '_', ['i'], 'x', '_', ['i']]
+    # demo_eq = list(StandardFont.font_metric.keys())
+    # demo_eq = ['\\log', ] + list('(x)=y')
+    # demo_eq = list('H(p,q)=-') + ['\\sum', '_', ['x', '\\in', 'X']] + list('p(x)') + ['\\log', '_', ['2']] + list('q(x)')
+    # demo_eq = ['\\int', '_', ['-', '\\infty'], '^', ['\\infty'], *list('aibicidieifi'), '\\alpha', '\\beta', '\\gamma'] + list('abcxyz') + ['\\infty', '\\pi', *list('r_'), ['2']]
+    demo_eq = ['A', '\\prime', *list('=A')]
+    demo_custom_equation(demo_lib, demo_eq, 5)
     plt.show()
-    # sys.exit()

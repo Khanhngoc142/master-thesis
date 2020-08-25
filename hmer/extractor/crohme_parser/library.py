@@ -20,6 +20,9 @@ class EquationFlag(Enum):
     SUM = auto()
     SUMUPPER = auto()
     SUMLOWER = auto()
+    INTEGRAL = auto()
+    INTEGRALUPPER = auto()
+    INTEGRALLOWER = auto()
 
 
 def get_scaledown_flag():
@@ -178,6 +181,8 @@ class Library(object):
                         flag = EquationFlag.SUPSCRIPT
                     elif flag is EquationFlag.SUM:
                         flag = EquationFlag.SUMUPPER
+                    elif flag is EquationFlag.INTEGRAL:
+                        flag = EquationFlag.INTEGRALUPPER
                     continue
                 elif e == '_':
                     if flag is None:
@@ -186,6 +191,8 @@ class Library(object):
                         flag = EquationFlag.LIMLOWER
                     elif flag is EquationFlag.SUM:
                         flag = EquationFlag.SUMLOWER
+                    elif flag is EquationFlag.INTEGRAL:
+                        flag = EquationFlag.INTEGRALLOWER
                     continue
 
                 _, cur_symbol = self.get_sample_of_symbol(e)
@@ -193,13 +200,13 @@ class Library(object):
 
                 # there are different scale tragetries depending on which characters
                 # scale by width
-                if e in list('-+='):
+                if e in list('-+=') + ['\\infty', '\\ldots', '\\pm']:
                     _, cur_symbol = scale2width_trace_group(cur_symbol, cur_scale)
                 # scale by max side
                 elif e in list(',.') + [
                     '\\rightarrow', '\\times', '\\div',
                     '\\sum', '\\exists', '\\forall',
-                    '\\geq', '\\gt', '\\leq', '\\lt', '\\neq'
+                    '\\geq', '\\gt', '\\leq', '\\lt', '\\neq',
                 ]:
                     _, cur_symbol = scale_trace_group_v2(cur_symbol, cur_scale)
                 # scale by height. Default
@@ -214,12 +221,19 @@ class Library(object):
                 else:
                     xshift = 0
                 # special case shift y to center at cur_yshift
+                _, h = get_trace_group_bbox_size(cur_symbol)
                 if e in list('+-=') + [
                     '\\rightarrow', '\\times', '\\div',
-                    '\\geq', '\\gt', '\\leq', '\\lt', '\\neq'
+                    '\\geq', '\\gt', '\\leq', '\\lt', '\\neq',
+                    '\\infty',
+                    '\\ldots',
                 ]:
-                    _, h = get_trace_group_bbox_size(cur_symbol)
                     cur_yshift -= h / 2
+                # yshift bottom alignment
+                elif e in ['\\pm']:
+                    cur_yshift -= h
+                elif e == '\\prime':
+                    cur_yshift += last_symbol_bbox[1]
 
                 # shift
                 cur_symbol = shift_trace_group_coords(cur_symbol, xshift=xshift + xrandom, yshift=cur_yshift + yrandom)
@@ -233,6 +247,8 @@ class Library(object):
                     flag = EquationFlag.LIM
                 elif e == '\\sum':
                     flag = EquationFlag.SUM
+                elif e == '\\int':
+                    flag = EquationFlag.INTEGRAL
                 else:
                     flag = None
             # handle child equations
@@ -242,12 +258,19 @@ class Library(object):
                 # scale child equation
                 if flag in [EquationFlag.SUPSCRIPT, EquationFlag.SUBSCRIPT, ]:
                     child_eq = scale_equation(child_eq, StandardFont.supsub_equation_scale)
-                elif flag in [EquationFlag.LIMLOWER, EquationFlag.SUMUPPER, EquationFlag.SUMLOWER]:
+                elif flag in [
+                    EquationFlag.LIMLOWER,
+                    EquationFlag.SUMUPPER, EquationFlag.SUMLOWER,
+                    EquationFlag.INTEGRALLOWER, EquationFlag.INTEGRALUPPER
+                ]:
                     child_eq = scale_equation(child_eq, StandardFont.lowerupper_equation_scale)
 
                 # x shift
                 # center child symbol to center of last symbol, last_symbol_bbox is always not None in THIS case
-                if flag in [EquationFlag.LIMLOWER, EquationFlag.SUMLOWER, EquationFlag.SUMUPPER]:
+                if flag in [
+                    EquationFlag.LIMLOWER,
+                    EquationFlag.SUMLOWER, EquationFlag.SUMUPPER
+                ]:
                     child_xmin, child_ymin, child_xmax, child_ymax = get_equation_bbox(child_eq)
                     child_w = child_xmax - child_xmin
                     last_symbol_w = last_symbol_bbox[2] - last_symbol_bbox[0]
@@ -257,26 +280,32 @@ class Library(object):
                     # upperlower leftalign. Default
                     else:
                         xshift = last_symbol_bbox[0] - StandardFont.upperlower_xshift_leftalign(child_w, last_symbol_w)
+                elif flag is EquationFlag.INTEGRALLOWER:
+                    xshift = last_symbol_bbox[2] - (last_symbol_bbox[2] - last_symbol_bbox[0])/3
                 elif last_symbol_bbox is not None:
-                    xshift = last_symbol_bbox[
-                                 2] + StandardFont.symbol_gap  # 0.2 is meant to create some space between 2 symbol
+                    xshift = \
+                        last_symbol_bbox[2] \
+                        + StandardFont.supsub_equation_gap_from_parent
                 else:
                     xshift = 0
 
                 # yshift
                 yshift = 0
+                _, child_eq_h = get_equation_bbox_size(child_eq)
                 # simple superscript
                 if flag is EquationFlag.SUPSCRIPT:
-                    _, child_eq_h = get_equation_bbox_size(child_eq)
                     yshift = StandardFont.sup_equation_yshift - child_eq_h
                 # simple subscript
                 elif flag is EquationFlag.SUBSCRIPT:
                     yshift = StandardFont.sub_equation_yshift
                 elif flag in [EquationFlag.LIMLOWER, EquationFlag.SUMLOWER]:
                     yshift = last_symbol_bbox[3] + StandardFont.lower_equation_yshift
-                elif flag in [EquationFlag.SUMUPPER]:
-                    _, child_eq_h = get_equation_bbox_size(child_eq)
+                elif flag is EquationFlag.SUMUPPER:
                     yshift = last_symbol_bbox[1] - StandardFont.upper_equation_yshift - child_eq_h
+                elif flag is EquationFlag.INTEGRALUPPER:
+                    yshift = last_symbol_bbox[1] - child_eq_h/2
+                elif flag is EquationFlag.INTEGRALLOWER:
+                    yshift = last_symbol_bbox[3] - child_eq_h/2
 
                 # distabilize position
                 xrandom, yrandom = 0, 0
@@ -286,18 +315,28 @@ class Library(object):
 
                 # update info var
                 # in some special cases we maintain the last_symbol_bbox
-                if flag in [EquationFlag.LIMLOWER, EquationFlag.SUMUPPER, EquationFlag.SUMLOWER]:
+                if flag in [
+                    EquationFlag.LIMLOWER,
+                    EquationFlag.SUMUPPER, EquationFlag.SUMLOWER,
+                ]:
                     last_symbol_bbox = [min(*child_parent_bbox_pair) if i < 2 else max(*child_parent_bbox_pair) for
                                         i, child_parent_bbox_pair in
                                         enumerate(zip(get_equation_bbox(child_eq), last_symbol_bbox))]
+                elif flag in [
+                    EquationFlag.INTEGRALUPPER, EquationFlag.INTEGRALLOWER,
+                ]:
+                    pass
                 else:
                     last_symbol_bbox = get_equation_bbox(child_eq)
+
                 for trace_group in child_eq:
                     gen_equation.append(trace_group)
 
                 # reset flag
                 if flag in [EquationFlag.SUMUPPER, EquationFlag.SUMLOWER]:
                     flag = EquationFlag.SUM
+                elif flag in [EquationFlag.INTEGRALUPPER, EquationFlag.INTEGRALLOWER]:
+                    flag = EquationFlag.INTEGRAL
                 else:
                     flag = None
         return gen_equation

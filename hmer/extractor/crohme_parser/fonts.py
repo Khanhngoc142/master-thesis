@@ -1,5 +1,6 @@
 class StandardFont:
-    font_metric = {  # font metric: symbols -> (standard_scale, standard_y_shift)
+    # font metric: symbols -> (standard_scale, standard_y_shift)
+    font_metric = {
         '!': (1, 0),
         '(': (1, 0),
         ')': (1, 0),
@@ -53,7 +54,7 @@ class StandardFont:
         'f': (1.2, 0),
         'g': (1.2, 0.4),
         'h': (1, 0),
-        'i': (0.7, 0.3),
+        'i': (1, 0),
         'j': (1.4, 0.4),
         'k': (1, 0),
         'l': (1, 0),
@@ -72,12 +73,15 @@ class StandardFont:
         'y': (1.2, 0.4),
         'z': (0.6, 0.4),
 
-        '\\lim': (1, 0),
+        '\\infty': (1.4, 0.65),
+        '\\pi': (0.6, 0.4),
+
         '\\cos': (0.6, 0.4),
         '\\sin': (0.7, 0.3),
         '\\tan': (1, 0),
         '\\theta': (0.95, 0.05),
 
+        '\\lim': (1, 0),
         '\\sum': (1.2, -0.1),
         '\\exists': (1.2, -0.1),
         '\\forall': (1.2, -0.1),
@@ -92,30 +96,37 @@ class StandardFont:
 
         '\\Delta': (1, 0),
 
-        # '\\alpha': (1, 0),
-        # '\\beta': (1, 0),
-        # '\\gamma': (1, 0),
-        # '\\infty': (1, 0),
-        # '\\int': (1, 0),
-        # '\\lambda': (1, 0),
-        # '\\ldots': (1, 0),
+        '\\log': (1.6, 0),
 
-        # '\\log': (,),
-        # '\\mu': (,),
-        # '\\phi': (,),
-        # '\\pi': (,),
-        # '\\pm': (,),
-        # '\\prime': (,),
-        # '\\sigma': (,),
-        # '\\sqrt': (,),
+        '\\alpha': (0.8, 0.2),
+        '\\beta': (1.2, 0.2),
+        '\\gamma': (1, 0),
 
+        '\\int': (3, (1 - 3)/2),
+
+        '\\ldots': (1.5, 0.95),
+        '\\lambda': (1, 0),
+        '\\mu': (1.2, 0.4),
+        '\\phi': (1.4, -0.1),  # empty, null
+        '\\pm': (1, 1.05),
+        '\\prime': (0.6, -0.2),
+        '\\sigma': (1, 0),
+
+        '\\sqrt': (1, 0),
     }
-    supsub_equation_scale = 0.5
+
+    # scale
+    supsub_equation_scale = 0.4
     lowerupper_equation_scale = 0.4
+
+    # yshift
     sub_equation_yshift = 0.7
     sup_equation_yshift = 0.3
     upper_equation_yshift = lower_equation_yshift = 0.2
+
+    # gap
     symbol_gap = 0.2
+    supsub_equation_gap_from_parent = 0
 
     @staticmethod
     def upperlower_xshift_rightalign(child_w, parent_w):
