@@ -15,7 +15,7 @@ if __name__ == "__main__":
         os.path.join(root_path, "data/CROHME_full_v2/CROHME2013_data/TrainINKML/MfrDB/MfrDB0057.inkml"))  # 57,77,17,27
     t_coords = ink.trace_coords
     # scale coords
-    _, t_coords = scale_traces(t_coords, 300)
+    _, t_coords = scale_trace_group(t_coords, 300)
     # new_coords = []
     # for trace_group in ink.trace_groups:
     # _, scaled_coords = scale_traces(trace_group.trace_coords)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         print("\n")
         # plt.show()
 
-        _, coords = scale_traces(new_coords, 300)
+        _, coords = scale_trace_group(new_coords, 300)
         img = plt_draw_traces(coords)
         # fig.add_subplot(3,2,n)
         # plt.imshow(img, cmap='gray')
