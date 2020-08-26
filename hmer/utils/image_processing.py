@@ -142,37 +142,46 @@ def scale_trace_group_v2(trace_group_data, box_size=1):
     xmin, ymin, xmax, ymax = get_trace_group_bbox(trace_group_data)
     scale = compute_scale_trace_group_bbox(xmin, ymin, xmax, ymax, box_size)
 
+    if scale == 1:
+        return scale, trace_group_data
+
     # compute new x, y origins
-    new_traces_data = []
+    new_trace_group_data = []
     for trace in trace_group_data:
         coords = [[(coord[0] - xmin) * scale, (coord[1] - ymin) * scale]
                   for coord in trace]
-        new_traces_data.append(coords)
-    return scale, new_traces_data
+        new_trace_group_data.append(coords)
+    return scale, new_trace_group_data
 
 
 def scale2height_trace_group(trace_group_data, height=1):
     xmin, ymin, xmax, ymax = get_trace_group_bbox(trace_group_data)
     scale = compute_scale2height_trace_group_bbox(ymin, ymax, height)
 
-    new_traces_data = []
+    if scale == 1:
+        return scale, trace_group_data
+
+    new_trace_group_data = []
     for trace in trace_group_data:
         coords = [[(coord[0] - xmin) * scale, (coord[1] - ymin) * scale]
                   for coord in trace]
-        new_traces_data.append(coords)
-    return scale, new_traces_data
+        new_trace_group_data.append(coords)
+    return scale, new_trace_group_data
 
 
 def scale2width_trace_group(trace_group_data, width=1):
     xmin, ymin, xmax, ymax = get_trace_group_bbox(trace_group_data)
     scale = compute_scale2height_trace_group_bbox(xmin, xmax, width)
 
-    new_traces_data = []
+    if scale == 1:
+        return scale, trace_group_data
+
+    new_trace_group_data = []
     for trace in trace_group_data:
         coords = [[(coord[0] - xmin) * scale, (coord[1] - ymin) * scale]
                   for coord in trace]
-        new_traces_data.append(coords)
-    return scale, new_traces_data
+        new_trace_group_data.append(coords)
+    return scale, new_trace_group_data
 
 
 def local_horizontal_sheer(trace_coord, alpha=10):
