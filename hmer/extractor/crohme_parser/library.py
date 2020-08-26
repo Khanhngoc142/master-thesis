@@ -152,17 +152,23 @@ class Library(object):
             xdiff = xmax - xmin
             ydiff = ymax - ymin
             diff = max(xdiff, ydiff)
-            target_diff = target_range[1] - target_range[0]
-            scale = target_diff / diff
+            if diff == 0:
+                group_traces = []
+                for trace in group.traces:
+                    coords = [[0, 0] for coord in trace.coords]
+                    group_traces.append(coords)
+            else:
+                target_diff = target_range[1] - target_range[0]
+                scale = target_diff / diff
 
-            # compute new x, y origin
-            xorigin = (target_range[1] - xdiff * scale) / 2
-            yorigin = (target_range[1] - ydiff * scale) / 2
-            group_traces = []
-            for trace in group.traces:
-                coords = [[xorigin + (coord[0] - xmin) * scale, yorigin + (coord[1] - ymin) * scale]
-                          for coord in trace.coords]
-                group_traces.append(coords)
+                # compute new x, y origin
+                xorigin = (target_range[1] - xdiff * scale) / 2
+                yorigin = (target_range[1] - ydiff * scale) / 2
+                group_traces = []
+                for trace in group.traces:
+                    coords = [[xorigin + (coord[0] - xmin) * scale, yorigin + (coord[1] - ymin) * scale]
+                              for coord in trace.coords]
+                    group_traces.append(coords)
             self.add_sample_to_symbol(lbl, group_traces)
 
     def generate_equation_traces(self, equation):
@@ -174,7 +180,10 @@ class Library(object):
         gen_equation = []
         last_symbol_bbox = None
         flag = None
-        for e in equation:
+        # for e in equation:
+        i = 0
+        while i < len(equation):
+            e = equation[i]
             # handle symbols
             if isinstance(e, str):
                 if e == '^':
@@ -184,6 +193,7 @@ class Library(object):
                         flag = EquationFlag.SUMUPPER
                     elif flag is EquationFlag.INTEGRAL:
                         flag = EquationFlag.INTEGRALUPPER
+                    i += 1
                     continue
                 elif e == '_':
                     if flag is None:
@@ -194,6 +204,35 @@ class Library(object):
                         flag = EquationFlag.SUMLOWER
                     elif flag is EquationFlag.INTEGRAL:
                         flag = EquationFlag.INTEGRALLOWER
+                    i += 1
+                    continue
+                elif e == '\\frac':
+                    num_eq = self.generate_equation_traces(equation[i + 1])  # numerator
+                    de_eq = self.generate_equation_traces(equation[i + 2])  # denominator
+
+                    num_eq_w, num_eq_h = get_equation_bbox_size(num_eq)
+                    de_eq_w, de_eq_h = get_equation_bbox_size(de_eq)
+
+                    max_w = max(num_eq_w, de_eq_w)*(1 + StandardFont.frac_equation_padding)
+
+                    num_eq = shift_equation(num_eq, (max_w - num_eq_w)/2, -StandardFont.frac_parts_yshift)
+                    de_eq = shift_equation(de_eq, (max_w - de_eq_w)/2, de_eq_h + StandardFont.frac_parts_yshift)
+
+                    _, frac_symbol = self.get_sample_of_symbol('-')
+                    _, frac_symbol = scale2width_trace_group(frac_symbol, max_w)
+                    frac_w, frac_h = get_trace_group_bbox_size(frac_symbol)
+                    frac_symbol = shift_trace_group_coords(frac_symbol, yshift=1 - frac_h/2)
+
+                    # lemme explain, the current vertical center is at 1. so we need to shift it up a litle to match `=` symbol
+                    merged = [frac_symbol, *num_eq, *de_eq]
+                    merged = shift_equation(merged, xshift=last_symbol_bbox[2] + StandardFont.symbol_gap, yshift=-1 + StandardFont.font_metric['='][1])
+
+                    last_symbol_bbox = get_equation_bbox(merged)
+
+                    for trace_group in merged:
+                        gen_equation.append(trace_group)
+
+                    i += 3
                     continue
 
                 _, cur_symbol = self.get_sample_of_symbol(e)
@@ -221,6 +260,8 @@ class Library(object):
                     xshift = last_symbol_bbox[2] + StandardFont.symbol_gap
                 else:
                     xshift = 0
+
+                # yshift
                 # special case shift y to center at cur_yshift
                 _, h = get_trace_group_bbox_size(cur_symbol)
                 if e in list('+-=') + [
@@ -254,6 +295,8 @@ class Library(object):
                     flag = EquationFlag.SQRT
                 else:
                     flag = None
+
+                i += 1
             # handle child equations
             elif isinstance(e, list):
                 child_eq = self.generate_equation_traces(e)
@@ -362,6 +405,8 @@ class Library(object):
                     flag = EquationFlag.INTEGRAL
                 else:
                     flag = None
+
+                i += 1
         return gen_equation
 
 

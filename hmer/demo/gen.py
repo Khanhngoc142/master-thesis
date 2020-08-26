@@ -87,8 +87,9 @@ if __name__ == "__main__":
     # demo_eq = ['\\log', ] + list('(x)=y')
     # demo_eq = list('H(p,q)=-') + ['\\sum', '_', ['x', '\\in', 'X']] + list('p(x)') + ['\\log', '_', ['2']] + list('q(x)')
     # demo_eq = ['\\int', '_', ['-', '\\infty'], '^', ['\\infty'], *list('aibicidieifi'), '\\alpha', '\\beta', '\\gamma'] + list('abcxyz') + ['\\infty', '\\pi', *list('r_'), ['2']]
-    #demo_eq = ['A', '\\prime', *list('=A')]
-    #demo_eq = ['\\sqrt', list('12+x')]
-    demo_eq = ['x','+','\\sqrt', ['\\sqrt', list('12+x')], *list('+y+z')]
-    demo_custom_equation(demo_lib, demo_eq, 2)
+    # demo_eq = ['A', '\\prime', *list('=A')]
+    # demo_eq = ['\\sqrt', list('12+x')]
+    # demo_eq = ['x','+','\\sqrt', ['\\sqrt', list('12+x')], *list('+y+z')]
+    demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
+    demo_custom_equation(demo_lib, demo_eq, 3)
     plt.show()

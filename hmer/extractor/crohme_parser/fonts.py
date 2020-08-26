@@ -119,11 +119,13 @@ class StandardFont:
     supsub_equation_scale = 0.4
     lowerupper_equation_scale = 0.4
     sqrt_equation_scale = 0.8
+    frac_equation_padding = 0.2
 
     # yshift
     sub_equation_yshift = 0.7
     sup_equation_yshift = 0.3
     upper_equation_yshift = lower_equation_yshift = 0.2
+    frac_parts_yshift = 0.1
 
     # gap
     symbol_gap = 0.2

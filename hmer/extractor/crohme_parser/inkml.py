@@ -5,6 +5,7 @@ from xml.etree import ElementTree as ET
 
 from constants import ink_xmlns, simplified_lbl_sep
 from utils import plt_draw
+import re
 
 
 class BaseTrait(object):
@@ -73,6 +74,38 @@ class TraceGroup(BaseTrait):
         self._id = TraceGroup._gen_id(_id, sep=':')
 
         self._label = element.find(namespace + "annotation").text
+
+        #
+        # Can't decide to split or merge frac and - together as the data does
+        #
+        # href = element.find(namespace + "annotationXML")
+        #
+        # if href is None:
+        #     href = self._label
+        # else:
+        #     href = href.get('href')
+        #
+        # debug_p = re.compile(r'\d+:(\d+:)*')
+        #
+        # if self._label == '=' and not href.startswith('=') and not len(debug_p.findall(href)) > 0:
+        #     print("DEBUG =")
+        #
+        # if self._label == '+' and not href.startswith('+') and not len(debug_p.findall(href)) > 0:
+        #     print("DEBUG +")
+        #
+        # if self._label == '-' and (href.startswith('\\frac') or href.startswith('_')):
+        #     self._label = '\\frac'
+        # elif self._label == '-' and href.startswith('='):
+        #     pass
+        # elif len(debug_p.findall(href)) > 0:
+        #     pass
+        # elif self._label not in [
+        #     '\\sqrt', '\\lt', '\\leq', '\\ldots', '\\gt', '\\geq', '.', '\\prime',
+        #     '\\rightarrow', '\\neq', '\\exists', '\\sum', '\\int', '+'
+        # ]:
+        #     if not href.lstrip('\\').startswith(self._label.lstrip('\\')):
+        #         print(f"WEIRD CASE: `{self._label}` and `{href}`")
+        #         print("DEBUG")
 
         traces_idx = []
         for trace_view in element.findall(namespace + "traceView"):
