@@ -13,4 +13,3 @@ if __name__ == "__main__":
     coords = ink.trace_coords
     ax = plt_draw_traces(coords)
     plt.show()
-
