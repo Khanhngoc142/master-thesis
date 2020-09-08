@@ -6,3 +6,4 @@ __pycache__
 /hmer/extractor/crohme_parser/demo-outputs/
 /hmer/demo-outputs/
 /hmer/weights/
+/hmer/model/weights/
