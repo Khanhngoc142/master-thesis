@@ -6,9 +6,10 @@ from utils.data_processing import normalize_label
 from utils.image_processing import get_trace_group_bbox
 from utils.plt_draw import plt_clear, plt_setup, plt_draw_traces
 from utils.fs import get_source_root
+from extractor.crohme_parser.extract import Extractor
 
 
-def render_equation(equation, label, output_path, size=300, dpi=96):
+def export_equation(equation, label, output_path, size=300, dpi=96):
     """
     :param equation: 4-layer list equation groups' coordinates
     :param label: list form equation
@@ -35,21 +36,41 @@ def render_equation(equation, label, output_path, size=300, dpi=96):
     return output_path + ".png " + " ".join([f"{lbl:d} {bbx[0][0]} {bbx[0][1]} {bbx[1][0]} {bbx[1][1]}" for lbl, bbx in zip(norm_label, bboxes_pix)])
 
 
-def render_equation_from_ink(ink, output_dir="demo-outputs", overwrite=False):
+def export_from_ink(ink, output_dir, overwrite=False, write_label=True):
     """
     render ink to output directory
     :param ink:
     :param output_dir:
     :param overwrite:
+    :param write_label:
     :return:
     """
     equation = [g.trace_coords for g in ink.trace_groups]
     label = ink.flatten_label
     filename = os.path.basename(ink.file_path)
-    out_file = os.path.join(get_source_root(), output_dir, filename)
+    out_file = os.path.join(output_dir, filename)
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
     if os.path.exists(out_file + '.png') and not overwrite:
         raise FileExistsError(out_file + '.png')
-    label_str = render_equation(equation, label, out_file)
-    with open(out_file + '.lbl.txt', 'w') as f:
-        f.write(label_str)
+    label_str = export_equation(equation, label.split(), out_file)
+    if write_label:
+        with open(out_file + '.lbl.txt', 'w') as f:
+            f.write(label_str)
+    return label_str
+
+
+def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"), datasets="train", output_dir=os.path.join(get_source_root(), "demo-outputs", "data"), overwrite=False, limit=None):
+    output_dir = os.path.join(output_dir, f"CROHME_{data_versions}_{datasets}")
+    extractor = Extractor(data_versions, crohme_package)
+    labels = []
+    i = 0
+    for ink in extractor.parse_inkmls_iterator(datasets=datasets):
+        print("Exporting ink {}...".format(ink.file_path))
+        lbl_str = export_from_ink(ink, output_dir, write_label=False, overwrite=overwrite)
+        labels.append(lbl_str)
+        i += 1
+        if limit is not None:
+            if i > limit:
+                break
+    with open(os.path.join(output_dir, "labels.txt"), 'w') as f:
+        f.write('\n'.join(labels))
