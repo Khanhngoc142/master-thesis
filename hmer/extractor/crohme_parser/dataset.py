@@ -34,8 +34,12 @@ class CROHMEDetection4SSD(data.Dataset):
 
         img_path = os.path.join(self.root, self.data.iloc[idx, 0])
         img = cv2.imread(img_path)
+        # to rgb
+        img = img[:, :, (2, 1, 0)]
         target = self.data.iloc[idx, 1]
+
         return torch.from_numpy(img).permute(2, 0, 1), target
+        # return torch.from_numpy(img), target
 
 
 if __name__ == "__main__":
