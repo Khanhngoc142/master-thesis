@@ -31,7 +31,7 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
 
     bboxes_pix = list(zip(xymin_pix, xymax_pix))
     norm_label = normalize_label(label)
-    fig.close()
+    plt.close()
 
     return output_path + ".png " + " ".join([f"{lbl:d} {bbx[0][0]} {bbx[0][1]} {bbx[1][0]} {bbx[1][1]}" for lbl, bbx in zip(norm_label, bboxes_pix)])
 
