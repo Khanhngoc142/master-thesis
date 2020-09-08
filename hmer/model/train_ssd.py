@@ -1,7 +1,6 @@
-from utils.augmentations import SSDAugmentation
-from model.ssd
-from layers.modules import MultiBoxLoss
-from ssd import build_ssd
+from model.ssdpytorch.utils.augmentations import SSDAugmentation
+from model.ssdpytorch.layers.modules import MultiBoxLoss
+from model.ssdpytorch.ssd import build_ssd
 import os
 import sys
 import time
@@ -14,7 +13,10 @@ import torch.nn.init as init
 import torch.utils.data as data
 import numpy as np
 import argparse
-from extractor.crohme_parser.dataset import
+
+from utilities.fs import get_source_root
+from extractor.crohme_parser.dataset import CROHMEDetection4SSD
+from utilities.data_processing import symbols
 
 
 def str2bool(v):
@@ -24,9 +26,7 @@ def str2bool(v):
 parser = argparse.ArgumentParser(
     description='Single Shot MultiBox Detector Training With Pytorch')
 train_set = parser.add_mutually_exclusive_group()
-parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO'],
-                    type=str, help='VOC or COCO')
-parser.add_argument('--dataset_root', default=VOC_ROOT,
+parser.add_argument('--dataset_root', default=os.path.join(get_source_root(), "demo-outputs/data/CROHME_2013_train"),
                     help='Dataset root directory path')
 parser.add_argument('--basenet', default='vgg16_reducedfc.pth',
                     help='Pretrained base model')
@@ -70,40 +70,22 @@ if not os.path.exists(args.save_folder):
 
 
 def train():
-    if args.dataset == 'COCO':
-        if args.dataset_root == VOC_ROOT:
-            if not os.path.exists(COCO_ROOT):
-                parser.error('Must specify dataset_root if specifying dataset')
-            print("WARNING: Using default COCO dataset_root because " +
-                  "--dataset_root was not specified.")
-            args.dataset_root = COCO_ROOT
-        cfg = coco
-        dataset = COCODetection(root=args.dataset_root,
-                                transform=SSDAugmentation(cfg['min_dim'],
-                                                          MEANS))
-    elif args.dataset == 'VOC':
-        if args.dataset_root == COCO_ROOT:
-            parser.error('Must specify dataset if specifying dataset_root')
-        cfg = voc
-        dataset = VOCDetection(root=args.dataset_root,
-                               transform=SSDAugmentation(cfg['min_dim'],
-                                                         MEANS))
-    elif args.dataset == 'CROHME':
-        cfg = {
-            'num_classes': 201,
-            'lr_steps': (280000, 360000, 400000),
-            'max_iter': 400000,
-            'feature_maps': [38, 19, 10, 5, 3, 1],
-            'min_dim': 300,
-            'steps': [8, 16, 32, 64, 100, 300],
-            'min_sizes': [21, 45, 99, 153, 207, 261],
-            'max_sizes': [45, 99, 153, 207, 261, 315],
-            'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
-            'variance': [0.1, 0.2],
-            'clip': True,
-            'name': 'CROHME',
-        }
-        dataset =
+    # load dataset
+    cfg = {
+        'num_classes': len(symbols) + 1,
+        'lr_steps': (280000, 360000, 400000),
+        'max_iter': 400000,
+        'feature_maps': [38, 19, 10, 5, 3, 1],
+        'min_dim': 300,
+        'steps': [8, 16, 32, 64, 100, 300],
+        'min_sizes': [21, 45, 99, 153, 207, 261],
+        'max_sizes': [45, 99, 153, 207, 261, 315],
+        'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
+        'variance': [0.1, 0.2],
+        'clip': True,
+        'name': 'CROHME',
+    }
+    dataset = CROHMEDetection4SSD(root=args.dataset_root)
 
     if args.visdom:
         import visdom

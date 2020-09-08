@@ -2,8 +2,8 @@ import os
 import random
 import extractor.crohme_parser.inkml as inkml
 from constants import simplified_lbl_sep
-from utils import plt_draw
-from utils import image_processing
+from utilities import plt_draw
+from utilities import image_processing
 import numpy as np
 
 

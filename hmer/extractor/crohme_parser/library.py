@@ -4,8 +4,8 @@ import warnings
 
 from extractor.crohme_parser.inkml import Ink
 from extractor.crohme_parser.extract import Extractor
-from utils.fs import get_source_root
-from utils.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, \
+from utilities.fs import get_source_root
+from utilities.image_processing import get_trace_group_bbox, shift_trace_group_coords, centerize_trace_group_coords, \
     scale_trace_group, scale2height_trace_group, scale2width_trace_group, scale_trace_group_v2, scale_equation, \
     get_equation_bbox_size, shift_equation, get_equation_bbox, get_trace_group_bbox_size
 from extractor.crohme_parser.fonts import StandardFont

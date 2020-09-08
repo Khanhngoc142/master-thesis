@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from utils.image_processing import get_trace_group_bbox
-from utils.data_processing import normalize_label
+from utilities.image_processing import get_trace_group_bbox
+from utilities.data_processing import normalize_label
 
 
 def plt_clear():

@@ -4,7 +4,7 @@ import numpy as np
 from xml.etree import ElementTree as ET
 
 from constants import ink_xmlns, simplified_lbl_sep
-from utils import plt_draw
+from utilities import plt_draw
 import re
 
 
