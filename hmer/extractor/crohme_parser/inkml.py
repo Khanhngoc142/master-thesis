@@ -173,6 +173,10 @@ class Ink(BaseTrait):
         return self._label
 
     @property
+    def flatten_label(self):
+        return ' '.join([g.label for g in self._trace_groups])
+
+    @property
     def simplified_lbl(self):
         return self._simplified_label
 
