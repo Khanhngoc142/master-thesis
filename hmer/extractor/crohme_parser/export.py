@@ -18,7 +18,6 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     :param dpi: your system's dpi. use this link to find your system's dpi https://www.infobyip.com/detectmonitordpi.php
     :return: label string with the following format
     """
-    plt_clear()
     fig, ax = plt_setup(figsize=(size/dpi, size/dpi), dpi=dpi)
     plt_draw_traces([trace for group in equation for trace in group], ax=ax)
     plt.savefig(output_path + '.png', dpi=dpi)
@@ -32,6 +31,7 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
 
     bboxes_pix = list(zip(xymin_pix, xymax_pix))
     norm_label = normalize_label(label)
+    fig.close()
 
     return output_path + ".png " + " ".join([f"{lbl:d} {bbx[0][0]} {bbx[0][1]} {bbx[1][0]} {bbx[1][1]}" for lbl, bbx in zip(norm_label, bboxes_pix)])
 
