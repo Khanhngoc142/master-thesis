@@ -1,6 +1,7 @@
 from model.ssdpytorch.utils.augmentations import SSDAugmentation
 from model.ssdpytorch.layers.modules import MultiBoxLoss
 from model.ssdpytorch.ssd import build_ssd
+from model.ssdpytorch.data import *
 import os
 import sys
 import time
@@ -38,7 +39,7 @@ parser.add_argument('--start_iter', default=0, type=int,
                     help='Resume training at this iter')
 parser.add_argument('--num_workers', default=4, type=int,
                     help='Number of workers used in dataloading')
-parser.add_argument('--cuda', default=True, type=str2bool,
+parser.add_argument('--cuda', default=False, type=str2bool,
                     help='Use CUDA to train model')
 parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float,
                     help='initial learning rate')
@@ -50,7 +51,7 @@ parser.add_argument('--gamma', default=0.1, type=float,
                     help='Gamma update for SGD')
 parser.add_argument('--visdom', default=False, type=str2bool,
                     help='Use visdom for loss visualization')
-parser.add_argument('--save_folder', default='weights/',
+parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'model/weights/'),
                     help='Directory for saving checkpoint models')
 args = parser.parse_args()
 

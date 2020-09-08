@@ -5,3 +5,4 @@ hmer/data/CROHME_full_v2/
 __pycache__
 /hmer/extractor/crohme_parser/demo-outputs/
 /hmer/demo-outputs/
+/hmer/weights/
