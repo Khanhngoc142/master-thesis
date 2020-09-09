@@ -38,6 +38,11 @@ class CROHMEDetection4SSD(data.Dataset):
         img = img[:, :, (2, 1, 0)]
         target = self.data.iloc[idx, 1]
 
+        # image preprocessing
+        # subtract means
+        mean = (104, 117, 123)
+        img = img.astype(np.float32) - mean
+
         return torch.from_numpy(img).permute(2, 0, 1), target
         # return torch.from_numpy(img), target
 
