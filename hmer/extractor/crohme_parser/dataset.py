@@ -25,6 +25,9 @@ class CROHMEDetection4SSD(data.Dataset):
         data = pd.DataFrame(data, columns=['img', 'target'])
         self.data = data
 
+        # temp
+        self.data = pd.concat([data]*10, axis=0)
+
     def __len__(self):
         return len(self.data)
 
@@ -37,14 +40,28 @@ class CROHMEDetection4SSD(data.Dataset):
         # to rgb
         img = img[:, :, (2, 1, 0)]
         target = self.data.iloc[idx, 1]
+        target = np.array(target)
+        boxes, labels = target[:, :4], target[:, 4]
 
         # image preprocessing
         # subtract means
         mean = (104, 117, 123)
         img = img.astype(np.float32) - mean
 
-        return torch.from_numpy(img).permute(2, 0, 1), target
-        # return torch.from_numpy(img), target
+        # convert coordinates to percent
+        height, width, channels = img.shape
+        boxes[:, 0] /= width
+        boxes[:, 2] /= width
+        boxes[:, 1] /= height
+        boxes[:, 3] /= height
+
+        # temporary
+        labels -= 1
+
+        # compose new target
+        target = np.hstack((boxes, np.expand_dims(labels, axis=1)))
+
+        return torch.from_numpy(img.astype(np.float32)).permute(2, 0, 1), target
 
 
 if __name__ == "__main__":
