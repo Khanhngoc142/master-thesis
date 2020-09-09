@@ -55,9 +55,6 @@ class CROHMEDetection4SSD(data.Dataset):
         boxes[:, 1] /= height
         boxes[:, 3] /= height
 
-        # temporary
-        labels -= 1
-
         # compose new target
         target = np.hstack((boxes, np.expand_dims(labels, axis=1)))
 
