@@ -89,6 +89,8 @@ def train():
     dataset = CROHMEDetection4SSD(root=args.dataset_root)
 
     viz = None
+    iter_plot = None
+    epoch_plot = None
     if args.visdom:
         import visdom
         viz = visdom.Visdom()
@@ -149,10 +151,13 @@ def train():
                                   pin_memory=True)
     # create batch iterator
     batch_iterator = iter(data_loader)
+
+    print("Start training")
     for iteration in range(args.start_iter, cfg['max_iter']):
+        # every epoch
         if args.visdom and iteration != 0 and (iteration % epoch_size == 0):
-            update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot, None,
-                            'append', epoch_size)
+            update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
+
             # reset epoch loss counters
             loc_loss = 0
             conf_loss = 0
@@ -190,13 +195,12 @@ def train():
         loc_loss += loss_l.item()
         conf_loss += loss_c.item()
 
-        if iteration % 10 == 0:
+        if iteration % 1 == 0:
             print('timer: %.4f sec.' % (t1 - t0))
-            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()), end=' ')
+            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()))
 
         if args.visdom:
-            update_vis_plot(viz, iteration, loss_l.item(), loss_c.item(),
-                            iter_plot, epoch_plot, 'append')
+            update_vis_plot(viz, iteration + 1, loss_l.item(), loss_c.item(), iter_plot)
 
         if iteration != 0 and iteration % 5000 == 0:
             print('Saving state, iter:', iteration)
@@ -212,7 +216,7 @@ def adjust_learning_rate(optimizer, gamma, step):
     # Adapted from PyTorch Imagenet example:
     # https://github.com/pytorch/examples/blob/master/imagenet/main.py
     """
-    lr = args.lr * (gamma ** (step))
+    lr = args.lr * (gamma ** step)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
@@ -240,22 +244,13 @@ def create_vis_plot(viz, _xlabel, _ylabel, _title, _legend):
     )
 
 
-def update_vis_plot(viz, iteration, loc, conf, window1, window2, update_type,
-                    epoch_size=1):
+def update_vis_plot(viz, it, loc, conf, window, update_type='append'):
     viz.line(
-        X=torch.ones((1, 3)).cpu() * iteration,
-        Y=torch.Tensor([loc, conf, loc + conf]).unsqueeze(0).cpu() / epoch_size,
-        win=window1,
+        X=torch.ones((1, 3)).cpu().numpy() * it,
+        Y=np.array([[loc, conf, loc + conf]]),
+        win=window,
         update=update_type
     )
-    # initialize epoch plot on first iteration
-    if iteration == 0:
-        viz.line(
-            X=torch.zeros((1, 3)).cpu(),
-            Y=torch.Tensor([loc, conf, loc + conf]).unsqueeze(0).cpu(),
-            win=window2,
-            update=True
-        )
 
 
 if __name__ == '__main__':
