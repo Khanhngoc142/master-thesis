@@ -103,7 +103,8 @@ symbols = [
     '\\sqrt',
 ]
 
-symbol2idx = dict([(s, idx + 1) for idx, s in enumerate(symbols)])
+# symbol2idx = dict([(s, idx + 1) for idx, s in enumerate(symbols)])
+symbol2idx = dict(zip(symbols, range(len(symbols))))
 
 
 def normalize_label(label):
