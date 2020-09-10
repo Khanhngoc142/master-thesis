@@ -61,6 +61,7 @@ def export_from_ink(ink, output_dir, overwrite=False, write_label=True):
 
 def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"), datasets="train", output_dir=os.path.join(get_source_root(), "demo-outputs", "data"), overwrite=False, limit=None):
     output_dir = os.path.join(output_dir, f"CROHME_{data_versions}_{datasets}")
+    os.makedirs(output_dir, exist_ok=True)
     extractor = Extractor(data_versions, crohme_package)
     labels = []
     i = 0
