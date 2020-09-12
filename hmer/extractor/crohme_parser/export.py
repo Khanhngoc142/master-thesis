@@ -33,7 +33,7 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     norm_label = normalize_label(label)
     plt.close()
 
-    return output_path + ".png " + " ".join([f"{lbl:d} {bbx[0][0]} {bbx[0][1]} {bbx[1][0]} {bbx[1][1]}" for lbl, bbx in zip(norm_label, bboxes_pix)])
+    return (output_path + ".png ").replace(get_source_root(), "").lstrip('/') + " ".join([f"{lbl:d} {bbx[0][0]} {bbx[0][1]} {bbx[1][0]} {bbx[1][1]}" for lbl, bbx in zip(norm_label, bboxes_pix)])
 
 
 def export_from_ink(ink, output_dir, overwrite=False, write_label=True):
@@ -59,8 +59,8 @@ def export_from_ink(ink, output_dir, overwrite=False, write_label=True):
     return label_str
 
 
-def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"), datasets="train", output_dir=os.path.join(get_source_root(), "demo-outputs", "data"), overwrite=False, limit=None):
-    output_dir = os.path.join(output_dir, f"CROHME_{data_versions}_{datasets}")
+def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"), datasets="train", output_dir=os.path.join("demo-outputs", "data"), overwrite=False, limit=None):
+    output_dir = os.path.join(get_source_root(), output_dir, f"CROHME_{data_versions}_{datasets}")
     os.makedirs(output_dir, exist_ok=True)
     extractor = Extractor(data_versions, crohme_package)
     labels = []
