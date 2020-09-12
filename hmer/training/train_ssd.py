@@ -58,8 +58,10 @@ parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'mo
                     help='Directory for saving checkpoint models')
 parser.add_argument('--save_epoch', default=3, type=int,
                     help='Save model per n epoch(s)')
+parser.add_argument('--validset_root', type=str, default=None)
+parser.add_argument('--eval_epoch', type=int, default=3)
+parser.add_argument('--verbose', type=int, default=10)
 args = parser.parse_args()
-
 
 if torch.cuda.is_available():
     if args.cuda:
@@ -90,15 +92,52 @@ def train():
         'clip': True,
         'name': 'CROHME',
     }
-    dataset = CROHMEDetection4SSD(root=args.dataset_root)
 
+    # Prepare data
+    print('Loading the dataset...')
+    dataset = CROHMEDetection4SSD(root=args.dataset_root)
+    if args.validset_root is not None:
+        validset = CROHMEDetection4SSD(root=args.validset_root)
+    else:
+        validset = None
+    data_loader = data.DataLoader(dataset, args.batch_size,
+                                  num_workers=args.num_workers,
+                                  shuffle=True, collate_fn=detection_collate,
+                                  pin_memory=True)
+    if validset is not None:
+        valid_data_loader = data.DataLoader(validset, args.batch_size,
+                                            num_workers=args.num_workers,
+                                            shuffle=True, collate_fn=detection_collate,
+                                            pin_memory=True)
+    else:
+        valid_data_loader = None
+
+    # Prepare plot
     viz = None
     iter_plot = None
     epoch_plot = None
     if args.visdom:
         import visdom
         viz = visdom.Visdom()
+        vis_title = 'SSD.PyTorch on ' + dataset.name
+        vis_legend = ['Loc Loss', 'Conf Loss', 'Total Loss']
+        iter_plot = create_vis_plot(viz, 'Iteration', 'Loss', vis_title, vis_legend)
+        epoch_plot = create_vis_plot(viz, 'Epoch', 'Loss', vis_title, vis_legend)
+        if validset is not None:
+            valid_plot = viz.line(
+                X=torch.zeros((1,)).cpu(),
+                Y=torch.zeros((1, 2)).cpu(),
+                opts=dict(
+                    xlabel='Epoch',
+                    ylabel='Loss',
+                    title='SSD.PyTorch on ' + dataset.name,
+                    legend=['Train Loss', 'Valid Loss']
+                )
+            )
+        else:
+            valid_plot = None
 
+    # build network
     ssd_net = build_ssd('train', cfg['min_dim'], cfg['num_classes'])
     net = ssd_net.float()
 
@@ -129,12 +168,6 @@ def train():
     criterion = MultiBoxLoss(cfg['num_classes'], 0.5, True, 0, True, 3, 0.5,
                              False, args.cuda)
 
-    net.train()
-    # loss counters
-    loc_loss = 0
-    conf_loss = 0
-    print('Loading the dataset...')
-
     epoch_size = len(dataset) // args.batch_size + 1
     print('Training SSD on:', dataset.name)
     print('Using the specified args:')
@@ -142,45 +175,24 @@ def train():
 
     step_index = 0
 
-    if args.visdom:
-        vis_title = 'SSD.PyTorch on ' + dataset.name
-        vis_legend = ['Loc Loss', 'Conf Loss', 'Total Loss']
-        iter_plot = create_vis_plot(viz, 'Iteration', 'Loss', vis_title, vis_legend)
-        epoch_plot = create_vis_plot(viz, 'Epoch', 'Loss', vis_title, vis_legend)
-
-    data_loader = data.DataLoader(dataset, args.batch_size,
-                                  num_workers=args.num_workers,
-                                  shuffle=False, collate_fn=detection_collate,
-                                  pin_memory=True)
-    # create batch iterator
-    batch_iterator = iter(data_loader)
-
     print("Start training")
+    epoch = None
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
+        # trigger train mode
+        net.train()
+
+        # create batch iterator
+        batch_iterator = iter(data_loader)
+
         # reset epoch loss counters
         loc_loss = 0
         conf_loss = 0
-        # for iteration in range(args.start_iter, cfg['max_iter']):
         for iteration in range(epoch_size):
-            # # every epoch
-            # if args.visdom and iteration != 0 and (iteration % epoch_size == 0):
-            #     update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
-            #
-            #     # reset epoch loss counters
-            #     loc_loss = 0
-            #     conf_loss = 0
-            #     epoch += 1
-
             if epoch * epoch_size + iteration in cfg['lr_steps']:
                 step_index += 1
                 adjust_learning_rate(optimizer, args.gamma, step_index)
 
-            # load train data
-            try:
-                images, targets = next(batch_iterator)
-            except StopIteration:
-                batch_iterator = iter(data_loader)
-                images, targets = next(batch_iterator)
+            images, targets = next(batch_iterator)
 
             if args.cuda:
                 images = Variable(images.cuda())
@@ -191,7 +203,6 @@ def train():
                 with torch.no_grad():
                     targets = [Variable(ann) for ann in targets]
             # forward
-            t0 = time.time()
             out = net(images)
             # backprop
             optimizer.zero_grad()
@@ -199,36 +210,72 @@ def train():
             loss = loss_l + loss_c
             loss.backward()
             optimizer.step()
-            t1 = time.time()
             loc_loss += loss_l.item()
             conf_loss += loss_c.item()
-
-            if epoch * epoch_size + iteration % 1 == 0:
-                print('timer: %.4f sec.' % (t1 - t0))
-                print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()))
 
             if args.visdom:
                 update_vis_plot(viz, epoch * epoch_size + iteration, loss_l.item(), loss_c.item(), iter_plot)
 
-        # plot epoch loss
+        # update epoch_plot
         update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
 
-        # if iteration != 0 and iteration % 5000 == 0:
+        if epoch % args.verbose == 0:
+            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss))
+
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
             save_model(ssd_net, epoch, args.save_folder, args.dataset)
-    torch.save(
-        ssd_net.state_dict(),
-        os.path.join(
-            args.save_folder if args.save_folder[0] == '/' else os.path.join(get_source_root(), args.save_folder),
-            args.dataset, str(args.start_epoch + args.epochs - 1) + '.pth'))
+
+        if epoch % args.eval_epoch == 0 and valid_data_loader is not None:
+            net.eval()  # trigger eval mode
+            valid_iterator = iter(valid_data_loader)
+            valid_loc_loss = 0
+            valid_conf_loss = 0
+            valid_size = len(validset) // args.batch_size + 1
+            for _ in range(valid_size):
+                images, targets = next(valid_iterator)
+
+                if args.cuda:
+                    images = Variable(images.cuda())
+                    with torch.no_grad():
+                        targets = [Variable(ann.cuda()) for ann in targets]
+                else:
+                    images = Variable(images)
+                    with torch.no_grad():
+                        targets = [Variable(ann) for ann in targets]
+                # forward
+                out = net(images)
+                # backprop
+                optimizer.zero_grad()
+                loss_l, loss_c = criterion(out, targets)
+                loss = loss_l + loss_c
+                loss.backward()
+                optimizer.step()
+                valid_loc_loss += loss_l.item()
+                valid_conf_loss += loss_c.item()
+            valid_loss = valid_loc_loss + valid_conf_loss
+            train_loss = loc_loss + conf_loss
+            valid_loss /= valid_size
+            train_loss /= epoch_size
+
+            print(f'EVAL @ epoch {epoch}' + ' || Loss: %.4f ||' % valid_loss)
+
+            # plot
+            viz.line(
+                X=torch.ones((1, 2)).cpu().numpy() * epoch,
+                Y=np.array([[train_loss, valid_loss]]),
+                win=valid_plot,
+                update='append'
+            )
+
+    save_model(ssd_net, epoch if epoch is not None else 0, args.save_folder, args.dataset)
 
 
-def save_model(net, it, save_folder, dataset):
+def save_model(net, it, save_folder, dataset, model_name='ssd300'):
     if not save_folder.startswith('/'):
         save_folder = os.path.join(get_source_root(), save_folder)
 
-    save_path = os.path.join(save_folder, dataset, str(it) + '.pth')
+    save_path = os.path.join(save_folder, dataset, model_name + '_' + str(it) + '.pth')
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     torch.save(net, save_path)
 
