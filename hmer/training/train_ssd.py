@@ -33,10 +33,12 @@ parser.add_argument('--basenet', default='vgg16_reducedfc.pth',
                     help='Pretrained base model')
 parser.add_argument('--batch_size', default=32, type=int,
                     help='Batch size for training')
+parser.add_argument('--epochs', default=10, type=int,
+                    help='Number of epoch(s)')
 parser.add_argument('--resume', default=None, type=str,
                     help='Checkpoint state_dict file to resume training from')
-parser.add_argument('--start_iter', default=0, type=int,
-                    help='Resume training at this iter')
+parser.add_argument('--start_epoch', default=0, type=int,
+                    help='Resume training at this epoch')
 parser.add_argument('--num_workers', default=4, type=int,
                     help='Number of workers used in dataloading')
 parser.add_argument('--cuda', default=False, type=str2bool,
@@ -53,6 +55,8 @@ parser.add_argument('--visdom', default=False, type=str2bool,
                     help='Use visdom for loss visualization')
 parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'model/weights/'),
                     help='Directory for saving checkpoint models')
+parser.add_argument('--save_epoch', default=3, type=int,
+                    help='Save model per n epoch(s)')
 args = parser.parse_args()
 
 
@@ -75,7 +79,6 @@ def train():
     cfg = {
         'num_classes': len(symbols) + 1,
         'lr_steps': (280000, 360000, 400000),
-        'max_iter': 400000,
         'feature_maps': [38, 19, 10, 5, 3, 1],
         'min_dim': 300,
         'steps': [8, 16, 32, 64, 100, 300],
@@ -129,10 +132,9 @@ def train():
     # loss counters
     loc_loss = 0
     conf_loss = 0
-    epoch = 0
     print('Loading the dataset...')
 
-    epoch_size = len(dataset) // args.batch_size
+    epoch_size = len(dataset) // args.batch_size + 1
     print('Training SSD on:', dataset.name)
     print('Using the specified args:')
     print(args)
@@ -147,63 +149,66 @@ def train():
 
     data_loader = data.DataLoader(dataset, args.batch_size,
                                   num_workers=args.num_workers,
-                                  shuffle=True, collate_fn=detection_collate,
+                                  shuffle=False, collate_fn=detection_collate,
                                   pin_memory=True)
     # create batch iterator
     batch_iterator = iter(data_loader)
 
     print("Start training")
-    for iteration in range(args.start_iter, cfg['max_iter']):
-        # every epoch
-        if args.visdom and iteration != 0 and (iteration % epoch_size == 0):
-            update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
+    for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
+        # for iteration in range(args.start_iter, cfg['max_iter']):
+        for iteration in range(epoch_size):
+            # every epoch
+            if args.visdom and iteration != 0 and (iteration % epoch_size == 0):
+                update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
 
-            # reset epoch loss counters
-            loc_loss = 0
-            conf_loss = 0
-            epoch += 1
+                # reset epoch loss counters
+                loc_loss = 0
+                conf_loss = 0
+                epoch += 1
 
-        if iteration in cfg['lr_steps']:
-            step_index += 1
-            adjust_learning_rate(optimizer, args.gamma, step_index)
+            if epoch * epoch_size + iteration in cfg['lr_steps']:
+                step_index += 1
+                adjust_learning_rate(optimizer, args.gamma, step_index)
 
-        # load train data
-        try:
-            images, targets = next(batch_iterator)
-        except StopIteration:
-            batch_iterator = iter(data_loader)
-            images, targets = next(batch_iterator)
+            # load train data
+            try:
+                images, targets = next(batch_iterator)
+            except StopIteration:
+                batch_iterator = iter(data_loader)
+                images, targets = next(batch_iterator)
 
-        if args.cuda:
-            images = Variable(images.cuda())
-            with torch.no_grad():
-                targets = [Variable(ann.cuda()) for ann in targets]
-        else:
-            images = Variable(images)
-            with torch.no_grad():
-                targets = [Variable(ann) for ann in targets]
-        # forward
-        t0 = time.time()
-        out = net(images)
-        # backprop
-        optimizer.zero_grad()
-        loss_l, loss_c = criterion(out, targets)
-        loss = loss_l + loss_c
-        loss.backward()
-        optimizer.step()
-        t1 = time.time()
-        loc_loss += loss_l.item()
-        conf_loss += loss_c.item()
+            if args.cuda:
+                images = Variable(images.cuda())
+                with torch.no_grad():
+                    targets = [Variable(ann.cuda()) for ann in targets]
+            else:
+                images = Variable(images)
+                with torch.no_grad():
+                    targets = [Variable(ann) for ann in targets]
+            # forward
+            t0 = time.time()
+            out = net(images)
+            # backprop
+            optimizer.zero_grad()
+            loss_l, loss_c = criterion(out, targets)
+            loss = loss_l + loss_c
+            loss.backward()
+            optimizer.step()
+            t1 = time.time()
+            loc_loss += loss_l.item()
+            conf_loss += loss_c.item()
 
-        if iteration % 1 == 0:
-            print('timer: %.4f sec.' % (t1 - t0))
-            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()))
+            if epoch * epoch_size + iteration % 1 == 0:
+                print('timer: %.4f sec.' % (t1 - t0))
+                print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()))
 
-        if args.visdom:
-            update_vis_plot(viz, iteration + 1, loss_l.item(), loss_c.item(), iter_plot)
+            if args.visdom:
+                update_vis_plot(viz, epoch * epoch_size + iteration, loss_l.item(), loss_c.item(), iter_plot)
 
-        if iteration != 0 and iteration % 5000 == 0:
-            print('Saving state, iter:', iteration)
+        # if iteration != 0 and iteration % 5000 == 0:
+        if epoch == 0 or epoch % args.save_epoch == 0:
+            print('Saving state, epoch:', epoch)
             torch.save(ssd_net.state_dict(), 'weights/ssd300_COCO_' +
                        repr(iteration) + '.pth')
     torch.save(ssd_net.state_dict(),

@@ -26,7 +26,7 @@ class CROHMEDetection4SSD(data.Dataset):
         self.data = data
 
         # temp
-        self.data = pd.concat([data]*10, axis=0)
+        # self.data = pd.concat([data.iloc[7:8]] * 10, axis=0)
 
     def __len__(self):
         return len(self.data)
@@ -66,6 +66,14 @@ if __name__ == "__main__":
     from utilities.plt_draw import plt_draw_bbox
 
     dataset = CROHMEDetection4SSD(root=os.path.join(get_source_root(), "demo-outputs/data/CROHME_2013_train"))
+    fig, ax = plt.subplots()
+    data = dataset[7]
+
+    ax.imshow(data[0].permute(1, 2, 0))
+    for box in (data[1][:, :4]*300).tolist():
+        plt_draw_bbox([box[:2], box[2:]], ax=ax)
+
+    plt.show()
 
     # for chosen_idx in range(5):
     #     data = dataset[chosen_idx]
@@ -78,4 +86,3 @@ if __name__ == "__main__":
     #
     #     for bbox in convert_target2bbox(data[1]):
     #         plt_draw_bbox(bbox, ax=ax)
-
