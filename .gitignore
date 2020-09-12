@@ -7,3 +7,5 @@ __pycache__
 /hmer/demo-outputs/
 /hmer/weights/
 /hmer/model/weights/
+/hmer/training/data/
+
