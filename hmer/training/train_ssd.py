@@ -42,7 +42,7 @@ parser.add_argument('--start_epoch', default=0, type=int,
                     help='Resume training at this epoch')
 parser.add_argument('--num_workers', default=4, type=int,
                     help='Number of workers used in dataloading')
-parser.add_argument('--cuda', default=False, type=str2bool,
+parser.add_argument('--cuda', default=True, type=str2bool,
                     help='Use CUDA to train model')
 parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float,
                     help='initial learning rate')
@@ -187,6 +187,7 @@ def train():
         # reset epoch loss counters
         loc_loss = 0
         conf_loss = 0
+        epoch_time = 0
         for iteration in range(epoch_size):
             if epoch * epoch_size + iteration in cfg['lr_steps']:
                 step_index += 1
@@ -202,6 +203,8 @@ def train():
                 images = Variable(images)
                 with torch.no_grad():
                     targets = [Variable(ann) for ann in targets]
+
+            t0 = time.time()
             # forward
             out = net(images)
             # backprop
@@ -212,7 +215,9 @@ def train():
             optimizer.step()
             loc_loss += loss_l.item()
             conf_loss += loss_c.item()
+            t1 = time.time()
 
+            epoch_time += (t1 - t0)
             if args.visdom:
                 update_vis_plot(viz, epoch * epoch_size + iteration, loss_l.item(), loss_c.item(), iter_plot)
 
@@ -220,12 +225,13 @@ def train():
         update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
 
         if epoch % args.verbose == 0:
-            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss))
+            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss + f' || time: {epoch_time:.3f} sec.'))
 
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
             save_model(ssd_net, epoch, args.save_folder, args.dataset)
 
+        # EVAL
         if epoch % args.eval_epoch == 0 and valid_data_loader is not None:
             net.eval()  # trigger eval mode
             valid_iterator = iter(valid_data_loader)
@@ -246,11 +252,7 @@ def train():
                 # forward
                 out = net(images)
                 # backprop
-                optimizer.zero_grad()
                 loss_l, loss_c = criterion(out, targets)
-                loss = loss_l + loss_c
-                loss.backward()
-                optimizer.step()
                 valid_loc_loss += loss_l.item()
                 valid_conf_loss += loss_c.item()
             valid_loss = valid_loc_loss + valid_conf_loss

@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-from utils.data_processing import normalize_label
-from utils.image_processing import get_trace_group_bbox
-from utils.plt_draw import plt_clear, plt_setup, plt_draw_traces
-from utils.fs import get_source_root
+from utilities.data_processing import normalize_label
+from utilities.image_processing import get_trace_group_bbox
+from utilities.plt_draw import plt_clear, plt_setup, plt_draw_traces
+from utilities.fs import get_source_root
 from extractor.crohme_parser.extract import Extractor
 
 

@@ -35,7 +35,7 @@ class CROHMEDetection4SSD(data.Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        img_path = os.path.join(self.root, self.data.iloc[idx, 0])
+        img_path = os.path.join(self.root, os.path.basename(self.data.iloc[idx, 0]))
         img = cv2.imread(img_path)
         # to rgb
         img = img[:, :, (2, 1, 0)]
