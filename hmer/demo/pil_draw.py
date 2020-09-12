@@ -3,10 +3,10 @@ import os
 import matplotlib.pyplot as plt
 
 from extractor.crohme_parser.inkml import Ink
-from utils.image_processing import *
-from utils.pil_draw import pil_draw_traces
-from utils.plt_draw import *
-from utils.fs import get_source_root
+from utilities.image_processing import *
+from utilities.pil_draw import pil_draw_traces
+from utilities.plt_draw import *
+from utilities.fs import get_source_root
 from extractor.crohme_parser import augmentation
 
 if __name__ == "__main__":

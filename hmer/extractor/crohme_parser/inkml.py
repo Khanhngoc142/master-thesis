@@ -173,6 +173,10 @@ class Ink(BaseTrait):
         return self._label
 
     @property
+    def flatten_label(self):
+        return ' '.join([g.label for g in self._trace_groups])
+
+    @property
     def simplified_lbl(self):
         return self._simplified_label
 
@@ -196,10 +200,17 @@ class Ink(BaseTrait):
         self._tree = tree = ET.parse(self._file_path)
         root = tree.getroot()
 
-        self._simplified_label = self._label = [
-            child for child in root.getchildren()
-            if (child.tag == self._namespace + "annotation") and (child.attrib == {'type': 'truth'})
-        ][0].text
+        try:
+            self._simplified_label = self._label = [
+                child for child in root.getchildren()
+                if (child.tag == self._namespace + "annotation") and (child.attrib == {'type': 'truth'})
+            ][0].text
+        except IndexError:
+            print("ERROR IN FILE: {}.\nRetry with finding typx: \"truth\" instead.".format(self._file_path))
+            self._simplified_label = self._label = [
+                child for child in root.getchildren()
+                if (child.tag == self._namespace + "annotation") and (child.attrib == {'typx': 'truth'})
+            ][0].text
 
         self._traces = traces = [Trace(trace_tag, self._namespace) for trace_tag in
                                  root.findall(self._namespace + "trace")]

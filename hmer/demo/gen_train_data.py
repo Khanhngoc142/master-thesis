@@ -7,7 +7,7 @@ import matplotlib.image as mpimg
 import math
 from PIL import Image, ImageDraw
 from extractor.crohme_parser.inkml import Ink
-from utils import plt_draw, image_processing
+from utilities import plt_draw, image_processing
 
 if __name__ == "__main__":
     figside = 300

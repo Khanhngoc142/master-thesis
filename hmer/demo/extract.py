@@ -1,8 +1,8 @@
 import os
 import matplotlib.pyplot as plt
 from extractor.crohme_parser import library, inkml
-from utils.plt_draw import plt_draw_traces
-from utils.fs import get_source_root, save_object
+from utilities.plt_draw import plt_draw_traces
+from utilities.fs import get_source_root, save_object
 
 
 def draw_demo(nrows, ncols, lib, symbol):

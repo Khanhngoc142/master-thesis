@@ -3,7 +3,7 @@ import re
 import matplotlib.pyplot as plt
 
 from extractor.crohme_parser.inkml import Ink
-from utils.plt_draw import plt_draw_traces
+from utilities.plt_draw import plt_draw_traces
 
 if __name__ == "__main__":
     cur_path = os.path.abspath('.')
