@@ -27,6 +27,7 @@ def str2bool(v):
 parser = argparse.ArgumentParser(
     description='Single Shot MultiBox Detector Training With Pytorch')
 train_set = parser.add_mutually_exclusive_group()
+parser.add_argument('--dataset', default='CROHME_2013')
 parser.add_argument('--dataset_root', default=os.path.join(get_source_root(), "demo-outputs/data/CROHME_2013_train"),
                     help='Dataset root directory path')
 parser.add_argument('--basenet', default='vgg16_reducedfc.pth',
@@ -156,16 +157,19 @@ def train():
 
     print("Start training")
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
+        # reset epoch loss counters
+        loc_loss = 0
+        conf_loss = 0
         # for iteration in range(args.start_iter, cfg['max_iter']):
         for iteration in range(epoch_size):
-            # every epoch
-            if args.visdom and iteration != 0 and (iteration % epoch_size == 0):
-                update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
-
-                # reset epoch loss counters
-                loc_loss = 0
-                conf_loss = 0
-                epoch += 1
+            # # every epoch
+            # if args.visdom and iteration != 0 and (iteration % epoch_size == 0):
+            #     update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
+            #
+            #     # reset epoch loss counters
+            #     loc_loss = 0
+            #     conf_loss = 0
+            #     epoch += 1
 
             if epoch * epoch_size + iteration in cfg['lr_steps']:
                 step_index += 1
@@ -206,13 +210,27 @@ def train():
             if args.visdom:
                 update_vis_plot(viz, epoch * epoch_size + iteration, loss_l.item(), loss_c.item(), iter_plot)
 
+        # plot epoch loss
+        update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
+
         # if iteration != 0 and iteration % 5000 == 0:
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
-            torch.save(ssd_net.state_dict(), 'weights/ssd300_COCO_' +
-                       repr(iteration) + '.pth')
-    torch.save(ssd_net.state_dict(),
-               args.save_folder + '' + args.dataset + '.pth')
+            save_model(ssd_net, epoch, args.save_folder, args.dataset)
+    torch.save(
+        ssd_net.state_dict(),
+        os.path.join(
+            args.save_folder if args.save_folder[0] == '/' else os.path.join(get_source_root(), args.save_folder),
+            args.dataset, str(args.start_epoch + args.epochs - 1) + '.pth'))
+
+
+def save_model(net, it, save_folder, dataset):
+    if not save_folder.startswith('/'):
+        save_folder = os.path.join(get_source_root(), save_folder)
+
+    save_path = os.path.join(save_folder, dataset, str(it) + '.pth')
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    torch.save(net, save_path)
 
 
 def adjust_learning_rate(optimizer, gamma, step):
