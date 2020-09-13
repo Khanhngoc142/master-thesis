@@ -12,7 +12,17 @@ import math
 
 import numpy as np
 
+import cv2
+import matplotlib.pyplot as plt
+
 MINOVERLAP = 0.5  # default value (defined in the PASCAL VOC2012 challenge)
+show_animation = True
+draw_plot = True
+GT_PATH = os.path.join(os.getcwd(), 'input', 'ground-truth')
+DR_PATH = os.path.join(os.getcwd(), 'input', 'detection-results')
+IMG_PATH = os.path.join(os.getcwd(), 'input', 'images-optional')
+tmp_files_path = ".temp_files"
+output_files_path = "output"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-na', '--no-animation', help="no animation is shown.", action="store_true")
@@ -47,10 +57,7 @@ if args.set_class_iou is not None:
 # make sure that the cwd() is the location of the python script (so that every path makes sense)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-GT_PATH = os.path.join(os.getcwd(), 'input', 'ground-truth')
-DR_PATH = os.path.join(os.getcwd(), 'input', 'detection-results')
 # if there are no images then no animation can be shown
-IMG_PATH = os.path.join(os.getcwd(), 'input', 'images-optional')
 if os.path.exists(IMG_PATH):
     for dirpath, dirnames, files in os.walk(IMG_PATH):
         if not files:
@@ -58,12 +65,6 @@ if os.path.exists(IMG_PATH):
             args.no_animation = True
 else:
     args.no_animation = True
-
-import cv2
-import matplotlib.pyplot as plt
-
-show_animation = True
-draw_plot = True
 
 
 def log_average_miss_rate(prec, rec, num_images):
@@ -348,80 +349,84 @@ def prepare_directories(tmp_dir, out_dir):
 
 
 # Create tmp and output directories
-tmp_files_path = ".temp_files"
-output_files_path = "output"
 prepare_directories(tmp_files_path, output_files_path)
 
-"""
- ground-truth
-     Load each of the ground-truth files into a temporary ".json" file.
-     Create a list of all the class names present in the ground-truth (gt_classes).
-"""
-# get a list with the ground-truth files
-ground_truth_files_list = glob.glob(GT_PATH + '/*.txt')
-if len(ground_truth_files_list) == 0:
-    error("Error: No ground-truth files found!")
-ground_truth_files_list.sort()
-# dictionary with counter per class
-gt_counter_per_class = {}
-counter_images_per_class = {}
 
-gt_files = []
-for txt_file in ground_truth_files_list:
-    # print(txt_file)
-    file_id = txt_file.split(".txt", 1)[0]
-    file_id = os.path.basename(os.path.normpath(file_id))
-    # check if there is a correspondent detection-results file
-    temp_path = os.path.join(DR_PATH, (file_id + ".txt"))
-    if not os.path.exists(temp_path):
-        error_msg = "Error. File not found: {}\n".format(temp_path)
-        error_msg += "(You can avoid this error message by running extra/intersect-gt-and-dr.py)"
-        error(error_msg)
-    lines_list = file_lines_to_list(txt_file)
-    # create ground-truth dictionary
-    bounding_boxes = []
-    is_difficult = False
-    for line in lines_list:
-        try:
-            if "difficult" in line:
-                class_name, left, top, right, bottom, _difficult = line.split()
-                is_difficult = True
-            else:
-                class_name, left, top, right, bottom = line.split()
-        except ValueError:
-            error_msg = "Error: File " + txt_file + " in the wrong format.\n"
-            error_msg += " Expected: <class_name> <left> <top> <right> <bottom> ['difficult']\n"
-            error_msg += " Received: " + line
-            error_msg += "\n\nIf you have a <class_name> with spaces between words you should remove them\n"
-            error_msg += "by running the script \"remove_space.py\" or \"rename_class.py\" in the \"extra/\" folder."
+def prepare_ground_truth():
+    """
+     ground-truth
+         Load each of the ground-truth files into a temporary ".json" file.
+         Create a list of all the class names present in the ground-truth (gt_classes).
+    """
+    # get a list with the ground-truth files
+    ground_truth_files_list = glob.glob(GT_PATH + '/*.txt')
+    if len(ground_truth_files_list) == 0:
+        error("Error: No ground-truth files found!")
+    ground_truth_files_list.sort()
+    # dictionary with counter per class
+    gt_counter_per_class = {}
+    counter_images_per_class = {}
+
+    gt_files = []
+    for txt_file in ground_truth_files_list:
+        # print(txt_file)
+        file_id = txt_file.split(".txt", 1)[0]
+        file_id = os.path.basename(os.path.normpath(file_id))
+        # check if there is a correspondent detection-results file
+        temp_path = os.path.join(DR_PATH, (file_id + ".txt"))
+        if not os.path.exists(temp_path):
+            error_msg = "Error. File not found: {}\n".format(temp_path)
+            error_msg += "(You can avoid this error message by running extra/intersect-gt-and-dr.py)"
             error(error_msg)
-        # check if class is in the ignore list, if yes skip
-        if class_name in args.ignore:
-            continue
-        bbox = left + " " + top + " " + right + " " + bottom
-        if is_difficult:
-            bounding_boxes.append({"class_name": class_name, "bbox": bbox, "used": False, "difficult": True})
-            is_difficult = False
-        else:
-            bounding_boxes.append({"class_name": class_name, "bbox": bbox, "used": False})
-            # count that object
-            if class_name in gt_counter_per_class:
-                gt_counter_per_class[class_name] += 1
+        lines_list = file_lines_to_list(txt_file)
+        # create ground-truth dictionary
+        bounding_boxes = []
+        is_difficult = False
+        for line in lines_list:
+            try:
+                if "difficult" in line:
+                    class_name, left, top, right, bottom, _difficult = line.split()
+                    is_difficult = True
+                else:
+                    class_name, left, top, right, bottom = line.split()
+            except ValueError:
+                error_msg = "Error: File " + txt_file + " in the wrong format.\n"
+                error_msg += " Expected: <class_name> <left> <top> <right> <bottom> ['difficult']\n"
+                error_msg += " Received: " + line
+                error_msg += "\n\nIf you have a <class_name> with spaces between words you should remove them\n"
+                error_msg += "by running the script \"remove_space.py\" or \"rename_class.py\" in the \"extra/\" folder."
+                error(error_msg)
+            # check if class is in the ignore list, if yes skip
+            if class_name in args.ignore:
+                continue
+            bbox = left + " " + top + " " + right + " " + bottom
+            if is_difficult:
+                bounding_boxes.append({"class_name": class_name, "bbox": bbox, "used": False, "difficult": True})
+                is_difficult = False
+            else:
+                bounding_boxes.append({"class_name": class_name, "bbox": bbox, "used": False})
+                # count that object
+                if class_name in gt_counter_per_class:
+                    gt_counter_per_class[class_name] += 1
+                else:
+                    # if class didn't exist yet
+                    gt_counter_per_class[class_name] = 1
+
+            if class_name in counter_images_per_class:
+                counter_images_per_class[class_name] += 1
             else:
                 # if class didn't exist yet
-                gt_counter_per_class[class_name] = 1
+                counter_images_per_class[class_name] = 1
 
-        if class_name in counter_images_per_class:
-            counter_images_per_class[class_name] += 1
-        else:
-            # if class didn't exist yet
-            counter_images_per_class[class_name] = 1
+        # dump bounding_boxes into a ".json" file
+        new_temp_file = tmp_files_path + "/" + file_id + "_ground_truth.json"
+        gt_files.append(new_temp_file)
+        with open(new_temp_file, 'w') as outfile:
+            json.dump(bounding_boxes, outfile)
+    return gt_counter_per_class, counter_images_per_class
 
-    # dump bounding_boxes into a ".json" file
-    new_temp_file = tmp_files_path + "/" + file_id + "_ground_truth.json"
-    gt_files.append(new_temp_file)
-    with open(new_temp_file, 'w') as outfile:
-        json.dump(bounding_boxes, outfile)
+
+gt_counter_per_class, counter_images_per_class = prepare_ground_truth()
 
 gt_classes = list(gt_counter_per_class.keys())
 # let's sort the classes alphabetically
