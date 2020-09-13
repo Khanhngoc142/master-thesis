@@ -77,6 +77,10 @@ if not os.path.exists(args.save_folder):
     os.mkdir(args.save_folder)
 
 
+def get_num_batch(dataset, batch_size):
+    return len(dataset) // batch_size + (0 if len(dataset) % batch_size == 0 else 1)
+
+
 def train():
     # load dataset
     cfg = {
@@ -168,7 +172,7 @@ def train():
     criterion = MultiBoxLoss(cfg['num_classes'], 0.5, True, 0, True, 3, 0.5,
                              False, args.cuda)
 
-    epoch_size = len(dataset) // args.batch_size + 1
+    num_batch = get_num_batch(dataset, args.batch_size)
     print('Training SSD on:', dataset.name)
     print('Using the specified args:')
     print(args)
@@ -188,12 +192,13 @@ def train():
         loc_loss = 0
         conf_loss = 0
         epoch_time = 0
-        for iteration in range(epoch_size):
-            if epoch * epoch_size + iteration in cfg['lr_steps']:
+        # for iteration, (images, targets) in enumerate(batch_iterator):
+        for iteration in range(num_batch):
+            images, targets = next(batch_iterator)
+
+            if epoch * num_batch + iteration in cfg['lr_steps']:
                 step_index += 1
                 adjust_learning_rate(optimizer, args.gamma, step_index)
-
-            images, targets = next(batch_iterator)
 
             if args.cuda:
                 images = Variable(images.cuda())
@@ -219,56 +224,62 @@ def train():
 
             epoch_time += (t1 - t0)
             if args.visdom:
-                update_vis_plot(viz, epoch * epoch_size + iteration, loss_l.item(), loss_c.item(), iter_plot)
+                update_vis_plot(viz, epoch * num_batch + iteration, loss_l.item(), loss_c.item(), iter_plot)
+
+        # clean up training loop
+        # del loss, out, images, targets
 
         # update epoch_plot
         update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
 
         if epoch % args.verbose == 0:
-            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss + f' || time: {epoch_time:.3f} sec.'))
+            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss) + f' || time: {epoch_time:.3f} sec.')
 
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
             save_model(ssd_net, epoch, args.save_folder, args.dataset)
 
         # EVAL
-        if epoch % args.eval_epoch == 0 and valid_data_loader is not None:
-            net.eval()  # trigger eval mode
-            valid_iterator = iter(valid_data_loader)
-            valid_loc_loss = 0
-            valid_conf_loss = 0
-            valid_size = len(validset) // args.batch_size + 1
-            for _ in range(valid_size):
-                images, targets = next(valid_iterator)
+        with torch.no_grad():
+            if epoch % args.eval_epoch == 0 and valid_data_loader is not None:
+                net.eval()  # trigger eval mode
+                valid_iterator = iter(valid_data_loader)
+                valid_loc_loss = 0
+                valid_conf_loss = 0
+                valid_num_batch = get_num_batch(validset, args.batch_size)
+                for _ in range(valid_num_batch):
+                    images, targets = next(valid_iterator)
 
-                if args.cuda:
-                    images = Variable(images.cuda())
-                    with torch.no_grad():
-                        targets = [Variable(ann.cuda()) for ann in targets]
-                else:
-                    images = Variable(images)
-                    with torch.no_grad():
-                        targets = [Variable(ann) for ann in targets]
-                # forward
-                out = net(images)
-                # backprop
-                loss_l, loss_c = criterion(out, targets)
-                valid_loc_loss += loss_l.item()
-                valid_conf_loss += loss_c.item()
-            valid_loss = valid_loc_loss + valid_conf_loss
-            train_loss = loc_loss + conf_loss
-            valid_loss /= valid_size
-            train_loss /= epoch_size
+                    if args.cuda:
+                        images = Variable(images.cuda())
+                        with torch.no_grad():
+                            targets = [Variable(ann.cuda()) for ann in targets]
+                    else:
+                        images = Variable(images)
+                        with torch.no_grad():
+                            targets = [Variable(ann) for ann in targets]
+                    # forward
+                    out = net(images)
+                    # backprop
+                    loss_l, loss_c = criterion(out, targets)
+                    valid_loc_loss += loss_l.item()
+                    valid_conf_loss += loss_c.item()
+                valid_loss = valid_loc_loss + valid_conf_loss
+                train_loss = loc_loss + conf_loss
+                valid_loss /= valid_num_batch
+                train_loss /= num_batch
 
-            print(f'EVAL @ epoch {epoch}' + ' || Loss: %.4f ||' % valid_loss)
+                print(f'EVAL @ epoch {epoch}' + ' || Loss: %.4f ||' % valid_loss)
 
-            # plot
-            viz.line(
-                X=torch.ones((1, 2)).cpu().numpy() * epoch,
-                Y=np.array([[train_loss, valid_loss]]),
-                win=valid_plot,
-                update='append'
-            )
+                # plot
+                viz.line(
+                    X=torch.ones((1, 2)).cpu().numpy() * epoch,
+                    Y=np.array([[train_loss, valid_loss]]),
+                    win=valid_plot,
+                    update='append'
+                )
+
+                # del valid_loss, out, images, train_set
 
     save_model(ssd_net, epoch if epoch is not None else 0, args.save_folder, args.dataset)
 

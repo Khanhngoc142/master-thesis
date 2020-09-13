@@ -25,9 +25,6 @@ class CROHMEDetection4SSD(data.Dataset):
         data = pd.DataFrame(data, columns=['img', 'target'])
         self.data = data
 
-        # temp
-        # self.data = pd.concat([data.iloc[7:8]] * 10, axis=0)
-
     def __len__(self):
         return len(self.data)
 
