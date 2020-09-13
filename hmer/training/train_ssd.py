@@ -226,6 +226,10 @@ def train():
             if args.visdom:
                 update_vis_plot(viz, epoch * num_batch + iteration, loss_l.item(), loss_c.item(), iter_plot)
 
+        # average loss
+        loc_loss /= num_batch
+        conf_loss /= num_batch
+
         # clean up training loop
         # del loss, out, images, targets
 
@@ -233,7 +237,7 @@ def train():
         update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
 
         if epoch % args.verbose == 0:
-            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss) + f' || time: {epoch_time:.3f} sec.')
+            print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss) + f' time: {epoch_time:.3f} sec.')
 
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
@@ -265,19 +269,19 @@ def train():
                     valid_loc_loss += loss_l.item()
                     valid_conf_loss += loss_c.item()
                 valid_loss = valid_loc_loss + valid_conf_loss
-                train_loss = loc_loss + conf_loss
                 valid_loss /= valid_num_batch
-                train_loss /= num_batch
+                train_loss = loc_loss + conf_loss
 
                 print(f'EVAL @ epoch {epoch}' + ' || Loss: %.4f ||' % valid_loss)
 
                 # plot
-                viz.line(
-                    X=torch.ones((1, 2)).cpu().numpy() * epoch,
-                    Y=np.array([[train_loss, valid_loss]]),
-                    win=valid_plot,
-                    update='append'
-                )
+                if args.visdom:
+                    viz.line(
+                        X=torch.ones((1, 2)).cpu().numpy() * epoch,
+                        Y=np.array([[train_loss, valid_loss]]),
+                        win=valid_plot,
+                        update='append'
+                    )
 
                 # del valid_loss, out, images, train_set
 
