@@ -9,3 +9,9 @@ __pycache__
 /hmer/model/weights/
 /hmer/training/data/
 
+/hmer/testing/data/
+/hmer/testing/data2/
+/hmer/testing/font/
+/hmer/testing/result/
+/hmer/testing/result_2/
+/hmer/training/data_lw_2/
