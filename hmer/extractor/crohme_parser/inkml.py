@@ -145,7 +145,7 @@ class TraceGroup(BaseTrait):
 
 
 class Ink(BaseTrait):
-    def __init__(self, file_path, namespace=ink_xmlns):
+    def __init__(self, file_path, namespace=ink_xmlns, is_test=False):
         f"""
         Ink object contains all useful information extracted and to be used to visualize into image.
         :param file_path: inkml file path, absolute path works best
@@ -157,6 +157,7 @@ class Ink(BaseTrait):
         self._tree = None
         self._traces = None
         self._trace_groups = None
+        self._is_test = is_test
 
         self._parse_file()
 
@@ -200,17 +201,22 @@ class Ink(BaseTrait):
         self._tree = tree = ET.parse(self._file_path)
         root = tree.getroot()
 
-        try:
-            self._simplified_label = self._label = [
-                child for child in root.getchildren()
-                if (child.tag == self._namespace + "annotation") and (child.attrib == {'type': 'truth'})
-            ][0].text
-        except IndexError:
-            print("ERROR IN FILE: {}.\nRetry with finding typx: \"truth\" instead.".format(self._file_path))
-            self._simplified_label = self._label = [
-                child for child in root.getchildren()
-                if (child.tag == self._namespace + "annotation") and (child.attrib == {'typx': 'truth'})
-            ][0].text
+        if not self._is_test:
+            lbl = [
+                    child for child in root.getchildren()
+                    if (child.tag == self._namespace + "annotation") and (child.attrib == {'type': 'truth'})
+                ]
+            if len(lbl) > 0:
+                self._simplified_label = self._label = lbl[0].text
+            else:
+                print("ERROR IN FILE: {}.\nRetry with finding typx: \"truth\" instead.".format(self._file_path))
+                lbl = [
+                    child for child in root.getchildren()
+                    if (child.tag == self._namespace + "annotation") and (child.attrib == {'typx': 'truth'})
+                ]
+                self._simplified_label = self._label = lbl
+        else:
+            self._simplified_label = self._label = None
 
         self._traces = traces = [Trace(trace_tag, self._namespace) for trace_tag in
                                  root.findall(self._namespace + "trace")]
@@ -237,7 +243,10 @@ class Ink(BaseTrait):
 
     @property
     def trace_coords(self):
-        return [trace_coords for group in self._trace_groups for trace_coords in group.trace_coords]
+        if not self._is_test:
+            return [trace_coords for group in self._trace_groups for trace_coords in group.trace_coords]
+        else:
+            return [trace.coords for trace in self._traces]
 
     def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2, color='b', draw_bbox=False,
                        **draw_bbox_kwargs):

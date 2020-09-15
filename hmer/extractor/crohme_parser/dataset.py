@@ -62,7 +62,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from utilities.plt_draw import plt_draw_bbox
 
-    dataset = CROHMEDetection4SSD(root=os.path.join(get_source_root(), "demo-outputs/data/CROHME_2013_train"))
+    dataset = CROHMEDetection4SSD(root=os.path.join(get_source_root(), "training/data/CROHME_2013_train"))
     fig, ax = plt.subplots()
     data = dataset[7]
 
