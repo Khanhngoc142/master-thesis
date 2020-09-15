@@ -35,7 +35,7 @@ def plt_trace_coords(coords, ax=None, linewidth=2, c='black'):
     return ax
 
 
-def plt_draw_traces(traces, ax=None, linewidth=2, c='black'):
+def plt_draw_traces(traces, ax=None, linewidth=1, c='black'):
     """
     draw a list of traces
     :param traces: 3-layer list. list of list of coordinates
