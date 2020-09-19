@@ -46,10 +46,10 @@ if __name__ == "__main__":
         # ax = axes[n]
         # ax.invert_yaxis()
         # ax.set_aspect('equal', adjustable='box')
-        new_coords = augmentation.InkAugmentor.geometric_transform(ink)
+        new_group_coords = augmentation.InkAugmentor.geometric_transform(ink)
         print("\n")
         # plt.show()
-
+        new_coords = [trace for group in new_group_coords for trace in group]
         _, coords = scale_trace_group(new_coords, 300)
         img = plt_draw_traces(coords)
         # fig.add_subplot(3,2,n)
