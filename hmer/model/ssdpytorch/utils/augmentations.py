@@ -30,6 +30,9 @@ def jaccard_numpy(box_a, box_b):
     area_b = ((box_b[2]-box_b[0]) *
               (box_b[3]-box_b[1]))  # [A,B]
     union = area_a + area_b - inter
+    # TODO: handle weird case of box with width/height = 0
+    if (union == 0).sum() > 0:
+        raise ValueError("union value error:\nunion: {}\nintersect: {}\niou: {}\nbox a: {}\nbox b: {}".format(union, inter, inter/union, box_a, box_b))
     return inter / union  # [A,B]
 
 
