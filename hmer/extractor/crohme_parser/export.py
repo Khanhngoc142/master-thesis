@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 from utilities.data_processing import normalize_label
-from utilities.image_processing import get_trace_group_bbox, couple_bbox
+from utilities.image_processing import get_trace_group_bbox, couple_bbox, decouple_bbox
 from utilities.plt_draw import plt_clear, plt_setup, plt_draw_traces
 from utilities.fs import get_source_root
 from extractor.crohme_parser.extract import Extractor
@@ -24,6 +24,10 @@ def pad_zero_size_bbox(box):
     return box
 
 
+def bboxes(args):
+    pass
+
+
 def export_equation(equation, label, output_path, size=300, dpi=96):
     """
     :param equation: 4-layer list equation groups' coordinates
@@ -36,7 +40,13 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     fig, ax = plt_setup(figsize=(size / dpi, size / dpi), dpi=dpi)
     plt_draw_traces([trace for group in equation for trace in group], ax=ax)
     plt.savefig(output_path + '.png', dpi=dpi)
-    bboxes = [box for box in [pad_zero_size_bbox(get_trace_group_bbox(group)) for group in equation] if box is not None]
+    norm_label = normalize_label(label)
+    bboxes = [get_trace_group_bbox(group) for group in equation]
+
+    # correcting box
+    norm_label, bboxes = zip(*[(nrm_lbl, pad_zero_size_bbox(box)) for nrm_lbl, box in zip(norm_label, bboxes) if
+                               pad_zero_size_bbox(box) is not None])
+
     xmin, ymin, xmax, ymax = zip(*bboxes)
     _, height = fig.canvas.get_width_height()
     xymin_pix = ax.transData.transform(np.vstack([xmin, ymin]).T)
@@ -45,7 +55,7 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     xymax_pix = np.vstack([xymax_pix[:, 0], height - xymax_pix[:, 1]]).T.tolist()
 
     bboxes_pix = list(zip(xymin_pix, xymax_pix))
-    norm_label = normalize_label(label)
+
     plt.close()
 
     return (output_path + ".png ").replace(get_source_root(), "").lstrip('/') + " ".join(
@@ -156,7 +166,12 @@ def find_weird_boxes(data_versions='2013', crohme_package=os.path.join(get_sourc
         # print("Exporting ink {}...".format(ink.file_path))
         equation = [g.trace_coords for g in ink.trace_groups]
         labels = ink.flatten_label.split()
-        bboxes = [get_box_size(*get_trace_group_bbox(group)) for group in equation]
+        bboxes = [get_trace_group_bbox(group) for group in equation]
+
+        labels, bboxes = zip(*[(nrm_lbl, pad_zero_size_bbox(box)) for nrm_lbl, box in zip(labels, bboxes) if
+                               pad_zero_size_bbox(box) is not None])
+
+        bboxes = [get_box_size(*decouple_bbox(box)) for box in bboxes]
         for idx, (w, h) in enumerate(bboxes):
             if labels[idx] in target_labels:
                 target_labels[labels[idx]] += 1

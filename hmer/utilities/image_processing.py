@@ -22,6 +22,10 @@ def couple_bbox(xmin, ymin, xmax, ymax):
     return (xmin, ymin), (xmax, ymax)
 
 
+def decouple_bbox(box):
+    return box[0][0], box[0][1], box[1][0], box[1][1]
+
+
 def shift_equation(equation, xshift, yshift):
     return [[[[coord[0] + xshift, coord[1] + yshift] for coord in trace] for trace in trace_group] for trace_group in
             equation]
