@@ -44,7 +44,7 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     bboxes = [get_trace_group_bbox(group) for group in equation]
 
     # correcting box
-    norm_label, bboxes = zip(*[(nrm_lbl, pad_zero_size_bbox(box)) for nrm_lbl, box in zip(norm_label, bboxes) if
+    norm_label, bboxes = zip(*[(nrm_lbl, decouple_bbox(pad_zero_size_bbox(box))) for nrm_lbl, box in zip(norm_label, bboxes) if
                                pad_zero_size_bbox(box) is not None])
 
     xmin, ymin, xmax, ymax = zip(*bboxes)
@@ -77,7 +77,7 @@ def export_from_ink_with_geoaugment(ink, output_dir, overwrite=False, write_labe
     for i in range(n_random):
         aug_equation = InkAugmentor.geometric_transform(ink)
         label = ink.flatten_label
-        filename = os.path.basename(ink.file_path) + '_' + str(i)
+        filename = os.path.basename(ink.file_path).split(".")[0] + '_' + str(i)
         out_file = os.path.join(output_dir, filename)
         os.makedirs(os.path.dirname(out_file), exist_ok=True)
         if os.path.exists(out_file + '.png') and not overwrite:
@@ -101,7 +101,7 @@ def export_from_ink(ink, output_dir, overwrite=False, write_label=True):
     """
     equation = [g.trace_coords for g in ink.trace_groups]
     label = ink.flatten_label
-    filename = os.path.basename(ink.file_path)
+    filename = os.path.basename(ink.file_path).split(".")[0]
     out_file = os.path.join(output_dir, filename)
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
     if os.path.exists(out_file + '.png') and not overwrite:

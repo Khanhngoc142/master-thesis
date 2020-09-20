@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-from utilities.fs import get_source_root
+from utilities.fs import get_path
 from utils.augmentations import jaccard_numpy
 from IPython.display import display
 
@@ -66,9 +66,9 @@ def compute_average_precision(conf, correct, num_gt):
     return (df.precision * df.recall).sum()
 
 
-if __name__ == "__main__":
-    gt_dict = load_file(os.path.join(get_source_root(), GT_FILEPATH))
-    pred_dict = load_file(os.path.join(get_source_root(), PRED_FILEPATH))
+def evaluate_AP(ground_truth_file, prediction_file, iou_threshold=0.5):
+    gt_dict = load_file(get_path(ground_truth_file))
+    pred_dict = load_file(get_path(prediction_file))
 
     images_per_class = {}
     counter_per_class = {}
@@ -100,15 +100,20 @@ if __name__ == "__main__":
             pred_box = pred_coords[idx]
             gt_boxes = gt_coords[gt_labels == pred_labels[idx]]
             iou = jaccard_numpy(gt_boxes, pred_box)
-            pred_eval_result.append([pred_labels[idx], pred_conf[idx], (iou > IOU_THRESHOLD).sum() > 0])
+            pred_eval_result.append([pred_labels[idx], pred_conf[idx], (iou > iou_threshold).sum() > 0])
 
     pred_eval_result = pd.DataFrame(data=pred_eval_result, columns=['cls', 'conf', 'correct'])
 
+    average_precision_per_class = {}
+
     for cls in sorted(counter_per_class.keys()):
         print("Class {} AP :".format(cls), end="\t")
-        print(compute_average_precision(
+        ap = compute_average_precision(
             pred_eval_result[pred_eval_result.cls == cls].conf,
             pred_eval_result[pred_eval_result.cls == cls].correct,
-            counter_per_class[cls]))
+            counter_per_class[cls])
+        print(ap)
+        average_precision_per_class[cls] = ap
 
+    return average_precision_per_class
 
