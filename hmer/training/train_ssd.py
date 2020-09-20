@@ -54,6 +54,7 @@ parser.add_argument('--gamma', default=0.1, type=float,
                     help='Gamma update for SGD')
 parser.add_argument('--visdom', default=False, type=str2bool,
                     help='Use visdom for loss visualization')
+parser.add_argument('--visdom_name', type=str, default=None)
 parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'model/weights/'),
                     help='Directory for saving checkpoint models')
 parser.add_argument('--save_epoch', default=3, type=int,
@@ -124,7 +125,7 @@ def train():
     if args.visdom:
         import visdom
         viz = visdom.Visdom()
-        vis_title = 'SSD.PyTorch on ' + dataset.name
+        vis_title = 'SSD.PyTorch on ' + dataset.name if args.visdom_name is None else args.visdom_name
         vis_legend = ['Loc Loss', 'Conf Loss', 'Total Loss']
         iter_plot = create_vis_plot(viz, 'Iteration', 'Loss', vis_title, vis_legend)
         epoch_plot = create_vis_plot(viz, 'Epoch', 'Loss', vis_title, vis_legend)
@@ -135,7 +136,7 @@ def train():
                 opts=dict(
                     xlabel='Epoch',
                     ylabel='Loss',
-                    title='SSD.PyTorch on ' + dataset.name,
+                    title='SSD.PyTorch on ' + dataset.name if args.visdom_name is None else args.visdom_name + ' EVALUATION',
                     legend=['Train Loss', 'Valid Loss']
                 )
             )
