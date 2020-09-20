@@ -11,11 +11,9 @@ if __name__ == "__main__":
         # 'test'
     ]:
         print("EXPORT {} DATASET".format(dataset.upper()))
-        # export_crohme_data(datasets=dataset, limit=limit, output_dir="training/data")
-        report = "\n".join(find_weird_boxes(datasets=dataset, limit=limit))
-        reports.append(report)
-    reports = "\n".join(reports)
-    with open(os.path.join(get_source_root(), "demo-outputs/weird.txt"), 'w') as fout:
-        fout.write(reports)
-
-
+        export_crohme_data(datasets=dataset, limit=limit, output_dir="training/data_aug")
+    #     report = "\n".join(find_weird_boxes(datasets=dataset, limit=limit))
+    #     reports.append(report)
+    # reports = "\n".join(reports)
+    # with open(os.path.join(get_source_root(), "demo-outputs/weird.txt"), 'w') as fout:
+    #     fout.write(reports)
