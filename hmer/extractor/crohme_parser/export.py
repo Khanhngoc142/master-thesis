@@ -3,11 +3,25 @@ import matplotlib.pyplot as plt
 import os
 
 from utilities.data_processing import normalize_label
-from utilities.image_processing import get_trace_group_bbox
+from utilities.image_processing import get_trace_group_bbox, couple_bbox
 from utilities.plt_draw import plt_clear, plt_setup, plt_draw_traces
 from utilities.fs import get_source_root
 from extractor.crohme_parser.extract import Extractor
 from extractor.crohme_parser.augmentation import InkAugmentor
+
+
+def pad_zero_size_bbox(box):
+    box = couple_bbox(*box)
+    w, h = box[1][0] - box[0][0], box[1][1] - box[0][1]
+    if w == 0 and h == 0:
+        return None
+    elif w == 0:
+        new_w = 0.1 * h
+        box = [(box[0][0] - new_w / 2, box[0][1]), (box[1][0] + new_w / 2, box[1][1])]
+    elif h == 0:
+        new_h = 0.1 * w
+        box = [(box[0][0], box[0][1] - new_h / 2), (box[1][0], box[1][1] + new_h / 2)]
+    return box
 
 
 def export_equation(equation, label, output_path, size=300, dpi=96):
@@ -22,7 +36,7 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     fig, ax = plt_setup(figsize=(size / dpi, size / dpi), dpi=dpi)
     plt_draw_traces([trace for group in equation for trace in group], ax=ax)
     plt.savefig(output_path + '.png', dpi=dpi)
-    bboxes = [get_trace_group_bbox(group) for group in equation]
+    bboxes = [box for box in [pad_zero_size_bbox(get_trace_group_bbox(group)) for group in equation] if box is not None]
     xmin, ymin, xmax, ymax = zip(*bboxes)
     _, height = fig.canvas.get_width_height()
     xymin_pix = ax.transData.transform(np.vstack([xmin, ymin]).T)
@@ -90,7 +104,8 @@ def export_from_ink(ink, output_dir, overwrite=False, write_label=True):
 
 
 def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"),
-                       datasets="train", output_dir=os.path.join("demo-outputs", "data"), overwrite=False, limit=None, treo_aug=True):
+                       datasets="train", output_dir=os.path.join("demo-outputs", "data"), overwrite=False, limit=None,
+                       treo_aug=True):
     output_dir = os.path.join(get_source_root(), output_dir, f"CROHME_{data_versions}_{datasets}")
     os.makedirs(output_dir, exist_ok=True)
     extractor = Extractor(data_versions, crohme_package)
@@ -110,3 +125,46 @@ def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_sou
                 break
     with open(os.path.join(output_dir, "labels.txt"), 'w') as f:
         f.write('\n'.join(labels))
+
+
+def get_box_size(xmin, ymin, xmax, ymax):
+    """
+
+    :param xmin:
+    :param ymin:
+    :param xmax:
+    :param ymax:
+    :return: width, height
+    """
+    return xmax - xmin, ymax - ymin
+
+
+def find_weird_boxes(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"),
+                     datasets="train", output_dir=os.path.join("demo-outputs", "data"), overwrite=False, limit=None,
+                     treo_aug=True):
+    weird = []
+    target_labels = {
+        '.': 0,
+        ',': 0,
+        '\prime': 0,
+        '-': 0
+    }
+    output_dir = os.path.join(get_source_root(), output_dir, f"CROHME_{data_versions}_{datasets}")
+    os.makedirs(output_dir, exist_ok=True)
+    extractor = Extractor(data_versions, crohme_package)
+    for ink in extractor.parse_inkmls_iterator(datasets=datasets):
+        # print("Exporting ink {}...".format(ink.file_path))
+        equation = [g.trace_coords for g in ink.trace_groups]
+        labels = ink.flatten_label.split()
+        bboxes = [get_box_size(*get_trace_group_bbox(group)) for group in equation]
+        for idx, (w, h) in enumerate(bboxes):
+            if labels[idx] in target_labels:
+                target_labels[labels[idx]] += 1
+            if w == 0 or h == 0:
+                report = "{}\t{}\t{}\t{}\t{}".format(ink.file_path.replace(get_source_root(), "").lstrip("/"), idx,
+                                                     labels[idx], w, h)
+                # print(report)
+                weird.append(report)
+
+    print(target_labels)
+    return weird

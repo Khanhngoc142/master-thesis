@@ -290,7 +290,7 @@ def parse_inkml_dir(data_dir_abs_path):
         for inkml_file in os.listdir(data_dir_abs_path):
             if inkml_file.endswith('.inkml'):
                 inkml_file_abs_path = os.path.join(data_dir_abs_path, inkml_file)
-                print("Parsing: {}".format(inkml_file_abs_path))
+                # print("Parsing: {}".format(inkml_file_abs_path))
                 yield Ink(inkml_file_abs_path)
 
 

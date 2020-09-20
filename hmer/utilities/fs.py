@@ -18,3 +18,6 @@ def load_object(file):
     with open(file, 'rb') as f:
         obj = pickle.load(f)
     return obj
+
+def get_path(rel_path):
+    return os.path.join(get_source_root(), rel_path)
