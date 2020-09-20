@@ -126,6 +126,8 @@ def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_sou
         lbl_str = export_from_ink(ink, output_dir, write_label=False, overwrite=overwrite)
         if treo_aug:
             aug_lbl_str_lst = export_from_ink_with_geoaugment(ink, output_dir, write_label=False, overwrite=overwrite)
+        else:
+            aug_lbl_str_lst = []
 
         labels.append(lbl_str)
         labels.extend(aug_lbl_str_lst)

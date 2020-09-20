@@ -11,7 +11,8 @@ if __name__ == "__main__":
         # 'test'
     ]:
         print("EXPORT {} DATASET".format(dataset.upper()))
-        export_crohme_data(datasets=dataset, limit=limit, output_dir="training/data_aug")
+        # export_crohme_data(datasets=dataset, limit=limit, output_dir="training/data_aug")
+        export_crohme_data(datasets=dataset, limit=limit, output_dir="training/data", treo_aug=False)
     #     report = "\n".join(find_weird_boxes(datasets=dataset, limit=limit))
     #     reports.append(report)
     # reports = "\n".join(reports)
