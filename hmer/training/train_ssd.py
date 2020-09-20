@@ -61,6 +61,7 @@ parser.add_argument('--save_epoch', default=3, type=int,
 parser.add_argument('--validset_root', type=str, default=None)
 parser.add_argument('--eval_epoch', type=int, default=3)
 parser.add_argument('--verbose', type=int, default=10)
+parser.add_argument('--model_name', type=str, default='ssd300')
 args = parser.parse_args()
 
 if torch.cuda.is_available():
@@ -153,7 +154,7 @@ def train():
         print('Resuming training, loading {}...'.format(args.resume))
         ssd_net.load_weights(args.resume)
     else:
-        vgg_weights = torch.load(args.save_folder + args.basenet)
+        vgg_weights = torch.load(args.basenet)
         print('Loading base network...')
         ssd_net.vgg.load_state_dict(vgg_weights)
 
@@ -241,7 +242,7 @@ def train():
 
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
-            save_model(ssd_net, epoch, args.save_folder, args.dataset)
+            save_model(ssd_net, epoch, args.save_folder, model_name=args.model_name)
 
         # EVAL
         with torch.no_grad():
@@ -285,14 +286,14 @@ def train():
 
                 # del valid_loss, out, images, train_set
 
-    save_model(ssd_net, epoch if epoch is not None else 0, args.save_folder, args.dataset)
+    save_model(ssd_net, epoch if epoch is not None else 0, args.save_folder, model_name=args.model_name)
 
 
-def save_model(net, it, save_folder, dataset, model_name='ssd300'):
+def save_model(net, it, save_folder, model_name='ssd300'):
     if not save_folder.startswith('/'):
         save_folder = os.path.join(get_source_root(), save_folder)
 
-    save_path = os.path.join(save_folder, dataset, model_name + '_' + str(it) + '.pth')
+    save_path = os.path.join(save_folder, model_name + '_' + str(it) + '.pth')
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     torch.save(net, save_path)
 
