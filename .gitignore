@@ -17,3 +17,5 @@ __pycache__
 /hmer/training/data_lw_2/
 /hmer/testing/result_epoch30/
 /hmer/testing/result_v1_15epoch/
+/hmer/testing/aug_geo/
+/hmer/testing/eval_by_map/aug_geo__/

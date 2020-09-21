@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from utilities.fs import get_path
 from utils.augmentations import jaccard_numpy
+from utilities.data_processing import idx2symbols
 from IPython.display import display
 
 GT_FILEPATH = "demo-outputs/data/CROHME_2013_train/labels.txt"  # TODO:
@@ -79,16 +80,16 @@ def evaluate_AP(ground_truth_file, prediction_file, iou_threshold=0.5):
         gt_labels = gt_data[:, 0].astype('int')
         gt_coords = gt_data[:, 1:].astype('float')
 
-        # pred_data = np.array(pred_dict[file]).reshape((-1, 6))
-        # pred_labels = pred_data[:, 0].astype('int')
-        # pred_conf = pred_data[:, 1].astype('float')
-        # pred_coords = pred_data[:, 2:].astype('float')
+        pred_data = np.array(pred_dict[file]).reshape((-1, 6))
+        pred_labels = pred_data[:, 0].astype('int')
+        pred_conf = pred_data[:, 1].astype('float')
+        pred_coords = pred_data[:, 2:].astype('float')
 
         # FOR DEV ONLY. TODO: Replace this with the above block
-        pred_data = np.array(pred_dict[file]).reshape((-1, 5))
-        pred_labels = pred_data[:, 0].astype('int')
-        pred_conf = np.ones(shape=(pred_data.shape[0],), dtype='float')
-        pred_coords = pred_data[:, 1:].astype('float')
+        # pred_data = np.array(pred_dict[file]).reshape((-1, 5))
+        # pred_labels = pred_data[:, 0].astype('int')
+        # pred_conf = np.ones(shape=(pred_data.shape[0],), dtype='float')
+        # pred_coords = pred_data[:, 1:].astype('float')
 
         for i in set(gt_labels):
             counter_increment(images_per_class, i)
@@ -107,7 +108,7 @@ def evaluate_AP(ground_truth_file, prediction_file, iou_threshold=0.5):
     average_precision_per_class = {}
 
     for cls in sorted(counter_per_class.keys()):
-        print("Class {} AP :".format(cls), end="\t")
+        print("Class {} AP :".format(idx2symbols[cls]), end="\t")
         ap = compute_average_precision(
             pred_eval_result[pred_eval_result.cls == cls].conf,
             pred_eval_result[pred_eval_result.cls == cls].correct,

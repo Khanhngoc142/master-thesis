@@ -13,9 +13,10 @@ from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
-parser.add_argument('--trained_model', default=os.path.join(get_source_root(), 'model/weights/ssd300.pth'),
+parser.add_argument('--trained_model', default=os.path.join(get_source_root(),
+                                                            'model/weights/CROHME_2013_aug_geometric/ssd300_24_best_eval.pth'),
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'testing/result/'), type=str,
+parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'testing/eval_by_map/aug_geo__/'), type=str,
                     help='Dir to save results')
 parser.add_argument('--visual_threshold', default=0.5, type=float,
                     help='Final confidence threshold')
@@ -85,8 +86,8 @@ def test_net(save_folder, net, cuda, img_paths, thresh):
     filename = save_folder + 'test.txt'
     num_images = len(img_paths)
     mean = (104, 117, 123)
-    for i, img_path in tqdm(enumerate(img_paths)):
-        # print('Testing image {:d}/{:d}....'.format(i + 1, num_images))
+    for i, img_path in enumerate(img_paths):
+        print('Testing {} image {:d}/{:d}....'.format(img_path, i + 1, num_images))
         img = cv2.imread(img_path)
         img = img.astype(np.float32) - mean
         img_pil = Image.open(img_path)
@@ -118,39 +119,43 @@ def test_net(save_folder, net, cuda, img_paths, thresh):
 
         for i in range(detections.size(1)):
             j = 0
-            while detections[0, i, j, 0] >= 0.01:
+            while detections[0, i, j, 0] >= 0.1:
                 # if pred_num == 0:
                 #     with open(filename, mode='a') as f:
                 #         f.write('PREDICTIONS: ' + '\n')
-                score = detections[0, i, j, 0]
-                label_name = symbols[i - 1]
+                score = detections[0, i, j, 0].item()
+                label_id = int(i - 1)
                 pt = (detections[0, i, j, 1:] * scale).cpu().numpy()
-                coords = (pt[0], pt[1], pt[2], pt[3], score, label_name)
+                coords = (pt[0], pt[1], pt[2], pt[3], score, label_id)
 
                 tmp_img_boxes.append(list(coords))
                 j += 1
 
-        box_ids = nms(np.array(tmp_img_boxes), 0.15)
+        box_ids = nms(np.array(tmp_img_boxes), 0.45)
         boxes = np.array(tmp_img_boxes)[box_ids]
-        for i,box in enumerate(boxes):
-            if pred_num==0:
-                if pred_num == 0:
-                    with open(filename, mode='a') as f:
-                        f.write('PREDICTIONS: ' + img_path.split('/')[-1]+ '\n')
+        pred_boxes_str = []
+        for i, box in enumerate(boxes):
+            if pred_num == 0:
+                with open(filename, mode='a') as f:
+                    # f.write(img_path.split('/')[-1]+ ' ')
+                    f.write(img_path.replace(get_source_root(), "").lstrip('/').split('.')[0] + '.png' + ' ')
             coords = (box[0], box[1], box[2], box[3])
             score = box[4]
-            label_name = box[5]
+            label_id = int(box[5])
             draw.rectangle(coords, outline='red')
-            draw.text((coords[0], coords[1]-15), label_name + " {:.2f}".format(score),
-                  fill=(0, 0, 0, 255))
+            draw.text((coords[0], coords[1] - 15), symbols[label_id] + " {:.2f}".format(score),
+                      fill=(0, 0, 0, 255))
             # img_pil.show()
             pred_num += 1
+            pred_boxes_str.append(str(label_id) + ' ' + str(score) + ' ' + ' '.join(str(c) for c in coords))
+            # with open(filename, mode='a') as f:
+            #     f.write(str(label_id) + ' ' + str(score) + ' ' + ' '.join(str(c) for c in coords) + '\n')
             with open(filename, mode='a') as f:
-                f.write(str(pred_num) + ' label: ' + label_name + ' score: ' +
-                        str(score) + ' ' + ' || '.join(str(c) for c in coords) + '\n')
+                # f.write(img_path.split('/')[-1]+ ' ')
+                f.write(img_path.replace(get_source_root(), "").lstrip('/').split('.')[0] + '.png' + ' ' + ' '.join(pred_boxes_str) + '\n')
 
-        # print(pred_num)
-        img_pil.save(os.path.join(save_folder, 'test_' + img_path.split('/')[-1]), 'png')
+                        # print(pred_num)
+        img_pil.save(os.path.join(save_folder, img_path.split('/')[-1].split('.')[0] + '.png'), 'png')
 
 
 def test():
@@ -164,8 +169,8 @@ def test():
         print('Finished loading model!')
 
         # load data
-        test_files = [os.path.join(get_source_root(), "testing/data/", fname) for fname in
-                      os.listdir(os.path.join(get_source_root(), "testing/data/"))][:100]
+        test_files = [os.path.join(get_source_root(), "training/data/CROHME_2013_valid/", fname) for fname in
+                      os.listdir(os.path.join(get_source_root(), "training/data/CROHME_2013_valid/"))]
         if args.cuda:
             net = net.cuda()
             cudnn.benchmark = True
