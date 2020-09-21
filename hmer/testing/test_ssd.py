@@ -34,7 +34,7 @@ else:
     torch.set_default_tensor_type('torch.FloatTensor')
 
 if not os.path.exists(args.save_folder):
-    os.mkdir(args.save_folder)
+    os.makedirs(args.save_folder, exist_ok=True)
 
 cfg = {
     'num_classes': len(symbols) + 1,
@@ -170,7 +170,7 @@ def test():
 
         # load data
         test_files = [os.path.join(get_source_root(), "training/data/CROHME_2013_valid/", fname) for fname in
-                      os.listdir(os.path.join(get_source_root(), "training/data/CROHME_2013_valid/"))]
+                      os.listdir(os.path.join(get_source_root(), "training/data/CROHME_2013_valid/")) if fname.endswith('.png')]
         if args.cuda:
             net = net.cuda()
             cudnn.benchmark = True
