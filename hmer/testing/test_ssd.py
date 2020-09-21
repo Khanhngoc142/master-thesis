@@ -34,7 +34,7 @@ else:
     torch.set_default_tensor_type('torch.FloatTensor')
 
 if not os.path.exists(args.save_folder):
-    os.mkdir(args.save_folder)
+    os.makedirs(args.save_folder, exist_ok=True)
 
 cfg = {
     'num_classes': len(symbols) + 1,
