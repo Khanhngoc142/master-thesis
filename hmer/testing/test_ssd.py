@@ -150,9 +150,9 @@ def test_net(save_folder, net, cuda, img_paths, thresh):
             pred_boxes_str.append(str(label_id) + ' ' + str(score) + ' ' + ' '.join(str(c) for c in coords))
             # with open(filename, mode='a') as f:
             #     f.write(str(label_id) + ' ' + str(score) + ' ' + ' '.join(str(c) for c in coords) + '\n')
-            with open(filename, mode='a') as f:
-                # f.write(img_path.split('/')[-1]+ ' ')
-                f.write(img_path.replace(get_source_root(), "").lstrip('/').split('.')[0] + '.png' + ' ' + ' '.join(pred_boxes_str) + '\n')
+        with open(filename, mode='a') as f:
+            # f.write(img_path.split('/')[-1]+ ' ')
+            f.write(img_path.replace(get_source_root(), "").lstrip('/').split('.')[0] + '.png' + ' ' + ' '.join(pred_boxes_str) + '\n')
 
                         # print(pred_num)
         img_pil.save(os.path.join(save_folder, img_path.split('/')[-1].split('.')[0] + '.png'), 'png')
