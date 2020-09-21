@@ -135,10 +135,10 @@ def test_net(save_folder, net, cuda, img_paths, thresh):
         boxes = np.array(tmp_img_boxes)[box_ids]
         pred_boxes_str = []
         for i, box in enumerate(boxes):
-            if pred_num == 0:
-                with open(filename, mode='a') as f:
-                    # f.write(img_path.split('/')[-1]+ ' ')
-                    f.write(img_path.replace(get_source_root(), "").lstrip('/').split('.')[0] + '.png' + ' ')
+            # if pred_num == 0:
+            #     with open(filename, mode='a') as f:
+            #         # f.write(img_path.split('/')[-1]+ ' ')
+            #         f.write(img_path.replace(get_source_root(), "").lstrip('/').split('.')[0] + '.png' + ' ')
             coords = (box[0], box[1], box[2], box[3])
             score = box[4]
             label_id = int(box[5])
