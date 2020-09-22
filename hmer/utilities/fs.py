@@ -19,5 +19,8 @@ def load_object(file):
         obj = pickle.load(f)
     return obj
 
+
 def get_path(rel_path):
+    if rel_path.startswith("/"):
+        return rel_path
     return os.path.join(get_source_root(), rel_path)
