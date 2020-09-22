@@ -130,9 +130,11 @@ def test_net(save_folder, net, cuda, img_paths, thresh):
 
                 tmp_img_boxes.append(list(coords))
                 j += 1
-
-        box_ids = nms(np.array(tmp_img_boxes), 0.45)
-        boxes = np.array(tmp_img_boxes)[box_ids]
+        if len(tmp_img_boxes) > 0:
+            box_ids = nms(np.array(tmp_img_boxes), 0.45)
+            boxes = np.array(tmp_img_boxes)[box_ids]
+        else:
+            boxes = []
         pred_boxes_str = []
         for i, box in enumerate(boxes):
             # if pred_num == 0:
