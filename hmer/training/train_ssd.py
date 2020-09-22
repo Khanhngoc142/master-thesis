@@ -78,9 +78,6 @@ if torch.cuda.is_available():
 else:
     torch.set_default_tensor_type('torch.FloatTensor')
 
-if not os.path.exists(args.save_folder):
-    os.mkdir(args.save_folder)
-
 if args.tensorboard_logdir is not None:
     import tensorflow as tf
 
