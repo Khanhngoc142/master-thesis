@@ -78,34 +78,36 @@ class TraceGroup(BaseTrait):
         #
         # Can't decide to split or merge frac and - together as the data does
         #
-        # href = element.find(namespace + "annotationXML")
-        #
-        # if href is None:
-        #     href = self._label
-        # else:
-        #     href = href.get('href')
-        #
-        # debug_p = re.compile(r'\d+:(\d+:)*')
-        #
+        href = element.find(namespace + "annotationXML")
+
+        if href is None:
+            href = self._label
+        else:
+            href = href.get('href')
+
+        debug_p = re.compile(r'\d+:(\d+:)*')
+
         # if self._label == '=' and not href.startswith('=') and not len(debug_p.findall(href)) > 0:
         #     print("DEBUG =")
         #
         # if self._label == '+' and not href.startswith('+') and not len(debug_p.findall(href)) > 0:
         #     print("DEBUG +")
-        #
-        # if self._label == '-' and (href.startswith('\\frac') or href.startswith('_')):
-        #     self._label = '\\frac'
-        # elif self._label == '-' and href.startswith('='):
-        #     pass
-        # elif len(debug_p.findall(href)) > 0:
-        #     pass
-        # elif self._label not in [
-        #     '\\sqrt', '\\lt', '\\leq', '\\ldots', '\\gt', '\\geq', '.', '\\prime',
-        #     '\\rightarrow', '\\neq', '\\exists', '\\sum', '\\int', '+'
-        # ]:
-        #     if not href.lstrip('\\').startswith(self._label.lstrip('\\')):
-        #         print(f"WEIRD CASE: `{self._label}` and `{href}`")
-        #         print("DEBUG")
+
+        self._discard = False
+
+        if self._label == '-' and (href.startswith('\\frac') or href.startswith('_')):
+            self._label = '\\frac'
+        elif self._label == '-' and href.startswith('='):
+            print("DEBUG: label {}, href {}. DISCARD!".format(self._label, href))
+            self._discard = True
+        elif len(debug_p.findall(href)) > 0:
+            pass
+        elif self._label not in [
+            '\\sqrt', '\\lt', '\\leq', '\\ldots', '\\gt', '\\geq', '.', '\\prime',
+            '\\rightarrow', '\\neq', '\\exists', '\\sum', '\\int', '+'
+        ]:
+            if not href.lstrip('\\').startswith(self._label.lstrip('\\')):
+                print(f"DEBUG: WEIRD CASE: `{self._label}` and `{href}`")
 
         traces_idx = []
         for trace_view in element.findall(namespace + "traceView"):
@@ -116,6 +118,10 @@ class TraceGroup(BaseTrait):
 
         self._bounding_box = [coord for trace in self._traces for coord in trace.bbox]
         self._bounding_box = [list(np.min(self._bounding_box, axis=0)), list(np.max(self._bounding_box, axis=0))]
+
+    @property
+    def discard(self):
+        return self._discard
 
     @property
     def label(self):
@@ -232,7 +238,7 @@ class Ink(BaseTrait):
 
             trace_groups.sort(key=lambda group: group.bbox[0][0])
 
-            self._trace_groups = trace_groups
+            self._trace_groups = [g for g in trace_groups if not g.discard]
 
             self._simplified_label = simplified_lbl_sep.join([
                 group.label
@@ -290,7 +296,7 @@ def parse_inkml_dir(data_dir_abs_path):
         for inkml_file in os.listdir(data_dir_abs_path):
             if inkml_file.endswith('.inkml'):
                 inkml_file_abs_path = os.path.join(data_dir_abs_path, inkml_file)
-                # print("Parsing: {}".format(inkml_file_abs_path))
+                print("Parsing: {}".format(inkml_file_abs_path))
                 yield Ink(inkml_file_abs_path)
 
 
