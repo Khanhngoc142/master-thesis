@@ -21,3 +21,4 @@ if __name__ == "__main__":
     # reports = "\n".join(reports)
     # with open(os.path.join(get_source_root(), "demo-outputs/weird.txt"), 'w') as fout:
     #     fout.write(reports)
+    print("DONE")
