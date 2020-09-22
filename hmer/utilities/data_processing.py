@@ -101,6 +101,7 @@ symbols = [
     '\\prime',
     '\\sigma',
     '\\sqrt',
+    '\\frac',
 ]
 
 # symbol2idx = dict([(s, idx + 1) for idx, s in enumerate(symbols)])
