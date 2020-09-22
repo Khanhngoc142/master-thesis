@@ -4,6 +4,7 @@ from model.ssdpytorch.ssd import build_ssd
 from model.ssdpytorch.data import *
 import os
 import sys
+import datetime as dt
 import time
 import torch
 from torch.autograd import Variable
@@ -15,7 +16,7 @@ import torch.utils.data as data
 import numpy as np
 import argparse
 
-from utilities.fs import get_source_root
+from utilities.fs import get_source_root, get_path
 from extractor.crohme_parser.dataset import CROHMEDetection4SSD
 from utilities.data_processing import symbols
 
@@ -52,11 +53,13 @@ parser.add_argument('--weight_decay', default=5e-4, type=float,
                     help='Weight decay for SGD')
 parser.add_argument('--gamma', default=0.1, type=float,
                     help='Gamma update for SGD')
-parser.add_argument('--visdom', default=False, type=str2bool,
-                    help='Use visdom for loss visualization')
-parser.add_argument('--visdom_name', type=str, default=None)
+# parser.add_argument('--visdom', default=False, type=str2bool,
+#                     help='Use visdom for loss visualization')
+# parser.add_argument('--visdom_name', type=str, default=None)
 parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'model/weights/'),
                     help='Directory for saving checkpoint models')
+parser.add_argument('--tensorboard_logdir', type=str, default=None)
+parser.add_argument('--run_id', type=str, default=dt.datetime.now().strftime("%Y%m%d-%H%M%S"))
 parser.add_argument('--save_epoch', default=3, type=int,
                     help='Save model per n epoch(s)')
 parser.add_argument('--validset_root', type=str, default=None)
@@ -77,6 +80,9 @@ else:
 
 if not os.path.exists(args.save_folder):
     os.mkdir(args.save_folder)
+
+if args.tensorboard_logdir is not None:
+    import tensorflow as tf
 
 
 def get_num_batch(dataset, batch_size):
@@ -118,30 +124,14 @@ def train():
     else:
         valid_data_loader = None
 
-    # Prepare plot
-    viz = None
-    iter_plot = None
-    epoch_plot = None
-    if args.visdom:
-        import visdom
-        viz = visdom.Visdom()
-        vis_title = 'SSD.PyTorch on ' + dataset.name if args.visdom_name is None else args.visdom_name
-        vis_legend = ['Loc Loss', 'Conf Loss', 'Total Loss']
-        iter_plot = create_vis_plot(viz, 'Iteration', 'Loss', vis_title, vis_legend)
-        epoch_plot = create_vis_plot(viz, 'Epoch', 'Loss', vis_title, vis_legend)
-        if validset is not None:
-            valid_plot = viz.line(
-                X=torch.zeros((1,)).cpu(),
-                Y=torch.zeros((1, 2)).cpu(),
-                opts=dict(
-                    xlabel='Epoch',
-                    ylabel='Loss',
-                    title='SSD.PyTorch on ' + dataset.name if args.visdom_name is None else args.visdom_name + ' EVALUATION',
-                    legend=['Train Loss', 'Valid Loss']
-                )
-            )
-        else:
-            valid_plot = None
+    file_writers = {}
+    if args.tensorboard_logdir is not None:
+        log_dir = get_path(os.path.join(args.tensorboard_logdir, args.model_name + '-' + args.run_id))
+
+        for k in ['loss', 'loc_loss', 'conf_loss']:
+            file_writers[f'train_{k}'] = tf.summary.create_file_writer(os.path.join(log_dir, f"train_{k}"))
+            if validset is not None:
+                file_writers[f'valid_{k}'] = tf.summary.create_file_writer(os.path.join(log_dir, f"valid_{k}"))
 
     # build network
     ssd_net = build_ssd('train', cfg['min_dim'], cfg['num_classes'])
@@ -223,31 +213,29 @@ def train():
             loc_loss += loss_l.item()
             conf_loss += loss_c.item()
             t1 = time.time()
-
             epoch_time += (t1 - t0)
-            if args.visdom:
-                update_vis_plot(viz, epoch * num_batch + iteration, loss_l.item(), loss_c.item(), iter_plot)
+
+            if args.tensorboard_logdir is not None:
+                tb_update_loss(file_writers, epoch * num_batch + iteration, loss_l.item(), loss_c.item(), 'train', 'batch_loss')
 
         # average loss
         loc_loss /= num_batch
         conf_loss /= num_batch
 
-        # clean up training loop
-        # del loss, out, images, targets
-
         # update epoch_plot
-        update_vis_plot(viz, epoch, loc_loss, conf_loss, epoch_plot)
+        if args.tensorboard_logdir is not None:
+            tb_update_loss(file_writers, epoch, loc_loss, conf_loss, 'train', 'epoch_loss')
 
         if epoch % args.verbose == 0:
             print(f'TRAIN @ epoch {epoch}' + ' || Loss: %.4f ||' % (loc_loss + conf_loss) + f' time: {epoch_time:.3f} sec.')
 
         if epoch == 0 or epoch % args.save_epoch == 0:
             print('Saving state, epoch:', epoch)
-            save_model(ssd_net, epoch, args.save_folder, model_name=args.model_name)
+            save_model(ssd_net, epoch, args.save_folder, args.run_id, model_name=args.model_name)
 
         # EVAL
-        with torch.no_grad():
-            if epoch % args.eval_epoch == 0 and valid_data_loader is not None:
+        if valid_data_loader is not None and ((epoch % args.eval_epoch == 0) or (epoch == (args.start_epoch + args.epochs - 1))):
+            with torch.no_grad():
                 net.eval()  # trigger eval mode
                 valid_iterator = iter(valid_data_loader)
                 valid_loc_loss = 0
@@ -270,29 +258,19 @@ def train():
                     loss_l, loss_c = criterion(out, targets)
                     valid_loc_loss += loss_l.item()
                     valid_conf_loss += loss_c.item()
-                valid_loss = valid_loc_loss + valid_conf_loss
-                valid_loss /= valid_num_batch
-                train_loss = loc_loss + conf_loss
+                valid_loc_loss /= valid_num_batch
+                valid_conf_loss /= valid_num_batch
 
-                print(f'EVAL @ epoch {epoch}' + ' || Loss: %.4f ||' % valid_loss)
+                print(f'EVAL @ epoch {epoch}' + ' || Loss: %.4f ||' % (valid_loc_loss + valid_conf_loss))
 
-                # plot
-                if args.visdom:
-                    viz.line(
-                        X=torch.ones((1, 2)).cpu().numpy() * epoch,
-                        Y=np.array([[train_loss, valid_loss]]),
-                        win=valid_plot,
-                        update='append'
-                    )
+                if args.tensorboard_logdir is not None:
+                    tb_update_loss(file_writers, epoch, valid_loc_loss, valid_conf_loss, 'valid', 'epoch_loss')
 
-                # del valid_loss, out, images, train_set
-
-    save_model(ssd_net, epoch if epoch is not None else 0, args.save_folder, model_name=args.model_name)
+    save_model(ssd_net, epoch if epoch is not None else 0, args.save_folder, args.run_id, model_name=args.model_name)
 
 
-def save_model(net, it, save_folder, model_name='ssd300'):
-    if not save_folder.startswith('/'):
-        save_folder = os.path.join(get_source_root(), save_folder)
+def save_model(net, it, save_folder, run, model_name='ssd300'):
+    save_folder = get_path(save_folder.rstrip('/') + '-' + run)
 
     save_path = os.path.join(save_folder, model_name + '_' + str(it) + '.pth')
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -320,26 +298,13 @@ def weights_init(m):
         m.bias.data.zero_()
 
 
-def create_vis_plot(viz, _xlabel, _ylabel, _title, _legend):
-    return viz.line(
-        X=torch.zeros((1,)).cpu(),
-        Y=torch.zeros((1, 3)).cpu(),
-        opts=dict(
-            xlabel=_xlabel,
-            ylabel=_ylabel,
-            title=_title,
-            legend=_legend
-        )
-    )
-
-
-def update_vis_plot(viz, it, loc, conf, window, update_type='append'):
-    viz.line(
-        X=torch.ones((1, 3)).cpu().numpy() * it,
-        Y=np.array([[loc, conf, loc + conf]]),
-        win=window,
-        update=update_type
-    )
+def tb_update_loss(file_writers, it, loc, conf, phase, metric):
+    with file_writers[f'{phase}_loc_loss'].as_default():
+        tf.summary.scalar(name=metric, data=loc, step=it)
+    with file_writers[f'{phase}_conf_loss'].as_default():
+        tf.summary.scalar(name=metric, data=conf, step=it)
+    with file_writers[f'{phase}_loss'].as_default():
+        tf.summary.scalar(name=metric, data=loc + conf, step=it)
 
 
 if __name__ == '__main__':
