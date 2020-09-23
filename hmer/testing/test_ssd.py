@@ -8,13 +8,13 @@ import os
 import cv2
 import torch.backends.cudnn as cudnn
 from utilities.fs import get_source_root
-from utilities.data_processing import symbols
+from utilities.data_processing import symbols, symbol2idx
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
 parser.add_argument('--trained_model', default=os.path.join(get_source_root(),
-                                                            'model/weights/CROHME_2013_aug_geometric/ssd300_24_best_eval.pth'),
+                                                            'model/weights/ssd300_14_besteval.pth'),
                     type=str, help='Trained state_dict file path to open')
 parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'testing/eval_by_map/aug_geo__/'), type=str,
                     help='Dir to save results')
@@ -57,7 +57,8 @@ def nms(dets, thresh):
     x2 = dets[:, 2]
     y2 = dets[:, 3]
     scores = dets[:, 4]
-
+    label_ids = dets[:, 5]
+    sqrt_id = symbol2idx['\\sqrt']
     areas = (x2 - x1 + 1) * (y2 - y1 + 1)
     order = scores.argsort()[::-1]
 
@@ -74,8 +75,11 @@ def nms(dets, thresh):
         h = np.maximum(0.0, yy2 - yy1 + 1)
         inter = w * h
         ovr = inter / (areas[i] + areas[order[1:]] - inter)
+        if label_ids[i] == sqrt_id:
+            inds = np.where(ovr <= 0.65)[0]
+        else:
+            inds = np.where(ovr <= thresh)[0]
 
-        inds = np.where(ovr <= thresh)[0]
         order = order[inds + 1]
 
     return keep
@@ -131,7 +135,7 @@ def test_net(save_folder, net, cuda, img_paths, thresh):
                 tmp_img_boxes.append(list(coords))
                 j += 1
         if len(tmp_img_boxes) > 0:
-            box_ids = nms(np.array(tmp_img_boxes), 0.45)
+            box_ids = nms(np.array(tmp_img_boxes), 0.15)
             boxes = np.array(tmp_img_boxes)[box_ids]
         else:
             boxes = []
