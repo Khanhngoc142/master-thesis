@@ -6,6 +6,7 @@ from utilities.fs import get_source_root, load_object, save_object
 import random
 import sys
 from extractor.crohme_parser.fonts import StandardFont
+import pandas as pd
 
 
 def sample_list(lst):
@@ -67,11 +68,24 @@ def demo_custom_equation(lib, eq, num):
     return fig, axes
 
 
+def gen_sin_cos(symbol_lid, pd_symbol_weight):
+    eq = []
+    sin_or_cos = random.choices(['\\sin', '\\cos'], weights=[pd_symbol_weight[pd_symbol_weight['symbol_name']=='\\sin'].weight.item(),
+                                                             pd_symbol_weight[pd_symbol_weight['symbol_name']=='\\cos'].weight.item()], k=1)
+    eq.append(sin_or_cos)
+    candidates = ['o', 'q', 'r', 'k', '\\alpha', '\\beta', '\\gamma']
+    c = random.choices(candidates, weights=[pd_symbol_weight[pd_symbol_weight['symbol_name']==c].weight.item() for c in candidates], k=1)
+    eq.append(c)
+
+    return eq
+
+
 if __name__ == "__main__":
     root_path = get_source_root()
 
-    demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
-
+    # demo_lib = load_object(os.path.join(root_path, "demo-outputs", "symbol_lib.pickle"))
+    demo_lib = library.build_library()
+    pd_symbol_weight = pd.read_csv('/home/ubuntu/workspace/mine/master-thesis.git/hmer/metadata/training_symbol_weight.csv')
     # demo_linear_equation(demo_lib, 5)
     # demo_equation_w_subsup(demo_lib, 5)
     # demo_equation_w_subsup(demo_lib, 5)
@@ -90,6 +104,7 @@ if __name__ == "__main__":
     # demo_eq = ['A', '\\prime', *list('=A')]
     # demo_eq = ['\\sqrt', list('12+x')]
     # demo_eq = ['x','+','\\sqrt', ['\\sqrt', list('12+x')], *list('+y+z')]
-    demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
+    # demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
+    demo_eq = gen_sin_cos(demo_lib, pd_symbol_weight)
     demo_custom_equation(demo_lib, demo_eq, 3)
     plt.show()
