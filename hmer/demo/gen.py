@@ -76,10 +76,10 @@ def gen_sin_cos(pd_symbol_weight):
     eq = []
     sin_or_cos = random.choices(['\\sin', '\\cos'], weights=get_symbol_weight(pd_symbol_weight, ['\\sin', '\\cos']), k=1)
     eq.extend(sin_or_cos)
-    candidates = ['o', 'q', 'r', 'k', '\\alpha', '\\beta', '\\gamma', 'x', 'y', 'i', 'j', '\\lambda', 'u', 'v', 'w', 'mu', '\\phi']
-    random_k = random.randint(1, 3)
+    candidates = ['o', 'q', 'r', 'k', '\\alpha', '\\beta', '\\gamma', 'x', 'y', 'i', 'j', '\\lambda', 'u', 'v', 'w', '\\mu', '\\phi']
+    random_k = random.randint(2, 4)
     c = random.choices(candidates, weights=get_symbol_weight(pd_symbol_weight, candidates), k=random_k)
-    eq.expend(c)
+    eq.extend(c)
     print(eq)
     return eq
 
