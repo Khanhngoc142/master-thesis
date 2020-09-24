@@ -58,15 +58,15 @@ class MultiBoxLoss(nn.Module):
                 shape: [batch_size,num_objs,5] (last idx is the label).
         """
         loc_data, conf_data, priors = predictions
-        num = loc_data.size(0)
+        batch_size = loc_data.size(0)
         priors = priors[:loc_data.size(1), :]
         num_priors = (priors.size(0))
         num_classes = self.num_classes
 
         # match priors (default boxes) and ground truth boxes
-        loc_t = torch.Tensor(num, num_priors, 4)
-        conf_t = torch.LongTensor(num, num_priors)
-        for idx in range(num):
+        loc_t = torch.zeros(batch_size, num_priors, 4)
+        conf_t = torch.zeros(batch_size, num_priors, dtype=torch.long)
+        for idx in range(batch_size):
             truths = targets[idx][:, :-1].data
             labels = targets[idx][:, -1].data
             defaults = priors.data
@@ -90,12 +90,12 @@ class MultiBoxLoss(nn.Module):
         loss_l = F.smooth_l1_loss(loc_p, loc_t, reduction='sum')
 
         # Compute max conf across batch for hard negative mining
-        batch_conf = conf_data.view(-1, self.num_classes)
+        batch_conf = conf_data.view(-1, num_classes)
         loss_c = log_sum_exp(batch_conf) - batch_conf.gather(1, conf_t.view(-1, 1))
 
         # Hard Negative Mining
         loss_c[pos.view(-1, 1)] = 0  # filter out pos boxes for now
-        loss_c = loss_c.view(num, -1)
+        loss_c = loss_c.view(batch_size, -1)
         _, loss_idx = loss_c.sort(1, descending=True)
         _, idx_rank = loss_idx.sort(1)
         num_pos = pos.long().sum(1, keepdim=True)
