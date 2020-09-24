@@ -93,19 +93,25 @@ def plt_draw_bbox(bbox, ax=None, scale=None, linewidth=2, color='r'):
     return ax
 
 
-def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, figsize=5):
+def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, figsize=3):
     num_boxes = len(boxes)
     img_path = get_path(img_path)
-    nrows = int(ceil(num_boxes / ncols)) * 2
-
     img = cv2.imread(img_path)
     img = img[:, :, (2, 1, 0)]  # to rgb
-    # fig = plt.figure(figsize=(ncols*figsize, nrows*figsize))
+    nrows = int(ceil(num_boxes/ncols))
+    fig = plt.figure(figsize=(ncols * figsize, nrows * 2 * figsize))
+    outer_grid = gridspec.GridSpec(2, 1, wspace=0, hspace=0.1)
 
-    # plot box
+    # image
+    ax = plt.Subplot(fig, gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=outer_grid[1])[0])
+    plt_config_ax(ax, spines=True)
+    ax.imshow(img)
+    fig.add_subplot(ax)
+
+    inner_grid = gridspec.GridSpecFromSubplotSpec(nrows, ncols, subplot_spec=outer_grid[0], hspace=0.25)
     pad = 3
-    fig, axes = plt.subplots(figsize=(ncols * figsize, nrows * figsize), nrows=nrows, ncols=ncols)
-    for i in range(nrows*ncols):
+    for i in range(nrows * ncols):
+        box_ax = plt.Subplot(fig, inner_grid[i])
         if i < len(boxes):
             xmin, ymin, xmax, ymax = boxes[i]
             xmin = int(floor(xmin)) - pad
@@ -113,20 +119,15 @@ def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, fi
             xmax = int(ceil(xmax)) + pad
             ymax = int(ceil(ymax)) + pad
             box = img[ymin:ymax + 1, xmin:xmax + 1, :]
-            # box_ax = plt.subplot(nrows*2, ncols, i + 1)
-            box_ax = axes[int(i / ncols)][i % ncols]
             plt_config_ax(box_ax, spines=True)
             plt.setp(box_ax.spines.values(), color='red')
             box_ax.imshow(box)
             if classes is not None:
-                box_ax.set_title("Class {} with conf: {}".format(idx2symbols[classes[i]], score[i]))
+                box_ax.set_title("Class {} with conf: {}".format(idx2symbols[classes[i]], score[i]), pad=0)
         else:
-            box_ax = axes[int(i / ncols)][i % ncols]
-            # plt_config_ax(box_ax, spines=False)
+            plt_config_ax(box_ax)
 
-    # show image
-    ax = plt.subplot(2, 1, 2)
-    ax = plt_config_ax(ax, inverse=False, spines=True)
-    ax.imshow(img)
-    plt.tight_layout(pad=15, h_pad=13, w_pad=1.08)
+        fig.add_subplot(box_ax)
+
+    # plt.tight_layout()
     plt.show()

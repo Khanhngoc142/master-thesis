@@ -23,4 +23,4 @@ if __name__ == "__main__":
 
     classes, conf, boxes = data[chosen_img]
 
-    plt_draw.visualize_img_w_boxes(chosen_img, boxes, classes, conf, ncols=2)
+    plt_draw.visualize_img_w_boxes(chosen_img, boxes, classes, conf, ncols=4)
