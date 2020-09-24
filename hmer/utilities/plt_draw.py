@@ -1,6 +1,11 @@
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import numpy as np
+from utilities.fs import get_path
+from math import ceil, floor
+import cv2
+from utilities.data_processing import idx2symbols
 
 
 def plt_clear():
@@ -11,6 +16,18 @@ def plt_savefig(output_path, bbox_inches='tight', dpi=100, **kwargs):
     plt.savefig(output_path + '.png', bbox_inches=bbox_inches, dpi=dpi, **kwargs)
 
 
+def plt_config_ax(ax, inverse=True, x=False, y=False, spines=False):
+    if inverse:
+        ax.invert_yaxis()
+    ax.set_aspect('equal', adjustable='box')
+    ax.xaxis.set_visible(x)
+    ax.yaxis.set_visible(y)
+    if not spines:
+        for spine_type in ['left', 'right', 'top', 'bottom']:
+            ax.spines[spine_type].set_visible(False)
+    return ax
+
+
 def plt_setup(**kwargs):
     """
     Prepare the canvas (figure and axis/axes) to draw
@@ -18,14 +35,7 @@ def plt_setup(**kwargs):
     :return: fig, ax
     """
     fig, ax = plt.subplots(**kwargs)
-    ax.invert_yaxis()
-    ax.set_aspect('equal', adjustable='box')
-    ax.xaxis.set_visible(False)
-    ax.yaxis.set_visible(False)
-    for spine_type in ['left', 'right', 'top', 'bottom']:
-        ax.spines[spine_type].set_visible(False)
-
-    return fig, ax
+    return fig, plt_config_ax(ax)
 
 
 def plt_trace_coords(coords, ax=None, linewidth=2, c='black'):
@@ -83,4 +93,40 @@ def plt_draw_bbox(bbox, ax=None, scale=None, linewidth=2, color='r'):
     return ax
 
 
+def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, figsize=5):
+    num_boxes = len(boxes)
+    img_path = get_path(img_path)
+    nrows = int(ceil(num_boxes / ncols)) * 2
 
+    img = cv2.imread(img_path)
+    img = img[:, :, (2, 1, 0)]  # to rgb
+    # fig = plt.figure(figsize=(ncols*figsize, nrows*figsize))
+
+    # plot box
+    pad = 3
+    fig, axes = plt.subplots(figsize=(ncols * figsize, nrows * figsize), nrows=nrows, ncols=ncols)
+    for i in range(nrows*ncols):
+        if i < len(boxes):
+            xmin, ymin, xmax, ymax = boxes[i]
+            xmin = int(floor(xmin)) - pad
+            ymin = int(floor(ymin)) - pad
+            xmax = int(ceil(xmax)) + pad
+            ymax = int(ceil(ymax)) + pad
+            box = img[ymin:ymax + 1, xmin:xmax + 1, :]
+            # box_ax = plt.subplot(nrows*2, ncols, i + 1)
+            box_ax = axes[int(i / ncols)][i % ncols]
+            plt_config_ax(box_ax, spines=True)
+            plt.setp(box_ax.spines.values(), color='red')
+            box_ax.imshow(box)
+            if classes is not None:
+                box_ax.set_title("Class {} with conf: {}".format(idx2symbols[classes[i]], score[i]))
+        else:
+            box_ax = axes[int(i / ncols)][i % ncols]
+            # plt_config_ax(box_ax, spines=False)
+
+    # show image
+    ax = plt.subplot(2, 1, 2)
+    ax = plt_config_ax(ax, inverse=False, spines=True)
+    ax.imshow(img)
+    plt.tight_layout(pad=15, h_pad=13, w_pad=1.08)
+    plt.show()
