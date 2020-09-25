@@ -117,5 +117,5 @@ def evaluate_AP(ground_truth_file, prediction_file, iou_threshold=0.5):
         print(ap)
         average_precision_per_class[cls] = ap
 
-    return average_precision_per_class
+    return average_precision_per_class, pred_eval_result
 
