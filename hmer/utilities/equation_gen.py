@@ -16,6 +16,7 @@ digit_without_zero_sym = list(string.digits.replace('0', ''))
 latin_sym = '\\theta \\Delta \\alpha \\beta \\gamma \\lambda \\mu \\phi'.split(' ')
 
 operator_sym = '+ - \\times \\div /'.split(' ')
+compare_operator_sym = '\\lt \\gt \\leq \\geq'.split(' ')
 pair_sym = ['\\[', '\\{']
 
 
@@ -36,9 +37,11 @@ def gen_number():
     continuous_digit = random_choices(digit_sym, random_k)
     eq.extend(continuous_digit)
 
-    random_type = random.randint(1,2)
+    random_type = random.randint(1,3)
     if random_type == 1:
         eq.append('\\pi')
+    elif random_type == 2:
+        eq.insert(0, '!')
 
     return eq
 
@@ -123,3 +126,49 @@ def gen_sin_cos():
 
     print(eq)
     return eq
+
+
+def gen_condition():
+    eq = []
+    forall_or_exists = random_choices(['\\forall', '\\exists'], 1)
+    eq.extend(forall_or_exists)
+
+    variable = random_choices(lowercase_alphabet_sym, 1)
+    eq.extend(variable)
+    eq.append('\\in')
+    eq.append('\\[')
+
+    lower_bound = random_choices(digit_sym, 1)
+    upper_bound = 1
+    while upper_bound[0] <= lower_bound[0]:
+        upper_bound = random_choices(digit_sym, 1)
+
+    eq.extend(lower_bound)
+    eq.append(',')
+    eq.extend(upper_bound)
+    eq.append('\\]')
+
+    eq.extend(variable)
+    compare_operator = random_choices(compare_operator_sym, 1)
+    number = gen_number()
+
+    eq.extend(compare_operator_sym)
+    eq.extend(number)
+
+    return eq
+
+
+def gen_unary():
+    eq = []
+
+    or_gt = random_choices(['!', '+-'], 1)
+    number = gen_number()
+    eq.extend(or_gt)
+    eq.extend(number)
+
+    return eq
+
+
+
+
+
