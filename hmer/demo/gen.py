@@ -111,6 +111,7 @@ if __name__ == "__main__":
     # demo_eq = ['x','+','\\sqrt', ['\\sqrt', list('12+x')], *list('+y+z')]
     # demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
     # demo_eq = gen_sin_cos(pd_symbol_weight)
-    demo_eq = gen_frac()
-    demo_custom_equation(demo_lib, demo_eq, 3)
+    demo_eq = gen_basic_linear()
+    for i in range(5):
+        demo_custom_equation(demo_lib, demo_eq, 3)
     plt.show()
