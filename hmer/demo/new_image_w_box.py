@@ -20,12 +20,12 @@ def process_line(line, ground_truth=False):
 
 
 if __name__ == "__main__":
-    label_file = get_path("training/data/CROHME_2013_valid/labels.txt")
+    label_file = get_path("demo-outputs/data/CROHME_2013_train_extra/labels.txt")
     with open(label_file, 'r') as f:
         data = f.readlines()
 
     data = dict([process_line(line, ground_truth=True) for line in data])
-    chosen_img = "training/data/CROHME_2013_valid/rit_42160_4.png"
+    chosen_img = "demo-outputs/data/CROHME_2013_train_extra/gen_0_0.png"
 
     classes, conf, boxes = data[chosen_img]
 

@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     root_path = get_source_root()
     demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
-    generate_extra_training_data(demo_lib, geo_aug=True, n_loop=2)
+    generate_extra_training_data(demo_lib, geo_aug=True, n_loop=5000, output_dir= 'training/extra_data')
 
     # for dataset in [
     #     'train',
