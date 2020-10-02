@@ -135,7 +135,7 @@ def gen_condition():
     eq.append('\\in')
     eq.append('[')
 
-    lower_bound = random_choices(digit_sym, 1)
+    lower_bound = random_choices(digit_sym[:-1], 1)
     upper_bound = ['1']
     while int(upper_bound[0]) <= int(lower_bound[0]):
         upper_bound = random_choices(digit_sym, 1)
