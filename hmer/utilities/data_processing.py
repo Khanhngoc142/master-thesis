@@ -117,6 +117,9 @@ def normalize_label(label):
     for s in label:
         if isinstance(s, list):
             for out_s in normalize_label(s):
-                yield symbol2idx[out_s]
-        elif isinstance(s, str):
-            yield symbol2idx[s]
+                yield out_s
+        elif isinstance(s, str) and (s != '_' and s != '^'):
+            if s == '\\frac':
+                yield symbol2idx['-']
+            else:
+                yield symbol2idx[s]

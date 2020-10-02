@@ -16,7 +16,7 @@ digit_without_zero_sym = list(string.digits.replace('0', ''))
 latin_sym = '\\theta \\Delta \\alpha \\beta \\gamma \\lambda \\mu \\phi'.split(' ')
 
 operator_sym = '+ - \\times \\div /'.split(' ')
-compare_operator_sym = '\\lt \\gt \\leq \\geq'.split(' ')
+compare_operator_sym = '\\lt \\gt \\leq \\geq \\neq'.split(' ')
 pair_sym = ['\\[', '\\{']
 
 
@@ -41,7 +41,7 @@ def gen_number():
     if random_type == 1:
         eq.append('\\pi')
     elif random_type == 2:
-        eq.insert(0, '!')
+        eq.append('!')
 
     return eq
 
@@ -76,7 +76,6 @@ def gen_basic_linear():
     operand_2 = gen_linear_operand()
     eq.extend(operand_2)
 
-    print(eq)
     return eq
 
 
@@ -112,7 +111,6 @@ def gen_log():
     main = gen_linear_operand()
     eq.extend(main)
 
-    print(eq)
     return eq
 
 
@@ -124,7 +122,6 @@ def gen_sin_cos():
     base = gen_linear_operand()
     eq.extend(base)
 
-    print(eq)
     return eq
 
 
@@ -136,23 +133,23 @@ def gen_condition():
     variable = random_choices(lowercase_alphabet_sym, 1)
     eq.extend(variable)
     eq.append('\\in')
-    eq.append('\\[')
+    eq.append('[')
 
     lower_bound = random_choices(digit_sym, 1)
-    upper_bound = 1
-    while upper_bound[0] <= lower_bound[0]:
+    upper_bound = ['1']
+    while int(upper_bound[0]) <= int(lower_bound[0]):
         upper_bound = random_choices(digit_sym, 1)
 
     eq.extend(lower_bound)
     eq.append(',')
     eq.extend(upper_bound)
-    eq.append('\\]')
+    eq.append(']')
 
     eq.extend(variable)
     compare_operator = random_choices(compare_operator_sym, 1)
     number = gen_number()
 
-    eq.extend(compare_operator_sym)
+    eq.extend(compare_operator)
     eq.extend(number)
 
     return eq
@@ -161,13 +158,106 @@ def gen_condition():
 def gen_unary():
     eq = []
 
-    or_gt = random_choices(['!', '+-'], 1)
+    or_gt = random_choices(['!', '\\pm'], 1)
     number = gen_number()
-    eq.extend(or_gt)
+    # eq.extend(or_gt)
     eq.extend(number)
+
+    if or_gt[0] == '!':
+        eq.extend(or_gt)
+    else:
+        eq.insert(0, or_gt[0])
 
     return eq
 
+
+def gen_sqrt():
+    eq = ['\\sqrt']
+    base = gen_basic_linear()
+    eq.append(base)
+
+    return eq
+
+
+def gen_lim():
+    eq = ['\\lim', '_']
+
+    sub = []
+    variable = random_choices(latin_sym, 1)
+    number = gen_number()
+    sub.extend(variable)
+    sub.append('\\rightarrow')
+    sub.extend(number)
+
+    eq.append(sub)
+
+    base = []
+    operator = random_choices(operator_sym, 1)
+    number =gen_number()
+    base.extend(variable)
+    base.extend(operator)
+    base.extend(number)
+
+    eq.extend(base)
+
+    return eq
+
+
+def gen_other():
+    eq = ['\\{']
+    variable = random_choices(latin_sym + uppercase_alphabet_sym, 1)
+    number = gen_number()
+    eq.extend(variable)
+    random_type = random.randint(1,2)
+    if random_type == 1:
+        eq.append('\\rightarrow')
+    else:
+        eq.append('\\ldots')
+    eq.extend(number)
+    eq.append('\\}')
+
+    return eq
+
+
+def gen_selection(random_type):
+    # random_type = random.randint(1, 10)
+    if random_type == 1:
+        return gen_number()
+    elif random_type == 2:
+        return gen_linear_operand()
+    elif random_type == 3:
+        return gen_basic_linear()
+    elif random_type == 4:
+        return gen_sin_cos()
+    elif random_type == 5:
+        return gen_frac()
+    elif random_type == 6:
+        return gen_lim()
+    elif random_type == 7:
+        return gen_log()
+    elif random_type == 8:
+        return gen_unary()
+    elif random_type == 9:
+        return gen_condition()
+    elif random_type == 10:
+        return gen_other()
+
+
+def gen_mix():
+    combination_or_not = random.randint(1,2)
+    if combination_or_not == 1:
+        model_type = random.randint(1, 10)
+        return gen_selection(model_type)
+    else:
+        eq = []
+        operand_1 = gen_selection(random.randint(1,7))
+        operand_2 = gen_selection(random.randint(1, 7))
+        operator = random_choices(operator_sym, 1)
+
+        eq.extend(operand_1)
+        eq.extend(operator)
+        eq.extend(operand_2)
+        return eq
 
 
 
