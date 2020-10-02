@@ -1,8 +1,8 @@
 import os
 import matplotlib.pyplot as plt
 from extractor.crohme_parser import library, inkml
-from utils.plt_draw import plt_draw_traces, plt_setup
-from utils.fs import get_source_root, load_object, save_object
+from utilities.plt_draw import plt_draw_traces, plt_setup
+from utilities.fs import get_source_root, load_object, save_object
 import random
 import sys
 from extractor.crohme_parser.fonts import StandardFont

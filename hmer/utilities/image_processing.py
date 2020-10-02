@@ -18,8 +18,17 @@ def get_equation_bbox_size(equation):
     return xmax - xmin, ymax - ymin
 
 
+def couple_bbox(xmin, ymin, xmax, ymax):
+    return (xmin, ymin), (xmax, ymax)
+
+
+def decouple_bbox(box):
+    return box[0][0], box[0][1], box[1][0], box[1][1]
+
+
 def shift_equation(equation, xshift, yshift):
-    return [[[[coord[0] + xshift, coord[1] + yshift] for coord in trace] for trace in trace_group] for trace_group in equation]
+    return [[[[coord[0] + xshift, coord[1] + yshift] for coord in trace] for trace in trace_group] for trace_group in
+            equation]
 
 
 def scale_equation(equation, scale, new_xorigin=0, new_yorigin=0):
@@ -47,6 +56,12 @@ def scale_equation(equation, scale, new_xorigin=0, new_yorigin=0):
     return output
 
 
+def np_get_trace_group_bbox(trace_group_np_coords):
+    xmin, ymin = np.min(trace_group_np_coords, axis=0)
+    xmax, ymax = np.max(trace_group_np_coords, axis=0)
+    return xmin, ymin, xmax, ymax
+
+
 def get_trace_group_bbox(trace_group_coords):
     """
     Get bounding box of a set of a trace group coordinates
@@ -54,9 +69,7 @@ def get_trace_group_bbox(trace_group_coords):
     :return: xmin, ymin, xmax, ymax
     """
     coords = [coord for trace in trace_group_coords for coord in trace]
-    xmin, ymin = np.min(coords, axis=0)
-    xmax, ymax = np.max(coords, axis=0)
-    return xmin, ymin, xmax, ymax
+    return np_get_trace_group_bbox(coords)
 
 
 def get_trace_group_bbox_size(trace_group_coords):
@@ -397,6 +410,6 @@ def geometric_global_transform(trace_coord, random_model, i, alpha, beta, gamma,
     :return:
     """
 
-    local_transformed_coord = geometric_local_model(trace_coord,random_model,i, alpha, beta)
-    tmp_coord_1 = local_scale(local_transformed_coord,k)
+    local_transformed_coord = geometric_local_model(trace_coord, random_model, i, alpha, beta)
+    tmp_coord_1 = local_scale(local_transformed_coord, k)
     return local_rotation(tmp_coord_1, gamma)

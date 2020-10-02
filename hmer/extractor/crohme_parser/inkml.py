@@ -4,7 +4,7 @@ import numpy as np
 from xml.etree import ElementTree as ET
 
 from constants import ink_xmlns, simplified_lbl_sep
-from utils import plt_draw
+from utilities import plt_draw
 import re
 
 
@@ -78,34 +78,36 @@ class TraceGroup(BaseTrait):
         #
         # Can't decide to split or merge frac and - together as the data does
         #
-        # href = element.find(namespace + "annotationXML")
-        #
-        # if href is None:
-        #     href = self._label
-        # else:
-        #     href = href.get('href')
-        #
-        # debug_p = re.compile(r'\d+:(\d+:)*')
-        #
+        href = element.find(namespace + "annotationXML")
+
+        if href is None:
+            href = self._label
+        else:
+            href = href.get('href')
+
+        debug_p = re.compile(r'\d+:(\d+:)*')
+
         # if self._label == '=' and not href.startswith('=') and not len(debug_p.findall(href)) > 0:
         #     print("DEBUG =")
         #
         # if self._label == '+' and not href.startswith('+') and not len(debug_p.findall(href)) > 0:
         #     print("DEBUG +")
-        #
-        # if self._label == '-' and (href.startswith('\\frac') or href.startswith('_')):
-        #     self._label = '\\frac'
-        # elif self._label == '-' and href.startswith('='):
-        #     pass
-        # elif len(debug_p.findall(href)) > 0:
-        #     pass
-        # elif self._label not in [
-        #     '\\sqrt', '\\lt', '\\leq', '\\ldots', '\\gt', '\\geq', '.', '\\prime',
-        #     '\\rightarrow', '\\neq', '\\exists', '\\sum', '\\int', '+'
-        # ]:
-        #     if not href.lstrip('\\').startswith(self._label.lstrip('\\')):
-        #         print(f"WEIRD CASE: `{self._label}` and `{href}`")
-        #         print("DEBUG")
+
+        self._discard = False
+
+        if self._label == '-' and (href.startswith('\\frac') or href.startswith('_')):
+            self._label = '\\frac'
+        elif self._label == '-' and href.startswith('='):
+            print("DEBUG: label {}, href {}. DISCARD!".format(self._label, href))
+            self._discard = True
+        elif len(debug_p.findall(href)) > 0:
+            pass
+        elif self._label not in [
+            '\\sqrt', '\\lt', '\\leq', '\\ldots', '\\gt', '\\geq', '.', '\\prime',
+            '\\rightarrow', '\\neq', '\\exists', '\\sum', '\\int', '+'
+        ]:
+            if not href.lstrip('\\').startswith(self._label.lstrip('\\')):
+                print(f"DEBUG: WEIRD CASE: `{self._label}` and `{href}`")
 
         traces_idx = []
         for trace_view in element.findall(namespace + "traceView"):
@@ -116,6 +118,10 @@ class TraceGroup(BaseTrait):
 
         self._bounding_box = [coord for trace in self._traces for coord in trace.bbox]
         self._bounding_box = [list(np.min(self._bounding_box, axis=0)), list(np.max(self._bounding_box, axis=0))]
+
+    @property
+    def discard(self):
+        return self._discard
 
     @property
     def label(self):
@@ -145,7 +151,7 @@ class TraceGroup(BaseTrait):
 
 
 class Ink(BaseTrait):
-    def __init__(self, file_path, namespace=ink_xmlns):
+    def __init__(self, file_path, namespace=ink_xmlns, is_test=False):
         f"""
         Ink object contains all useful information extracted and to be used to visualize into image.
         :param file_path: inkml file path, absolute path works best
@@ -157,6 +163,7 @@ class Ink(BaseTrait):
         self._tree = None
         self._traces = None
         self._trace_groups = None
+        self._is_test = is_test
 
         self._parse_file()
 
@@ -171,6 +178,10 @@ class Ink(BaseTrait):
     @property
     def label(self):
         return self._label
+
+    @property
+    def flatten_label(self):
+        return ' '.join([g.label for g in self._trace_groups])
 
     @property
     def simplified_lbl(self):
@@ -196,10 +207,22 @@ class Ink(BaseTrait):
         self._tree = tree = ET.parse(self._file_path)
         root = tree.getroot()
 
-        self._simplified_label = self._label = [
-            child for child in root.getchildren()
-            if (child.tag == self._namespace + "annotation") and (child.attrib == {'type': 'truth'})
-        ][0].text
+        if not self._is_test:
+            lbl = [
+                    child for child in root.getchildren()
+                    if (child.tag == self._namespace + "annotation") and (child.attrib == {'type': 'truth'})
+                ]
+            if len(lbl) > 0:
+                self._simplified_label = self._label = lbl[0].text
+            else:
+                print("ERROR IN FILE: {}.\nRetry with finding typx: \"truth\" instead.".format(self._file_path))
+                lbl = [
+                    child for child in root.getchildren()
+                    if (child.tag == self._namespace + "annotation") and (child.attrib == {'typx': 'truth'})
+                ]
+                self._simplified_label = self._label = lbl
+        else:
+            self._simplified_label = self._label = None
 
         self._traces = traces = [Trace(trace_tag, self._namespace) for trace_tag in
                                  root.findall(self._namespace + "trace")]
@@ -215,7 +238,7 @@ class Ink(BaseTrait):
 
             trace_groups.sort(key=lambda group: group.bbox[0][0])
 
-            self._trace_groups = trace_groups
+            self._trace_groups = [g for g in trace_groups if not g.discard]
 
             self._simplified_label = simplified_lbl_sep.join([
                 group.label
@@ -226,7 +249,10 @@ class Ink(BaseTrait):
 
     @property
     def trace_coords(self):
-        return [trace_coords for group in self._trace_groups for trace_coords in group.trace_coords]
+        if not self._is_test:
+            return [trace_coords for group in self._trace_groups for trace_coords in group.trace_coords]
+        else:
+            return [trace.coords for trace in self._traces]
 
     def convert_to_img(self, output_path, write_simplified_label=False, linewidth=2, color='b', draw_bbox=False,
                        **draw_bbox_kwargs):

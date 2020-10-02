@@ -2,8 +2,8 @@ import os
 import random
 import extractor.crohme_parser.inkml as inkml
 from constants import simplified_lbl_sep
-from utils import plt_draw
-from utils import image_processing
+from utilities import plt_draw
+from utilities import image_processing
 import numpy as np
 
 
@@ -40,7 +40,7 @@ class InkAugmentor(object):
         :param ink:
         :return:
         """
-        new_coords = []
+        new_group_coords = []
         gamma = random.randint(-10, 10)
         k = round(random.uniform(0.7, 1.3), 1)
         random_model = random.randint(1, 5)
@@ -50,15 +50,16 @@ class InkAugmentor(object):
         else:
             alpha = random.randint(-5, 5)
         beta = random.randint(-10, 10)
-        print(random_model, i, alpha, beta, gamma, k)
+        # print(random_model, i, alpha, beta, gamma, k)
 
         for trace_group in ink.trace_groups:
-
+            tmp_group_coords = []
             for trace in trace_group.traces:
                 tmp_coord = image_processing.geometric_global_transform(trace.coords, random_model, i, alpha, beta,
                                                                         gamma, k)
-                new_coords.append(tmp_coord)
-        return new_coords
+                tmp_group_coords.append(tmp_coord)
+            new_group_coords.append(tmp_group_coords)
+        return new_group_coords
 
 
 if __name__ == '__main__':

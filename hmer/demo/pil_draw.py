@@ -3,10 +3,10 @@ import os
 import matplotlib.pyplot as plt
 
 from extractor.crohme_parser.inkml import Ink
-from utils.image_processing import *
-from utils.pil_draw import pil_draw_traces
-from utils.plt_draw import *
-from utils.fs import get_source_root
+from utilities.image_processing import *
+from utilities.pil_draw import pil_draw_traces
+from utilities.plt_draw import *
+from utilities.fs import get_source_root
 from extractor.crohme_parser import augmentation
 
 if __name__ == "__main__":
@@ -46,10 +46,10 @@ if __name__ == "__main__":
         # ax = axes[n]
         # ax.invert_yaxis()
         # ax.set_aspect('equal', adjustable='box')
-        new_coords = augmentation.InkAugmentor.geometric_transform(ink)
+        new_group_coords = augmentation.InkAugmentor.geometric_transform(ink)
         print("\n")
         # plt.show()
-
+        new_coords = [trace for group in new_group_coords for trace in group]
         _, coords = scale_trace_group(new_coords, 300)
         img = plt_draw_traces(coords)
         # fig.add_subplot(3,2,n)

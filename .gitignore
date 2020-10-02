@@ -5,3 +5,17 @@ hmer/data/CROHME_full_v2/
 __pycache__
 /hmer/extractor/crohme_parser/demo-outputs/
 /hmer/demo-outputs/
+/hmer/weights/
+/hmer/model/weights/
+/hmer/training/data/
+
+/hmer/testing/data/
+/hmer/testing/data2/
+/hmer/testing/font/
+/hmer/testing/result/
+/hmer/testing/result_2/
+/hmer/training/data_lw_2/
+/hmer/testing/result_epoch30/
+/hmer/testing/result_v1_15epoch/
+/hmer/testing/aug_geo/
+/hmer/testing/eval_by_map/aug_geo__/
