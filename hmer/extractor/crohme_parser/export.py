@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-from utilities.data_processing import normalize_label
+from utilities.data_processing import normalize_label, idx2symbols
 from utilities.image_processing import get_trace_group_bbox, couple_bbox, decouple_bbox
-from utilities.plt_draw import plt_clear, plt_setup, plt_draw_traces
+from utilities.plt_draw import plt_clear, plt_setup, plt_draw_traces, plt_draw_bbox
 from utilities.fs import get_source_root
 from extractor.crohme_parser.extract import Extractor
 from extractor.crohme_parser.augmentation import InkAugmentor
@@ -38,14 +38,19 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
     :return: label string with the following format
     """
     fig, ax = plt_setup(figsize=(size / dpi, size / dpi), dpi=dpi)
-    plt_draw_traces([trace for group in equation for trace in group], ax=ax)
-    plt.savefig(output_path + '.png', dpi=dpi)
-    norm_label = normalize_label(label)
     bboxes = [get_trace_group_bbox(group) for group in equation]
+    plt_draw_traces([trace for group in equation for trace in group], ax=ax)
+    norm_label = list(normalize_label(label))
+    # for i, box in enumerate(bboxes):
+    #     plt_draw_bbox(couple_bbox(*box), ax=ax)
+    #     ax.text(box[0], box[1], idx2symbols[norm_label[i]])
+    plt.savefig(output_path + '.png', dpi=dpi)
+    # bboxes = [get_trace_group_bbox(group) for group in equation]
 
     # correcting box
-    norm_label, bboxes = zip(*[(nrm_lbl, decouple_bbox(pad_zero_size_bbox(box))) for nrm_lbl, box in zip(norm_label, bboxes) if
-                               pad_zero_size_bbox(box) is not None])
+    norm_label, bboxes = zip(
+        *[(nrm_lbl, decouple_bbox(pad_zero_size_bbox(box))) for nrm_lbl, box in zip(norm_label, bboxes) if
+          pad_zero_size_bbox(box) is not None])
 
     xmin, ymin, xmax, ymax = zip(*bboxes)
     _, height = fig.canvas.get_width_height()
@@ -60,6 +65,20 @@ def export_equation(equation, label, output_path, size=300, dpi=96):
 
     return (output_path + ".png ").replace(get_source_root(), "").lstrip('/') + " ".join(
         [f"{lbl:d} {bbx[0][0]} {bbx[0][1]} {bbx[1][0]} {bbx[1][1]}" for lbl, bbx in zip(norm_label, bboxes_pix)])
+
+
+def gen_data_with_geoaugment(ink, parent_label, parent_out_file, overwrite=False, n_random=3):
+    labels = []
+    for i in range(n_random):
+        aug_equation = InkAugmentor.geometric_transform(ink)
+        out_file = parent_out_file + f'_{i}'
+        os.makedirs(os.path.dirname(out_file), exist_ok=True)
+        if os.path.exists(out_file + '.png') and not overwrite:
+            raise FileExistsError(out_file + '.png')
+        label_str = export_equation(aug_equation, parent_label, out_file)
+        labels.append(label_str)
+
+    return labels
 
 
 def export_from_ink_with_geoaugment(ink, output_dir, overwrite=False, write_label=True, n_random=5):
@@ -135,6 +154,32 @@ def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_sou
         if limit is not None:
             if i > limit:
                 break
+    with open(os.path.join(output_dir, "labels.txt"), 'w') as f:
+        f.write('\n'.join(labels))
+
+
+def generate_extra_training_data(symbol_lib, data_versions='2013', datasets="train",
+                                 output_dir=os.path.join("demo-outputs", "data"), geo_aug=False, n_loop=3000):
+    output_dir = os.path.join(get_source_root(), output_dir, f"CROHME_{data_versions}_{datasets}_extra")
+    os.makedirs(output_dir, exist_ok=True)
+    labels = []
+
+    for i in range(n_loop):
+        label, ink = InkAugmentor.equation_generate(symbol_lib)
+        print(label)
+        filename = f'gen_{i}'
+        out_file = os.path.join(output_dir, filename)
+        os.makedirs(os.path.dirname(out_file), exist_ok=True)
+        if os.path.exists(out_file + '.png'):
+            raise FileExistsError(out_file + '.png')
+
+        label_str = export_equation(ink, label, out_file)
+        labels.append(label_str)
+
+        if geo_aug:
+            aug_labels = gen_data_with_geoaugment(ink, label, out_file)
+            labels.extend(aug_labels)
+
     with open(os.path.join(output_dir, "labels.txt"), 'w') as f:
         f.write('\n'.join(labels))
 

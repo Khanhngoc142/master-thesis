@@ -6,6 +6,8 @@ from utilities.fs import get_source_root, load_object, save_object
 import random
 import sys
 from extractor.crohme_parser.fonts import StandardFont
+import pandas as pd
+from utilities.equation_gen import *
 
 
 def sample_list(lst):
@@ -67,11 +69,28 @@ def demo_custom_equation(lib, eq, num):
     return fig, axes
 
 
+# def get_symbol_weight(pd_symbol_weight, sym_lst):
+#     return [pd_symbol_weight[pd_symbol_weight['symbol_name']==c].weight.item() for c in sym_lst]
+#
+#
+# def gen_sin_cos(pd_symbol_weight):
+#     eq = []
+#     sin_or_cos = random.choices(['\\sin', '\\cos'], weights=get_symbol_weight(pd_symbol_weight, ['\\sin', '\\cos']), k=1)
+#     eq.extend(sin_or_cos)
+#     candidates = ['o', 'q', 'r', 'k', '\\alpha', '\\beta', '\\gamma', 'x', 'y', 'i', 'j', '\\lambda', 'u', 'v', 'w', '\\mu', '\\phi']
+#     random_k = random.randint(2, 4)
+#     c = random.choices(candidates, weights=get_symbol_weight(pd_symbol_weight, candidates), k=random_k)
+#     eq.extend(c)
+#     print(eq)
+#     return eq
+
+
 if __name__ == "__main__":
     root_path = get_source_root()
 
     demo_lib = load_object(os.path.join(root_path, "demo-outputs", "lib.pkl"))
-
+    # demo_lib = library.build_library()
+    # pd_symbol_weight = pd.read_csv('/home/ubuntu/workspace/mine/master-thesis.git/hmer/metadata/training_symbol_weight.csv')
     # demo_linear_equation(demo_lib, 5)
     # demo_equation_w_subsup(demo_lib, 5)
     # demo_equation_w_subsup(demo_lib, 5)
@@ -90,6 +109,9 @@ if __name__ == "__main__":
     # demo_eq = ['A', '\\prime', *list('=A')]
     # demo_eq = ['\\sqrt', list('12+x')]
     # demo_eq = ['x','+','\\sqrt', ['\\sqrt', list('12+x')], *list('+y+z')]
-    demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
-    demo_custom_equation(demo_lib, demo_eq, 3)
+    # demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
+    # demo_eq = gen_sin_cos(pd_symbol_weight)
+    demo_eq = gen_basic_linear()
+    for i in range(5):
+        demo_custom_equation(demo_lib, demo_eq, 3)
     plt.show()

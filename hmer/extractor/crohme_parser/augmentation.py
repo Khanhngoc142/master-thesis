@@ -2,8 +2,7 @@ import os
 import random
 import extractor.crohme_parser.inkml as inkml
 from constants import simplified_lbl_sep
-from utilities import plt_draw
-from utilities import image_processing
+from utilities import plt_draw, image_processing, equation_gen
 import numpy as np
 
 
@@ -52,14 +51,30 @@ class InkAugmentor(object):
         beta = random.randint(-10, 10)
         # print(random_model, i, alpha, beta, gamma, k)
 
-        for trace_group in ink.trace_groups:
-            tmp_group_coords = []
-            for trace in trace_group.traces:
-                tmp_coord = image_processing.geometric_global_transform(trace.coords, random_model, i, alpha, beta,
-                                                                        gamma, k)
-                tmp_group_coords.append(tmp_coord)
-            new_group_coords.append(tmp_group_coords)
+        if isinstance(ink, list):
+            for trace_group in ink:
+                tmp_group_coords = []
+                for trace in trace_group:
+                    tmp_coord = image_processing.geometric_global_transform(trace, random_model, i, alpha, beta,
+                                                                            gamma, k)
+                    tmp_group_coords.append(tmp_coord)
+                new_group_coords.append(tmp_group_coords)
+
+        else:
+            for trace_group in ink.trace_groups:
+                tmp_group_coords = []
+                for trace in trace_group.traces:
+                    tmp_coord = image_processing.geometric_global_transform(trace.coords, random_model, i, alpha, beta,
+                                                                            gamma, k)
+                    tmp_group_coords.append(tmp_coord)
+                new_group_coords.append(tmp_group_coords)
         return new_group_coords
+
+    @staticmethod
+    def equation_generate(lib):
+        equation_str = equation_gen.gen_mix()
+        ink = lib.generate_equation_traces(equation_str)
+        return equation_str, ink
 
 
 if __name__ == '__main__':
