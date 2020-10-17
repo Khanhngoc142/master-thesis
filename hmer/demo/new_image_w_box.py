@@ -20,13 +20,13 @@ def process_line(line, ground_truth=False):
 
 
 if __name__ == "__main__":
-    label_file = get_path("demo-outputs/data/CROHME_2013_train_extra/labels.txt")
+    label_file = get_path("/home/ubuntu/data/v_filter0.1_globalnms0.650.15_ssdtest0.10.1_aug_extra_data/aug_geo_extra_datatest.txt")
     with open(label_file, 'r') as f:
         data = f.readlines()
 
-    data = dict([process_line(line, ground_truth=True) for line in data])
-    chosen_img = "demo-outputs/data/CROHME_2013_train_extra/gen_0_0.png"
+    data = dict([process_line(line, ground_truth=False) for line in data])
+    chosen_img = "training/data/CROHME_2013_valid/122_em_347{}.png"
 
-    classes, conf, boxes = data[chosen_img]
+    classes, conf, boxes = data[chosen_img.format('')]
 
-    plt_draw.visualize_img_w_boxes(chosen_img, boxes, classes, conf, ncols=4)
+    plt_draw.visualize_img_w_boxes(chosen_img.format('.inkml'), boxes, classes, conf, ncols=4)
