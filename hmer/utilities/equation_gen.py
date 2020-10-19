@@ -37,7 +37,7 @@ def gen_number():
     continuous_digit = random_choices(digit_sym, random_k)
     eq.extend(continuous_digit)
 
-    random_type = random.randint(1,3)
+    random_type = random.randint(1, 3)
     if random_type == 1:
         eq.append('\\pi')
     elif random_type == 2:
@@ -193,7 +193,7 @@ def gen_lim():
 
     base = []
     operator = random_choices(operator_sym, 1)
-    number =gen_number()
+    number = gen_number()
     base.extend(variable)
     base.extend(operator)
     base.extend(number)
@@ -208,13 +208,29 @@ def gen_other():
     variable = random_choices(latin_sym + uppercase_alphabet_sym, 1)
     number = gen_number()
     eq.extend(variable)
-    random_type = random.randint(1,2)
+    random_type = random.randint(1, 2)
     if random_type == 1:
         eq.append('\\rightarrow')
     else:
         eq.append('\\ldots')
     eq.extend(number)
     eq.append('\\}')
+
+    return eq
+
+
+def gen_absolute():
+    eq = ['|']
+    number = gen_linear_operand()
+    eq.extend(number)
+
+    random_last_symbol = random.randint(1, 3)
+    if random_last_symbol == 1:
+        eq.append('o')
+    elif random_last_symbol == 2:
+        eq.append('X')
+    
+    eq.append('|')
 
     return eq
 
@@ -241,16 +257,18 @@ def gen_selection(random_type):
         return gen_condition()
     elif random_type == 10:
         return gen_other()
+    elif random_type == 11:
+        return gen_absolute()
 
 
 def gen_mix():
-    combination_or_not = random.randint(1,2)
+    combination_or_not = random.randint(1, 2)
     if combination_or_not == 1:
-        model_type = random.randint(1, 10)
+        model_type = random.randint(1, 11)
         return gen_selection(model_type)
     else:
         eq = []
-        operand_1 = gen_selection(random.randint(1,7))
+        operand_1 = gen_selection(random.randint(1, 7))
         operand_2 = gen_selection(random.randint(1, 7))
         operator = random_choices(operator_sym, 1)
 
@@ -258,7 +276,3 @@ def gen_mix():
         eq.extend(operator)
         eq.extend(operand_2)
         return eq
-
-
-
-
