@@ -49,7 +49,7 @@ def compute_average_precision(conf, correct, num_gt):
     df.loc[:, 'recall'] = df.recall.apply(lambda r: int(r*10)/10)  # flooring to 1 decimal place
 
     # compute interpolated precision
-    new_index = pd.Index(np.linspace(0, 1, 11), name='recall')
+    new_index = pd.Index([i/10 for i in range(0, 11)], name='recall')
     df = df.groupby('recall').agg({'precision': 'max'}).reindex(new_index)
     if np.isnan(df.iloc[-1].precision):  # if missing recall 1.0
         df.iloc[-1].precision = 0
