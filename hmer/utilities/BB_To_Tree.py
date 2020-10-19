@@ -4,7 +4,6 @@ import copy
 from PIL import Image, ImageDraw, ImageFont
 
 
-# noinspection PyPep8Naming
 class SymbolManager:
 	def __init__(self):
 
@@ -15,7 +14,7 @@ class SymbolManager:
 		self.dictionary = []
 
 		try:
-			with open('label.txt') as f:
+			with open('new_label.txt') as f:
 				sym_list = f.readlines()
 				for sym in sym_list:
 					temp = sym.strip().split()
@@ -24,57 +23,56 @@ class SymbolManager:
 			print('Error label.txt is not found')
 			return
 
-		self.AddClassToDictionary()
+		self.add_class_to_dictionary()
 
-	def AddClassToDictionary(self):
+	def add_class_to_dictionary(self):
 		# Class consist of
 		#  NonScripted: + - = > ->
-		NC = ['add', 'sub', '=', 'rightarrow', 'leq', 'geq', 'neq']  # 7
+		non_scripted = ['add', 'sub', '=', 'rightarrow', 'leq', 'geq', 'neq', 'lt', 'gt']  # 7
 		#  Bracket ( { [
-		BR = ['(']
+		bracket = ['(', '[', '\\{']
 		#  Root : sqrt
-		SQ = ['sqrt']
+		square_root = ['sqrt']
 		#  VariableRange : _Sigma, integral, _PI,
-		VR = ['_Sigma', '_Pi', 'lim', 'integral']
+		variable_range = ['_Sigma', '_Pi', 'lim', 'integral']
 		#  Plain_Ascender: 0..9, A..Z, b d f h i k l t
-		PA = ['b', 'd', 'f', 'h', 'i', 'k', 'l', 't', 'exists', 'forall', '!', '_Delta', '_Omega', '_Phi', 'div', 'beta', 'lamda', 'tan', 'log']
-		PA = PA + list(map(str, range(10)))
-		PA = PA + list(string.ascii_uppercase)
+		plain_ascender = ['b', 'd', 'f', 'h', 'i', 'k', 'l', 't', 'exists', 'forall', '!', '_Delta', '_Omega', '_Phi', 'div', 'beta', 'lamda', 'tan', 'log']
+		plain_ascender = plain_ascender + list(map(str, range(10)))
+		plain_ascender = plain_ascender + list(string.ascii_uppercase)
 		#  Plain_Descender: g p q y gamma, nuy, rho khi phi
-		PD = ['g', 'p', 'q', 'y', 'gamma', 'muy', 'rho', '']
+		plain_decender = ['g', 'p', 'q', 'y', 'gamma', 'muy', 'rho', '']
 		#  plain_Centered: The rest
 		for entry in self.dictionary:
 			temp_class = 'plain_Centered'
-			Alignment = 'Centred'
-			if entry[0] in NC:
+			alignment = 'Centred'
+			if entry[0] in non_scripted:
 				temp_class = 'NonScripted'
-			elif entry[0] in BR:
+			elif entry[0] in bracket:
 				temp_class = 'Bracket'
-			elif entry[0] in SQ:
+			elif entry[0] in square_root:
 				temp_class = 'Root'
-			elif entry[0] in VR:
+			elif entry[0] in variable_range:
 				temp_class = 'VariableRange'
-			elif entry[0] in PA:
+			elif entry[0] in plain_ascender:
 				temp_class = 'Plain_Ascender'
-				Alignment = 'Ascender'
-			elif entry[0] in PD:
+				alignment = 'Ascender'
+			elif entry[0] in plain_decender:
 				temp_class = 'Plain_Descender'
-				Alignment = 'Descender'
+				alignment = 'Descender'
 			entry.append(temp_class)
-			entry.append(Alignment)
+			entry.append(alignment)
 
-	def getClass(self, symbol):
+	def get_class(self, symbol):
 		for entry in self.dictionary:
 			if entry[0] == symbol:
 				return entry[2]
 
-	def getSymbolFromIndex(self, index):
+	def get_symbol_from_idx(self, index):
 		for entry in self.dictionary:
 			if entry[1] == index:
 				return entry[0], entry[2], entry[3]
 
 
-# noinspection PyPep8Naming,PyBroadException,PyMethodMayBeStatic
 class LBST:
 	def __init__(self, psymbol_manager):
 		# root = []
@@ -111,28 +109,28 @@ class LBST:
 	# LBSTnode_sym
 	# sym, BST_node
 
-	def process(self, BSTtree):
+	def process(self, bst_tree):
 
 		try:
-			LBSTtree = self.createLBSTtreefromBSTtree(BSTtree)
-			return LBSTtree
+			lbst_tree = self.create_lbst_tree_from_bst_tree(bst_tree)
+			return lbst_tree
 		except RuntimeError:
 			print('unable to parse')
-			print(BSTtree)
+			print(bst_tree)
 			return []
 
-	# OperatorTree = self.createOperatorTreeFromLBSTTree(LBSTtree)
+	# OperatorTree = self.create_operator_tree_from_lbst_tree(LBSTtree)
 	# print(OperatorTree)
 	# return
 
 	# try:
-	#     OperatorTree = self.createOperatorTreeFromLBSTTree(LBSTtree)
+	#     OperatorTree = self.create_operator_tree_from_lbst_tree(LBSTtree)
 	#     print(OperatorTree)
 	# except:
 	#     print('unable to parse')
 	#     print(LBSTtree)
 
-	def createLiteralNode(self, sym):
+	def create_literal_node(self, sym):
 		node = {}
 
 		if len(sym) == 2 and sym[0] == 'z':
@@ -146,115 +144,113 @@ class LBST:
 
 		return node
 
-	def createParentNode(self, ntype):
+	def create_parent_node(self, ntype):
 		return {'type': ntype}
 
-	def deleteOldChild(self, tree):
+	def delete_old_child(self, tree):
 		for node in tree:
 			if 'child' in node:
 				for child in node['child']:
-					self.deleteOldChild(child)
+					self.delete_old_child(child)
 
 			if 'old_child' in node:
 				del node['old_child']
 
-	def createCompoundSymbolBaseline(self, BSTtree):
+	def create_compound_symbol_baseline(self, bst_tree):
 		compounded_tree = []
 		merging = False
 
 		numlist = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'ldot']
 
-		for node in BSTtree:
-			sym, clas, align = self.symbol_manager.getSymbolFromIndex(node[4])
+		for node in bst_tree:
+			sym, clas, align = self.symbol_manager.get_symbol_from_idx(node[4])
 
 			if merging and sym in self.compoundable_list or (
 					sym == 'ldot' and compounded_tree[-1]['symbol'][-1] in numlist):
 
 				if compounded_tree[-1]['symbol'][-1] in numlist and sym not in numlist:
-					compounded_tree.append(self.createLiteralNode(sym))
+					compounded_tree.append(self.create_literal_node(sym))
 				else:
 					compounded_tree[-1]['symbol'] = compounded_tree[-1]['symbol'] + sym
 
-				if self.countChild(node) != 0:
+				if self.count_child(node) != 0:
 					merging = False
 
 					compounded_tree[-1]['old_child'] = node[9]
 			else:
 				merging = False
 
-				temp_node = self.createLiteralNode(sym)
+				temp_node = self.create_literal_node(sym)
 
 				temp_node['old_child'] = node[9]
 				compounded_tree.append(temp_node)
-				if self.countChild(node) == 0:
+				if self.count_child(node) == 0:
 					if sym in self.compoundable_list or sym in self.Prefix_compoundable_list:
 						merging = True
 
 		return compounded_tree
 
-	def handleSub(self, BSTtree):
-		for idx in range(len(BSTtree)):
+	def handle_sub(self, bst_tree):
+		for idx in range(len(bst_tree)):
 
-			if 'old_child' not in BSTtree[idx]:
+			if 'old_child' not in bst_tree[idx]:
 				continue
 
 			# SUB
-			if len(BSTtree[idx]['old_child'][6]) > 0:
-				newnode = self.createParentNode('sub')
+			if len(bst_tree[idx]['old_child'][6]) > 0:
+				newnode = self.create_parent_node('sub')
 				newnode['child'] = []
-				newnode['child'].append([BSTtree[idx]])
+				newnode['child'].append([bst_tree[idx]])
 
-				newnode['child'].append(self.createLBSTtreefromBSTtree(BSTtree[idx]['old_child'][6]))
+				newnode['child'].append(self.create_lbst_tree_from_bst_tree(bst_tree[idx]['old_child'][6]))
 
-				BSTtree[idx]['old_child'][6] = []
-				newnode['old_child'] = BSTtree[idx]['old_child']
+				bst_tree[idx]['old_child'][6] = []
+				newnode['old_child'] = bst_tree[idx]['old_child']
 
-				del BSTtree[idx]
-				BSTtree.insert(idx, newnode)
+				del bst_tree[idx]
+				bst_tree.insert(idx, newnode)
 
-	def handleSup(self, BSTtree):
+	def handle_sup(self, bst_tree):
 
 		# print(BSTtree)
 
-		for idx in range(len(BSTtree)):
+		for idx in range(len(bst_tree)):
 
-			if 'old_child' not in BSTtree[idx]:
+			if 'old_child' not in bst_tree[idx]:
 				continue
 
-			if len(BSTtree[idx]['old_child'][5]) > 0:
-				newnode = self.createParentNode('sup')
+			if len(bst_tree[idx]['old_child'][5]) > 0:
+				newnode = self.create_parent_node('sup')
 				newnode['child'] = []
-				newnode['child'].append([BSTtree[idx]])
-				newnode['child'].append(self.createLBSTtreefromBSTtree(BSTtree[idx]['old_child'][5]))
+				newnode['child'].append([bst_tree[idx]])
+				newnode['child'].append(self.create_lbst_tree_from_bst_tree(bst_tree[idx]['old_child'][5]))
 
-				BSTtree[idx]['old_child'][5] = []
-				newnode['old_child'] = BSTtree[idx]['old_child']
+				bst_tree[idx]['old_child'][5] = []
+				newnode['old_child'] = bst_tree[idx]['old_child']
 
-				del BSTtree[idx]
-				BSTtree.insert(idx, newnode)
+				del bst_tree[idx]
+				bst_tree.insert(idx, newnode)
 
-	def handleSQRT(self, BSTtree):
-		for idx in range(len(BSTtree)):
+	def handle_sqrt(self, bst_tree):
+		for idx in range(len(bst_tree)):
 
-			if 'old_child' not in BSTtree[idx]:
+			if 'old_child' not in bst_tree[idx]:
 				continue
 
-			if len(BSTtree[idx]['old_child'][4]) > 0 and BSTtree[idx]['symbol'] == 'sqrt':
-				newnode = self.createParentNode('sqrt')
+			if len(bst_tree[idx]['old_child'][4]) > 0 and bst_tree[idx]['symbol'] == 'sqrt':
+				newnode = self.create_parent_node('sqrt')
 				newnode['child'] = []
-				newnode['child'].append(self.createLBSTtreefromBSTtree(BSTtree[idx]['old_child'][4]))
+				newnode['child'].append(self.create_lbst_tree_from_bst_tree(bst_tree[idx]['old_child'][4]))
 
-				BSTtree[idx]['old_child'][4] = []
-				newnode['old_child'] = BSTtree[idx]['old_child']
+				bst_tree[idx]['old_child'][4] = []
+				newnode['old_child'] = bst_tree[idx]['old_child']
 
-				del BSTtree[idx]
-				BSTtree.insert(idx, newnode)
+				del bst_tree[idx]
+				bst_tree.insert(idx, newnode)
 
-	def handleNonScript_and_VariableRange(self, BSTtree):
-
-		for idx in range(len(BSTtree)):
-
-			if 'old_child' not in BSTtree[idx] or 'symbol' not in BSTtree[idx]:
+	def handle_nonscripted_and_variablerange(self, bst_tree):
+		for idx in range(len(bst_tree)):
+			if 'old_child' not in bst_tree[idx] or 'symbol' not in bst_tree[idx]:
 				continue
 
 			# SUM
@@ -264,263 +260,259 @@ class LBST:
 			# lim
 			# rightarrow
 
-			if len(BSTtree[idx]['old_child'][3]) > 0 or len(BSTtree[idx]['old_child'][2]) > 0:
-				if BSTtree[idx]['symbol'] == '_Sigma':
-					newnode = self.createParentNode('_Sigma')
-				elif BSTtree[idx]['symbol'] == '_Pi':
-					newnode = self.createParentNode('_Pi')
-				elif BSTtree[idx]['symbol'] == 'integral ':
-					newnode = self.createParentNode('integral')
-				elif BSTtree[idx]['symbol'] == 'lim':
-					newnode = self.createParentNode('lim')
-				elif BSTtree[idx]['symbol'] == 'sub':
-					newnode = self.createParentNode('frac')
-				elif BSTtree[idx]['symbol'] == 'rightarrow':
-					newnode = self.createParentNode('rightarrow')
+			if len(bst_tree[idx]['old_child'][3]) > 0 or len(bst_tree[idx]['old_child'][2]) > 0:
+				if bst_tree[idx]['symbol'] == '_Sigma':
+					newnode = self.create_parent_node('_Sigma')
+				elif bst_tree[idx]['symbol'] == '_Pi':
+					newnode = self.create_parent_node('_Pi')
+				elif bst_tree[idx]['symbol'] == 'integral ':
+					newnode = self.create_parent_node('integral')
+				elif bst_tree[idx]['symbol'] == 'lim':
+					newnode = self.create_parent_node('lim')
+				elif bst_tree[idx]['symbol'] == 'sub':
+					newnode = self.create_parent_node('frac')
+				elif bst_tree[idx]['symbol'] == 'rightarrow':
+					newnode = self.create_parent_node('rightarrow')
 				else:
-					newnode = self.createParentNode(BSTtree[idx]['symbol'])
+					newnode = self.create_parent_node(bst_tree[idx]['symbol'])
 
 				newnode['child'] = []
-				newnode['child'].append(self.createLBSTtreefromBSTtree(BSTtree[idx]['old_child'][2]))
-				newnode['child'].append(self.createLBSTtreefromBSTtree(BSTtree[idx]['old_child'][3]))
+				newnode['child'].append(self.create_lbst_tree_from_bst_tree(bst_tree[idx]['old_child'][2]))
+				newnode['child'].append(self.create_lbst_tree_from_bst_tree(bst_tree[idx]['old_child'][3]))
 
-				BSTtree[idx]['old_child'][2] = []
-				BSTtree[idx]['old_child'][3] = []
-				newnode['old_child'] = BSTtree[idx]['old_child']
+				bst_tree[idx]['old_child'][2] = []
+				bst_tree[idx]['old_child'][3] = []
+				newnode['old_child'] = bst_tree[idx]['old_child']
 
-				del BSTtree[idx]
-				BSTtree.insert(idx, newnode)
+				del bst_tree[idx]
+				bst_tree.insert(idx, newnode)
 
-	def handleBracket(self, BSTtree):
-
+	def handle_bracket(self, bst_tree):
 		open_index = -1
 
-		for idx in range(len(BSTtree)):
+		for idx in range(len(bst_tree)):
 
-			if 'symbol' not in BSTtree[idx]:
+			if 'symbol' not in bst_tree[idx]:
 				continue
 
-			if BSTtree[idx]['symbol'] == '(':
+			if bst_tree[idx]['symbol'] == '(':
 				open_index = idx
-			elif BSTtree[idx]['symbol'] == ')':
+			elif bst_tree[idx]['symbol'] == ')':
 				close_index = idx
 
 				del_list = list(range(open_index, close_index + 1))
 				del_list.reverse()
 
-				bracket_content = [BSTtree[open_index + 1: close_index]]
+				bracket_content = [bst_tree[open_index + 1: close_index]]
 
-				newnode = self.createParentNode('bracket')
-				newnode['child'] = [self.handleCompounded_tree(bracket_content[0])]
+				newnode = self.create_parent_node('bracket')
+				newnode['child'] = [self.handle_compound_tree(bracket_content[0])]
 
-				if 'old_child' in BSTtree[idx]:
-					newnode['old_child'] = BSTtree[idx]['old_child']
+				if 'old_child' in bst_tree[idx]:
+					newnode['old_child'] = bst_tree[idx]['old_child']
 
 				for i in del_list:
-					del BSTtree[i]
+					del bst_tree[i]
 
-				BSTtree.insert(open_index, newnode)
+				bst_tree.insert(open_index, newnode)
 
 				return True
 		return False
 
-	def createLBSTtreefromBSTtree(self, BSTtree):
+	def create_lbst_tree_from_bst_tree(self, bst_tree):
+		compounded_tree = self.create_compound_symbol_baseline(bst_tree)
+		return self.handle_compound_tree(compounded_tree)
 
-		compounded_tree = self.createCompoundSymbolBaseline(BSTtree)
-
-		return self.handleCompounded_tree(compounded_tree)
-
-	def handleCompounded_tree(self, compounded_tree):
-
-		while self.handleBracket(compounded_tree):
+	def handle_compound_tree(self, compounded_tree):
+		while self.handle_bracket(compounded_tree):
 			pass
 
-		self.handleSub(compounded_tree)
-		self.handleSup(compounded_tree)
+		self.handle_sub(compounded_tree)
+		self.handle_sup(compounded_tree)
 
-		self.handleSQRT(compounded_tree)
+		self.handle_sqrt(compounded_tree)
 
-		self.handleNonScript_and_VariableRange(compounded_tree)
+		self.handle_nonscripted_and_variablerange(compounded_tree)
 
-		self.deleteOldChild(compounded_tree)
+		self.delete_old_child(compounded_tree)
 
 		return compounded_tree
 
-	def createOperationParentNode(self, ntype):
+	def create_operation_parent_node(self, ntype):
 		return {'type': 'Op' + ntype}
 
-	def createFunctionParentNode(self, ntype):
+	def create_function_parent_node(self, ntype):
 		return {'type': ntype}
 
-	def ParseToOperationTreeBinary(self, LBSTTree, op_list):
-		idx_list = list(range(len(LBSTTree)))
+	def parse_to_operation_tree_binary(self, lbst_tree, op_list):
+		idx_list = list(range(len(lbst_tree)))
 		idx_list.reverse()
 
 		for idx in idx_list:
-			if 'symbol' not in LBSTTree[idx]:
+			if 'symbol' not in lbst_tree[idx]:
 				continue
 
-			if LBSTTree[idx]['symbol'] in op_list:
-				newnode = self.createOperationParentNode(LBSTTree[idx]['symbol'])
+			if lbst_tree[idx]['symbol'] in op_list:
+				newnode = self.create_operation_parent_node(lbst_tree[idx]['symbol'])
 				newnode['child'] = []
 
-				newnode['child'].append([LBSTTree[idx - 1]])
-				newnode['child'].append([LBSTTree[idx + 1]])
+				newnode['child'].append([lbst_tree[idx - 1]])
+				newnode['child'].append([lbst_tree[idx + 1]])
 
-				del LBSTTree[idx + 1]
-				del LBSTTree[idx]
-				del LBSTTree[idx - 1]
+				del lbst_tree[idx + 1]
+				del lbst_tree[idx]
+				del lbst_tree[idx - 1]
 
-				LBSTTree.insert(idx - 1, newnode)
+				lbst_tree.insert(idx - 1, newnode)
 				return True
 
 		return False
 
-	def ParseToOperationTreeAS(self, LBSTTree):
-		idx_list = list(range(len(LBSTTree)))
+	def parse_to_operation_tree_as(self, lbst_tree):
+		idx_list = list(range(len(lbst_tree)))
 		idx_list.reverse()
 
 		for idx in idx_list:
-			if 'symbol' not in LBSTTree[idx]:
+			if 'symbol' not in lbst_tree[idx]:
 				continue
 
-			if LBSTTree[idx]['symbol'] in self.OperatorList_as:
+			if lbst_tree[idx]['symbol'] in self.OperatorList_as:
 
-				newnode = self.createOperationParentNode(LBSTTree[idx]['symbol'])
+				newnode = self.create_operation_parent_node(lbst_tree[idx]['symbol'])
 
 				if idx == 0 or (
-						'symbol' in LBSTTree[idx - 1] and
+						'symbol' in lbst_tree[idx - 1] and
 						(
-								LBSTTree[idx - 1]['symbol'] in self.OperatorList_as or
-								LBSTTree[idx - 1]['symbol'] in self.OperatorList_eq)):  # unary
+								lbst_tree[idx - 1]['symbol'] in self.OperatorList_as or
+								lbst_tree[idx - 1]['symbol'] in self.OperatorList_eq)):  # unary
 					newnode['child'] = []
 
-					newnode['child'].append([LBSTTree[idx + 1]])
+					newnode['child'].append([lbst_tree[idx + 1]])
 
-					del LBSTTree[idx + 1]
-					del LBSTTree[idx]
+					del lbst_tree[idx + 1]
+					del lbst_tree[idx]
 
-					LBSTTree.insert(idx, newnode)
+					lbst_tree.insert(idx, newnode)
 					return True
 
 				else:  # binary
 
 					newnode['child'] = []
-					newnode['child'].append([LBSTTree[idx - 1]])
-					newnode['child'].append([LBSTTree[idx + 1]])
+					newnode['child'].append([lbst_tree[idx - 1]])
+					newnode['child'].append([lbst_tree[idx + 1]])
 
-					del LBSTTree[idx + 1]
-					del LBSTTree[idx]
-					del LBSTTree[idx - 1]
-					LBSTTree.insert(idx - 1, newnode)
+					del lbst_tree[idx + 1]
+					del lbst_tree[idx]
+					del lbst_tree[idx - 1]
+					lbst_tree.insert(idx - 1, newnode)
 					return True
 
 		return False
 
-	def AddInvisibleMultiply(self, LBSTTree):  # for cases such as '2a'
-		idx_list = list(range(len(LBSTTree) - 1))
+	def add_invisible_multiply(self, lbst_tree):  # for cases such as '2a'
+		idx_list = list(range(len(lbst_tree) - 1))
 
 		for idx in idx_list:
 
-			cond_left = LBSTTree[idx]['type'] in self.AllowAjacentAsMultiply and LBSTTree[idx][
+			cond_left = lbst_tree[idx]['type'] in self.AllowAjacentAsMultiply and lbst_tree[idx][
 				'symbol'] not in self.AllowAjacentAsMultiplyRight
 
-			cond_right = LBSTTree[idx + 1]['type'] in self.AllowAjacentAsMultiply or (
-					'symbol' in LBSTTree[idx + 1] and
-					LBSTTree[idx + 1]['symbol'] in self.AllowAjacentAsMultiplyRight)
+			cond_right = lbst_tree[idx + 1]['type'] in self.AllowAjacentAsMultiply or (
+					'symbol' in lbst_tree[idx + 1] and
+					lbst_tree[idx + 1]['symbol'] in self.AllowAjacentAsMultiplyRight)
 
 			if cond_left and cond_right:
-				newnode = self.createOperationParentNode('Otime')
+				newnode = self.create_operation_parent_node('Otime')
 				newnode['child'] = []
-				newnode['child'].append([LBSTTree[idx]])
-				newnode['child'].append([LBSTTree[idx + 1]])
+				newnode['child'].append([lbst_tree[idx]])
+				newnode['child'].append([lbst_tree[idx + 1]])
 
-				del LBSTTree[idx + 1]
-				del LBSTTree[idx]
+				del lbst_tree[idx + 1]
+				del lbst_tree[idx]
 
-				LBSTTree.insert(idx, newnode)
+				lbst_tree.insert(idx, newnode)
 				return True
 
 		return False
 
-	def ParseChild(self, LBSTTree):
-		idx_list = list(range(len(LBSTTree)))
+	def parse_child(self, lbst_tree):
+		idx_list = list(range(len(lbst_tree)))
 
 		for idx in idx_list:
 
-			if 'child' not in LBSTTree[idx]:
+			if 'child' not in lbst_tree[idx]:
 				continue
 
-			for i in range(len(LBSTTree[idx]['child'])):
-				LBSTTree[idx]['child'][i] = self.ParseToOperationTree(LBSTTree[idx]['child'][i])
+			for i in range(len(lbst_tree[idx]['child'])):
+				lbst_tree[idx]['child'][i] = self.parse_to_operation_tree(lbst_tree[idx]['child'][i])
 
-	def parseFunctionOperator(self, LBSTTree):  # for cases such as f(x)
-		idx_list = list(range(len(LBSTTree) - 1))
+	def parse_function_operator(self, lbst_tree):  # for cases such as f(x)
+		idx_list = list(range(len(lbst_tree) - 1))
 		idx_list.reverse()
 
 		for idx in idx_list:
 
-			cond_function_name = 'symbol' in LBSTTree[idx] and LBSTTree[idx][
+			cond_function_name = 'symbol' in lbst_tree[idx] and lbst_tree[idx][
 				'symbol'] in self.AllowAjacentAsMultiplyRight
-			cond_user_defined_name = 'symbol' in LBSTTree[idx] and LBSTTree[idx][
+			cond_user_defined_name = 'symbol' in lbst_tree[idx] and lbst_tree[idx][
 				'symbol'] not in self.AllOp  # not merge to cond_function_name because i am not so sure about this case
 
-			cond_left = cond_user_defined_name or cond_function_name or LBSTTree[idx]['type'] in self.VariableRangeList
+			cond_left = cond_user_defined_name or cond_function_name or lbst_tree[idx]['type'] in self.VariableRangeList
 
-			type_right = LBSTTree[idx + 1]['type']
+			type_right = lbst_tree[idx + 1]['type']
 			if type_right in self.AllOp or (len(type_right) > 1 and type_right[:2] == 'Op'):
 				continue
 
 			if cond_left:
 				if cond_function_name or cond_user_defined_name:
-					newnode = self.createFunctionParentNode('f' + LBSTTree[idx]['symbol'])
+					newnode = self.create_function_parent_node('f' + lbst_tree[idx]['symbol'])
 				else:
-					newnode = self.createOperationParentNode('f' + LBSTTree[idx]['type'])
+					newnode = self.create_operation_parent_node('f' + lbst_tree[idx]['type'])
 				newnode['child'] = []
 
-				if 'child' in LBSTTree[idx]:
-					for c in LBSTTree[idx]['child']:
+				if 'child' in lbst_tree[idx]:
+					for c in lbst_tree[idx]['child']:
 						newnode['child'].append(c)
 
-				newnode['child'].append([LBSTTree[idx + 1]])
+				newnode['child'].append([lbst_tree[idx + 1]])
 
-				del LBSTTree[idx + 1]
-				del LBSTTree[idx]
+				del lbst_tree[idx + 1]
+				del lbst_tree[idx]
 
-				LBSTTree.insert(idx, newnode)
+				lbst_tree.insert(idx, newnode)
 				return True
 
 		return False
 
-	def ParseToOperationTree(self, LBSTTree):
+	def parse_to_operation_tree(self, lbst_tree):
 
-		self.ParseChild(LBSTTree)
+		self.parse_child(lbst_tree)
 
-		while self.AddInvisibleMultiply(LBSTTree):
+		while self.add_invisible_multiply(lbst_tree):
 			pass
 
-		while self.parseFunctionOperator(LBSTTree):
+		while self.parse_function_operator(lbst_tree):
 			pass
 
-		while self.ParseToOperationTreeBinary(LBSTTree, self.OperatorList_md):
+		while self.parse_to_operation_tree_binary(lbst_tree, self.OperatorList_md):
 			pass
-		while self.ParseToOperationTreeAS(LBSTTree):
+		while self.parse_to_operation_tree_as(lbst_tree):
 			pass
-		while self.ParseToOperationTreeBinary(LBSTTree, self.OperatorList_eq):
+		while self.parse_to_operation_tree_binary(lbst_tree, self.OperatorList_eq):
 			pass
 
-		return LBSTTree
+		return lbst_tree
 
-	def createOperatorTreeFromLBSTTree(self, LBSTTree):
+	def create_operator_tree_from_lbst_tree(self, lbst_tree):
 
-		return self.ParseToOperationTree(LBSTTree)
+		return self.parse_to_operation_tree(lbst_tree)
 
-	def createLBSTnodefromBSTnode(self, BSTnode):
-		# sym, clas, align = self.symbol_manager.getSymbolFromIndex(BSTnode[4])
-		self.symbol_manager.getSymbolFromIndex(BSTnode[4])
+	def create_lbst_node_from_bst_node(self, bst_node):
+		# sym, clas, align = self.symbol_manager.get_symbol_from_idx(BSTnode[4])
+		self.symbol_manager.get_symbol_from_idx(bst_node[4])
 
-	def countChild(self, BSTnode):
-		childnodes = BSTnode[9]
+	def count_child(self, bst_node):
+		childnodes = bst_node[9]
 		count = 0
 		for child in childnodes:
 			count += len(child)
@@ -528,20 +520,19 @@ class LBST:
 		return count
 
 
-# noinspection PyPep8Naming
 class LatexGenerator:
 	def __init__(self):
 		self.greek_alphabet = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'muy', 'rho', 'nuy', 'omega', 'lamda', 'phi', 'sigma', 'theta', 'pi']
 
-	def process(self, LBSTTree):
-		print(LBSTTree)
-		output = self.createLatexString(LBSTTree)
+	def process(self, lbst_tree):
+		print(lbst_tree)
+		output = self.create_latex_string(lbst_tree)
 
 		print(output)
 
 		return output
 
-	def getStringFromNode(self, node):
+	def get_string_from_node(self, node):
 		if 'type' in node:
 			if node['type'] == 'literal':
 
@@ -588,20 +579,20 @@ class LatexGenerator:
 
 				return node['symbol']
 			elif node['type'] == 'bracket':
-				return '(' + self.createLatexString(node['child'][0]) + ')'
+				return '(' + self.create_latex_string(node['child'][0]) + ')'
 			elif node['type'] == 'sqrt':
-				return '\\sqrt{' + self.createLatexString(node['child'][0]) + '}'
+				return '\\sqrt{' + self.create_latex_string(node['child'][0]) + '}'
 			elif node['type'] == 'sup':
 
-				base = self.createLatexString(node['child'][0])
-				sup = self.createLatexString(node['child'][1])
+				base = self.create_latex_string(node['child'][0])
+				sup = self.create_latex_string(node['child'][1])
 
 				return base + '^{ ' + sup + ' }'
 
 			elif node['type'] == 'sub':
 
-				base = self.createLatexString(node['child'][0])
-				sub = self.createLatexString(node['child'][1])
+				base = self.create_latex_string(node['child'][0])
+				sub = self.create_latex_string(node['child'][1])
 
 				# SPECIAL #############
 				if 'symbol' in node['child'][1][0] and node['child'][1][0]['symbol'] == '.':
@@ -611,66 +602,65 @@ class LatexGenerator:
 				return base + '_{ ' + sub + ' }'
 
 			elif node['type'] == 'frac':
-				upper_node = self.createLatexString(node['child'][0])
-				lower_node = self.createLatexString(node['child'][1])
+				upper_node = self.create_latex_string(node['child'][0])
+				lower_node = self.create_latex_string(node['child'][1])
 
 				return '\\frac{' + upper_node + '}{' + lower_node + '}'
 
 			elif node['type'] == '_Sigma':
-				upper_node = self.createLatexString(node['child'][0])
-				lower_node = self.createLatexString(node['child'][1])
+				upper_node = self.create_latex_string(node['child'][0])
+				lower_node = self.create_latex_string(node['child'][1])
 
 				return '\\sum^{' + upper_node + '}_{' + lower_node + '}'
 
 			elif node['type'] == '_Pi':
-				upper_node = self.createLatexString(node['child'][0])
-				lower_node = self.createLatexString(node['child'][1])
+				upper_node = self.create_latex_string(node['child'][0])
+				lower_node = self.create_latex_string(node['child'][1])
 
 				return '\\prod^{' + upper_node + '}_{' + lower_node + '}'
 
 			elif node['type'] == 'lim':
-				lower_node = self.createLatexString(node['child'][1])
+				lower_node = self.create_latex_string(node['child'][1])
 
 				return '\\lim_{' + lower_node + '}'
 
 			elif node['type'] == 'integral':
-				upper_node = self.createLatexString(node['child'][0])
-				lower_node = self.createLatexString(node['child'][1])
+				upper_node = self.create_latex_string(node['child'][0])
+				lower_node = self.create_latex_string(node['child'][1])
 
 				return '\\int^{' + upper_node + '}_{' + lower_node + '}'
 			else:
 				if len(node['child'][0]) > 0 and len(node['child'][1]) == 0:
-					return node['type'] + '^{' + self.createLatexString(node['child'][0]) + '}'
+					return node['type'] + '^{' + self.create_latex_string(node['child'][0]) + '}'
 
 				elif len(node['child'][0]) == 0 and len(node['child'][1]) > 0:
-					return node['type'] + '_{' + self.createLatexString(node['child'][1]) + '}'
+					return node['type'] + '_{' + self.create_latex_string(node['child'][1]) + '}'
 
 				elif len(node['child'][0]) > 0 and len(node['child'][1]) > 0:
-					return node['type'] + '^{' + self.createLatexString(
-						node['child'][0]) + '}_{' + self.createLatexString(node['child'][1]) + '}'
+					return node['type'] + '^{' + self.create_latex_string(
+						node['child'][0]) + '}_{' + self.create_latex_string(node['child'][1]) + '}'
 
 				return str(node)
 		else:
 			return str(node)
 
-	def createLatexString(self, LBSTTree):
-		Latex_string = ''
+	def create_latex_string(self, lbst_tree):
+		latex_str = ''
 
-		if type(LBSTTree) == dict:
+		if type(lbst_tree) == dict:
 
-			Latex_string = Latex_string + self.getStringFromNode(LBSTTree)
+			latex_str = latex_str + self.get_string_from_node(lbst_tree)
 
-			if 'child' in LBSTTree:
+			if 'child' in lbst_tree:
 				pass
-			return Latex_string
+			return latex_str
 
-		for child in LBSTTree:
-			Latex_string = Latex_string + self.createLatexString(child)
+		for child in lbst_tree:
+			latex_str = latex_str + self.create_latex_string(child)
 
-		return Latex_string
+		return latex_str
 
 
-# noinspection PyPep8Naming,PyAttributeOutsideInit,PyShadowingBuiltins,PyDictCreation
 class BBParser:
 	def __init__(self):
 		self.debugInt = 0
@@ -688,7 +678,7 @@ class BBParser:
 	# TL TR AB BL
 	#
 
-	def getDataFromFile(self):  # debug
+	def get_data_from_file(self):  # debug
 		# with open('Exp_train_giaidoan2.txt') as f:
 		with open('ssd_train.txt') as f:
 			z = f.readlines()
@@ -699,30 +689,30 @@ class BBParser:
 		self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 		# self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 26 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 74 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 57 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 
-	def process(self, input):  # input is raw string
-		raw_line = input.replace('\n', '').split(' ')
+	def process(self, input_line):  # input is raw string
+		raw_line = input_line.strip().split()
 
 		self.handling_file = raw_line[0]
 		raw_line = raw_line[1:]
 
 		raw_line = list(map(lambda s: int(float(s)), raw_line))
 
-		BB_List = []
+		bbox_lst = []
 
 		# for i in range(raw_line[0]):
 		for i in range(int(len(raw_line)/6)):
-			# BB_List.append(raw_line[5 * i + 1: 5 * i + 6])
-			BB_List.append(raw_line[6*i + 2:6*(i+1)] + [raw_line[6*i]])
+			# bbox_lst.append(raw_line[5 * i + 1: 5 * i + 6])
+			bbox_lst.append(raw_line[6*i + 2:6*(i+1)] + [raw_line[6*i]])
 
-		self.preprocessingBBList(BB_List)
-		BST = self.BuildBST(BB_List)
-		# self.debugPrint(BST)
+		self.preprocess_bbox_lst(bbox_lst)
+		bst = self.build_bst(bbox_lst)
+		# self.debug_print(bst)
 
 		self.current_LBST = LBST(self.symbol_manager)
 
-		LBSTTree = self.current_LBST.process(BST)
+		lbst_tree = self.current_LBST.process(bst)
 
-		latex_string = self.latexgenerator.process(LBSTTree)
+		latex_string = self.latexgenerator.process(lbst_tree)
 
 		return latex_string
 
@@ -740,9 +730,9 @@ class BBParser:
 	# 	for i in range(raw_line[0]):
 	# 		BB_List.append(raw_line[5 * i + 1: 5 * i + 6])
 	#
-	# 	self.preprocessingBBList(BB_List)
-	# 	BST = self.BuildBST(BB_List)
-	# 	# self.debugPrint(BST)
+	# 	self.preprocess_bbox_lst(BB_List)
+	# 	BST = self.build_bst(BB_List)
+	# 	# self.debug_print(BST)
 	#
 	# 	self.current_LBST = LBST(self.symbol_manager)
 	#
@@ -752,27 +742,27 @@ class BBParser:
 	#
 	# 	return latex_string
 
-	def BuildBST(self, BB_list):
-		BST = []
-		if len(BB_list) == 0:
-			return BST
-		node_list = sorted(BB_list, key=itemgetter(0))
+	def build_bst(self, bbox_lst):
+		bst = []
+		if len(bbox_lst) == 0:
+			return bst
+		node_list = sorted(bbox_lst, key=itemgetter(0))
 
-		retvalue = self.ExtractBaseline(node_list)
+		retvalue = self.extract_baseline(node_list)
 
 		return retvalue
 
-	def debugPrint(self, tree):
+	def debug_print(self, tree):
 		print(self.handling_file)
 		for i in tree:
-			sym, clas, align = self.symbol_manager.getSymbolFromIndex(i[4])
+			sym, clas, align = self.symbol_manager.get_symbol_from_idx(i[4])
 			# print(i)
 			print(sym)
 			for j in i[9]:
 				print(j)
 			print('---')
 
-	def ExtractBaseline(self, rnode_list):
+	def extract_baseline(self, rnode_list):
 		if len(rnode_list) < 1:
 			return rnode_list
 
@@ -786,13 +776,13 @@ class BBParser:
 
 		del rnode_list[idx]
 
-		baseline_symbols = self.Hor([s_start], rnode_list)
+		baseline_symbols = self.hor([s_start], rnode_list)
 
-		updated_baseline = self.CollectRegion(baseline_symbols)
+		updated_baseline = self.collect_region(baseline_symbols)
 
 		for symbol in updated_baseline:
 			for idx in range(len(symbol[self.Atb['child_temp']])):
-				temp = self.ExtractBaseline(symbol[self.Atb['child_temp']][idx])
+				temp = self.extract_baseline(symbol[self.Atb['child_temp']][idx])
 
 				# print('>>>>>')
 				# print(symbol[self.Atb['child_temp']][idx])
@@ -804,20 +794,20 @@ class BBParser:
 
 		return updated_baseline
 
-	def start(self, S_node_list):  # return the index of first symbol in baseline
-		if len(S_node_list) < 1:
+	def start(self, s_node_lst):  # return the index of first symbol in baseline
+		if len(s_node_lst) < 1:
 			return 0
 
-		temp_list = S_node_list[:]
+		temp_list = s_node_lst[:]
 		while len(temp_list) > 1:
 
 			sym_n = temp_list[-1]
 			sym_n_1 = temp_list[-2]
 
-			sym_n_sym, sym_n_class, sym_n_align = self.symbol_manager.getSymbolFromIndex(sym_n[4])
+			sym_n_sym, sym_n_class, sym_n_align = self.symbol_manager.get_symbol_from_idx(sym_n[4])
 
-			if self.overlap(sym_n, sym_n_1) or self.Contains(sym_n, sym_n_1) or (
-					sym_n_class == 'VariableRange' and not self.IsAdjacent(sym_n_1, sym_n)):
+			if self.overlap(sym_n, sym_n_1) or self.contains(sym_n, sym_n_1) or (
+					sym_n_class == 'VariableRange' and not self.is_adjacent(sym_n_1, sym_n)):
 				# s_n dominate
 				del temp_list[-2]
 			else:
@@ -825,64 +815,64 @@ class BBParser:
 
 		return temp_list[0]
 
-	# self.debugDraw(temp_list)
+	# self.debug_draw(temp_list)
 
-	def Hor(self, S_node_list_1, S_node_list_2):
-		if len(S_node_list_2) == 0:
-			return S_node_list_1
+	def hor(self, s_node_lst_1, s_node_lst_2):
+		if len(s_node_lst_2) == 0:
+			return s_node_lst_1
 
-		current_symbol = S_node_list_1[-1]
+		current_symbol = s_node_lst_1[-1]
 
-		remaining_symbols, current_symbol_new = self.Partition(S_node_list_2, copy.deepcopy(current_symbol))
+		remaining_symbols, current_symbol_new = self.partition(s_node_lst_2, copy.deepcopy(current_symbol))
 
 		# replace
 
-		S_node_list_1.pop()
+		s_node_lst_1.pop()
 
-		S_node_list_1.append(current_symbol_new)
+		s_node_lst_1.append(current_symbol_new)
 
 		if len(remaining_symbols) == 0:
-			return S_node_list_1
+			return s_node_lst_1
 
 		# 6
-		sym, clas, align = self.symbol_manager.getSymbolFromIndex(current_symbol_new[4])
+		sym, clas, align = self.symbol_manager.get_symbol_from_idx(current_symbol_new[4])
 
 		if clas == 'NonScripted':
 			temp = self.start(remaining_symbols)
-			temp = S_node_list_1 + [temp]
+			temp = s_node_lst_1 + [temp]
 
-			return self.Hor(temp, remaining_symbols)
+			return self.hor(temp, remaining_symbols)
 
-		SL = remaining_symbols[:]
+		sl = remaining_symbols[:]
 
-		while len(SL) > 0:
-			l1 = SL[0]
+		while len(sl) > 0:
+			l1 = sl[0]
 
-			if self.IsRegularHor(current_symbol_new, l1):
+			if self.is_regular_hor(current_symbol_new, l1):
 				####
-				# if (len(SL) == 2):
+				# if (len(sl) == 2):
 
-				temp = self.CheckOverlap(l1, remaining_symbols)
+				temp = self.check_overlap(l1, remaining_symbols)
 
-				temp = S_node_list_1 + [temp]
+				temp = s_node_lst_1 + [temp]
 
-				return self.Hor(temp, remaining_symbols)
+				return self.hor(temp, remaining_symbols)
 
-			SL = SL[1:]
+			sl = sl[1:]
 
-		current_symbol_new = self.PartitionFinal(remaining_symbols, copy.deepcopy(current_symbol_new))
+		current_symbol_new = self.partition_final(remaining_symbols, copy.deepcopy(current_symbol_new))
 
-		temp = S_node_list_1[:]
+		temp = s_node_lst_1[:]
 		temp.pop()
 		temp.append(current_symbol_new)
 
 		return temp
 
-	def CollectRegion(self, snode_list):
-		temp = self.CollectRegionPartial(snode_list, 'TL')
-		return self.CollectRegionPartial(temp, 'BL')
+	def collect_region(self, snode_list):
+		temp = self.collect_region_partial(snode_list, 'TL')
+		return self.collect_region_partial(temp, 'BL')
 
-	def CollectRegionPartial(self, snode_list, region):
+	def collect_region_partial(self, snode_list, region):
 		if len(snode_list) == 0:
 			return snode_list
 
@@ -904,9 +894,9 @@ class BBParser:
 
 		if len(snode_list) > 1:
 			s2 = snode_list[1]
-			superList, tleftList = self.PartitionSharedRegion(region_diagonal, s1, s2)
-			s1_new = self.addRegion(region_s1_diagonal, superList, s1)
-			s2_new = self.addRegion(region_diagonal, tleftList, self.removeRegion([region_diagonal], s2))
+			super_list, tleft_list = self.partition_shared_region(region_diagonal, s1, s2)
+			s1_new = self.add_region(region_s1_diagonal, super_list, s1)
+			s2_new = self.add_region(region_diagonal, tleft_list, self.remove_region([region_diagonal], s2))
 
 			del_idx = 0
 			for i in snode_list_new:
@@ -917,27 +907,27 @@ class BBParser:
 
 			snode_list.insert(del_idx, s2_new)
 
-		syms1_new, class1_new, aligs1_new = self.symbol_manager.getSymbolFromIndex(s1_new[self.Atb['label']])
+		syms1_new, class1_new, aligs1_new = self.symbol_manager.get_symbol_from_idx(s1_new[self.Atb['label']])
 		if class1_new == 'VariableRange':
 			# region_list = ['TL', 'T', 'SUP']
 
-			s1_new = self.mergeRegion(region_list, region_vertical, s1)
+			s1_new = self.merge_region(region_list, region_vertical, s1)
 
-		return [s1_new] + self.CollectRegion(snode_list_new)
+		return [s1_new] + self.collect_region(snode_list_new)
 
-	def IsRegularHor(self, snode1, snode2):
-		# sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(snode1[self.Atb['label']])
-		self.symbol_manager.getSymbolFromIndex(snode1[self.Atb['label']])
-		sym2, clas2, alig2 = self.symbol_manager.getSymbolFromIndex(snode2[self.Atb['label']])
+	def is_regular_hor(self, snode1, snode2):
+		# sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(snode1[self.Atb['label']])
+		self.symbol_manager.get_symbol_from_idx(snode1[self.Atb['label']])
+		sym2, clas2, alig2 = self.symbol_manager.get_symbol_from_idx(snode2[self.Atb['label']])
 
-		cond_a = self.IsAdjacent(snode2, snode1)
+		cond_a = self.is_adjacent(snode2, snode1)
 
 		cond_b = snode1[1] > snode2[1] and snode1[3] < snode2[3]  # 1 in 2 horizontally
 		cond_c = (sym2 == '(' or sym2 == ')') and snode2[1] < snode1[6] < snode2[3]
 
 		return cond_a or cond_b or cond_c
 
-	def preprocessingBBList(self, BB_list):
+	def preprocess_bbox_lst(self, bbox_lst):
 		# format: (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup, child)
 		# child_temp: TL, BL, T, B, C, SUP, SUB
 		# child_main: SUP, SUB, UPP, LOW
@@ -963,8 +953,8 @@ class BBParser:
 		self.ChildLabel['SUP'] = 5
 		self.ChildLabel['SUB'] = 6
 
-		for BB in BB_list:
-			sym, clas, align = self.symbol_manager.getSymbolFromIndex(BB[4])
+		for BB in bbox_lst:
+			sym, clas, align = self.symbol_manager.get_symbol_from_idx(BB[4])
 			# centroidx
 			if sym == '(':
 				BB.append((BB[0] + BB[2]) / 2)
@@ -1002,7 +992,7 @@ class BBParser:
 
 			BB.append([[], [], [], [], [], [], []])
 
-			sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(BB[4])
+			sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(BB[4])
 			BB.append(sym1)
 
 	# BB.append([[], [], [], []])
@@ -1012,12 +1002,12 @@ class BBParser:
 		if snode_1[0] == snode_2[0] and snode_1[1] == snode_2[1]:
 			return False
 
-		sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(snode_1[4])
-		sym2, clas2, alig2 = self.symbol_manager.getSymbolFromIndex(snode_2[4])
+		sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(snode_1[4])
+		sym2, clas2, alig2 = self.symbol_manager.get_symbol_from_idx(snode_2[4])
 
 		cond_b = clas1 == 'NonScripted'
 		cond_c = snode_1[0] <= snode_2[5] < snode_1[2]
-		cond_d = not self.Contains(snode_2, snode_1)
+		cond_d = not self.contains(snode_2, snode_1)
 
 		cond_e_i = \
 			(sym2 == '(' or sym2 == ')') and \
@@ -1032,13 +1022,13 @@ class BBParser:
 		ret = cond_b and cond_c and cond_d and cond_e
 		return ret
 
-	def CheckOverlap(self, snode, snode_list):
+	def check_overlap(self, snode, snode_list):
 		longest = -1
 
 		return_candidate = 0
 
 		for node in snode_list:
-			sym, clas, alig = self.symbol_manager.getSymbolFromIndex(node[4])
+			sym, clas, alig = self.symbol_manager.get_symbol_from_idx(node[4])
 			if clas == 'NonScripted' and self.overlap(node, snode):
 				w = node[2] - node[0]
 				if w > longest:
@@ -1050,20 +1040,20 @@ class BBParser:
 		else:
 			return return_candidate
 
-	def Contains(self, snode_1, snode_2):  # for root
-		sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(snode_1[4])
-		# sym2, clas2, alig2 = self.symbol_manager.getSymbolFromIndex(snode_2[4])
-		self.symbol_manager.getSymbolFromIndex(snode_2[4])
+	def contains(self, snode_1, snode_2):  # for root
+		sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(snode_1[4])
+		# sym2, clas2, alig2 = self.symbol_manager.get_symbol_from_idx(snode_2[4])
+		self.symbol_manager.get_symbol_from_idx(snode_2[4])
 
 		cond_1 = clas1 == 'Root'
 		cond_2 = snode_1[0] <= snode_2[5] < snode_1[2]
 		cond_3 = snode_1[1] <= snode_2[6] < snode_1[4]
 		return cond_1 and cond_2 and cond_3
 
-	def IsAdjacent(self, snode_1, snode_2):  # Test whether snode1 is horizontally adjacent to snode2, where snode1 may be to the left or right of snode2
-		# sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(snode_1[4])
-		self.symbol_manager.getSymbolFromIndex(snode_1[4])
-		sym2, clas2, alig2 = self.symbol_manager.getSymbolFromIndex(snode_2[4])
+	def is_adjacent(self, snode_1, snode_2):  # Test whether snode1 is horizontally adjacent to snode2, where snode1 may be to the left or right of snode2
+		# sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(snode_1[4])
+		self.symbol_manager.get_symbol_from_idx(snode_1[4])
+		sym2, clas2, alig2 = self.symbol_manager.get_symbol_from_idx(snode_2[4])
 
 		# format: (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup)
 		# child: TL, BL, T, B, C
@@ -1076,7 +1066,7 @@ class BBParser:
 
 		return (clas2 != 'NonScripted') and (snode_2[7] > snode_1[6] > snode_2[8])
 
-	def Partition(self, snode_list, snode):
+	def partition(self, snode_list, snode):
 		temp_list = snode_list[:]
 
 		del_idx_list = []
@@ -1114,7 +1104,7 @@ class BBParser:
 
 		return snode_list, snode
 
-	def PartitionFinal(self, snode_list, snode):
+	def partition_final(self, snode_list, snode):
 		# format: (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup)
 		# child: TL, BL, T, B, C, SUP, SUB
 		for node in snode_list:
@@ -1125,41 +1115,40 @@ class BBParser:
 
 		return snode
 
-	def PartitionSharedRegion(self, region_label, snode1, snode2):
+	def partition_shared_region(self, region_label, snode1, snode2):
 
-		S_node_list_1 = []
-		S_node_list_2 = []
+		s_node_lst_1 = []
+		s_node_lst_2 = []
 
 		idx = 0
 		if region_label == 'BL':
 			idx = 1
 
-		# rnode = SL = copy.deepcopy(snode2[self.Atb['child_temp']][idx])
-		SL = copy.deepcopy(snode2[self.Atb['child_temp']][idx])
+		# rnode = sl = copy.deepcopy(snode2[self.Atb['child_temp']][idx])
+		sl = copy.deepcopy(snode2[self.Atb['child_temp']][idx])
 
-		sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(snode1[4])
-		sym2, clas2, alig2 = self.symbol_manager.getSymbolFromIndex(snode2[4])
+		sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(snode1[4])
+		sym2, clas2, alig2 = self.symbol_manager.get_symbol_from_idx(snode2[4])
 
 		if clas1 == 'Nonscripted':
-			S_node_list_1 = []
-			return S_node_list_1, SL
+			s_node_lst_1 = []
+			return s_node_lst_1, sl
 
-		elif (clas2 != 'VariableRange') or (clas2 == 'VariableRange' and not self.HasNonEmptyRegion(snode2, 'T')):
-			S_node_list_1 = SL
-			return S_node_list_1, S_node_list_2
+		elif (clas2 != 'VariableRange') or (clas2 == 'VariableRange' and not self.has_non_empty_region(snode2, 'T')):
+			s_node_lst_1 = sl
+			return s_node_lst_1, s_node_lst_2
 
-		elif clas2 == 'VariableRange' and self.HasNonEmptyRegion(snode2, 'T'):
-			for i in SL:
-				if self.IsAdjacent(i, snode2):
-					S_node_list_1.append(i)
+		elif clas2 == 'VariableRange' and self.has_non_empty_region(snode2, 'T'):
+			for i in sl:
+				if self.is_adjacent(i, snode2):
+					s_node_lst_1.append(i)
 				else:
-					S_node_list_2.append(i)
+					s_node_lst_2.append(i)
 
-			return S_node_list_1, S_node_list_2
+			return s_node_lst_1, s_node_lst_2
 
-	def HasNonEmptyRegion(self, snode, region_label):
+	def has_non_empty_region(self, snode, region_label):
 		# child: TL, BL, T, B, C, SUP, SUB
-
 		return len(snode[self.Atb['child_temp']][self.ChildLabel[region_label]]) > 0
 
 	# if region_label == 'TL':
@@ -1178,11 +1167,11 @@ class BBParser:
 	# 	return len(snode[self.Atb['child_temp']][6]) > 0
 	# return False
 
-	def debugDraw(self, temp_list):
+	def debug_draw(self, temp_list):
 		print('debug draw')
-		# sym1, clas1, alig1 = self.symbol_manager.getSymbolFromIndex(temp_list[0][4])
+		# sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(temp_list[0][4])
 
-		self.symbol_manager.getSymbolFromIndex(temp_list[0][4])
+		self.symbol_manager.get_symbol_from_idx(temp_list[0][4])
 
 		img = Image.open('./hardimg/' + self.handling_file)
 
@@ -1193,8 +1182,7 @@ class BBParser:
 
 		img.save('./result2/' + self.handling_file)
 
-	def addRegion(self, region_label, list_to_add, snode):
-
+	def add_region(self, region_label, list_to_add, snode):
 		snode[self.Atb['child_temp']][self.ChildLabel[region_label]] = \
 			snode[self.Atb['child_temp']][self.ChildLabel[region_label]] + list_to_add
 
@@ -1214,7 +1202,7 @@ class BBParser:
 		# 	snode[self.Atb['child_temp']][6] = snode[self.Atb['child_temp']][6] + list_to_add
 		return snode
 
-	def removeRegion(self, region_label_list, snode):
+	def remove_region(self, region_label_list, snode):
 		for region_label in region_label_list:
 			snode[self.Atb['child_temp']][self.ChildLabel[region_label]] = []
 		# if region_label == 'TL':
@@ -1234,8 +1222,7 @@ class BBParser:
 
 		return snode
 
-	def mergeRegion(self, region_label_list, region_label, snode):
-
+	def merge_region(self, region_label_list, region_label, snode):
 		add_idx = self.ChildLabel[region_label]
 
 		for region_to_merge in region_label_list:
