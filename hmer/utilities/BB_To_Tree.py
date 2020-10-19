@@ -687,6 +687,7 @@ class BBParser:
 	def debug(self):
 		# self.process('null 4 272 236 323 287 13 143 265 191 323 5 359 202 438 280 72 108 173 169 258 72')
 		self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
+		# self.process('training/data/CROHME_2013_valid/122_em_358.png 6 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 5 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 		# self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 26 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 74 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 57 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 
 	def process(self, input_line):  # input is raw string
@@ -931,7 +932,7 @@ class BBParser:
 		# format: (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup, child)
 		# child_temp: TL, BL, T, B, C, SUP, SUB
 		# child_main: SUP, SUB, UPP, LOW
-		self.Atb = {}  # BB Attribute
+		self.Atb = {}  # bbox Attribute
 		self.Atb['tlx'] = 0
 		self.Atb['tly'] = 1
 		self.Atb['brx'] = 2
@@ -953,47 +954,47 @@ class BBParser:
 		self.ChildLabel['SUP'] = 5
 		self.ChildLabel['SUB'] = 6
 
-		for BB in bbox_lst:
-			sym, clas, align = self.symbol_manager.get_symbol_from_idx(BB[4])
+		for bbox in bbox_lst:
+			sym, clas, align = self.symbol_manager.get_symbol_from_idx(bbox[4])
 			# centroidx
 			if sym == '(':
-				BB.append((BB[0] + BB[2]) / 2)
+				bbox.append((bbox[0] + bbox[2]) / 2)
 			elif sym == ')':
-				BB.append((BB[0] + BB[2]) / 2)
+				bbox.append((bbox[0] + bbox[2]) / 2)
 			else:
-				c = BB[0] + (BB[2] - BB[0]) / 2.0
-				BB.append(c)
+				c = bbox[0] + (bbox[2] - bbox[0]) / 2.0
+				bbox.append(c)
 
 			# centroidy
 			if align == 'Centred':
-				c = BB[1] + (BB[3] - BB[1]) / 2.0
-				BB.append(c)
+				c = bbox[1] + (bbox[3] - bbox[1]) / 2.0
+				bbox.append(c)
 			elif align == 'Ascender':
-				c = BB[1] + (BB[3] - BB[1]) / 4.0 * 3
-				BB.append(c)
+				c = bbox[1] + (bbox[3] - bbox[1]) / 4.0 * 3
+				bbox.append(c)
 			else:
-				c = BB[1] + (BB[3] - BB[1]) / 4.0
-				BB.append(c)
+				c = bbox[1] + (bbox[3] - bbox[1]) / 4.0
+				bbox.append(c)
 
 			# thres_sub
-			height = BB[3] - BB[1]
+			height = bbox[3] - bbox[1]
 
 			if clas == 'NonScripted':
-				BB.append(BB[6])
-				BB.append(BB[6])
+				bbox.append(bbox[6])
+				bbox.append(bbox[6])
 			# elif clas == 'Bracket':
 
 			elif clas == 'Plain_Descender':
-				BB.append(BB[1] + 0.5 * height + 0.5 * height * self.threshold_ratio_t)
-				BB.append(BB[1] + height - 0.5 * height * self.threshold_ratio_t)
+				bbox.append(bbox[1] + 0.5 * height + 0.5 * height * self.threshold_ratio_t)
+				bbox.append(bbox[1] + height - 0.5 * height * self.threshold_ratio_t)
 			else:
-				BB.append(BB[1] + height * self.threshold_ratio_t)
-				BB.append(BB[1] + height - height * self.threshold_ratio_t)
+				bbox.append(bbox[1] + height * self.threshold_ratio_t)
+				bbox.append(bbox[1] + height - height * self.threshold_ratio_t)
 
-			BB.append([[], [], [], [], [], [], []])
+			bbox.append([[], [], [], [], [], [], []])
 
-			sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(BB[4])
-			BB.append(sym1)
+			sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(bbox[4])
+			bbox.append(sym1)
 
 	# BB.append([[], [], [], []])
 
