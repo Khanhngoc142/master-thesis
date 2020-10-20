@@ -1,3 +1,4 @@
+from pprint import pprint
 from operator import itemgetter
 import string
 import copy
@@ -525,9 +526,9 @@ class LatexGenerator:
 		self.greek_alphabet = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'muy', 'rho', 'nuy', 'omega', 'lamda', 'phi', 'sigma', 'theta', 'pi']
 
 	def process(self, lbst_tree):
-		print(lbst_tree)
 		output = self.create_latex_string(lbst_tree)
 
+		pprint(lbst_tree)
 		print(output)
 
 		return output
@@ -535,12 +536,10 @@ class LatexGenerator:
 	def get_string_from_node(self, node):
 		if 'type' in node:
 			if node['type'] == 'literal':
-
 				if node['symbol'] == 'integral':
 					return '\\int'
 				if node['symbol'] == '_Delta':
 					return '\\Delta'
-
 				if node['symbol'] == 'ldots':
 					return '\\ldots'
 				if node['symbol'] == 'rightarrow':
@@ -580,11 +579,11 @@ class LatexGenerator:
 				return node['symbol']
 			elif node['type'].startswith('bracket'):
 				tmp_bracket = ['(']
-				if tmp_bracket == '(':
+				if '(' in tmp_bracket:
 					tmp_bracket.append(')')
-				elif tmp_bracket == '[':
+				elif '[' in tmp_bracket:
 					tmp_bracket.append(']')
-				elif tmp_bracket == '\\{':
+				elif '\\{' in tmp_bracket:
 					tmp_bracket.append('\\}')
 				return tmp_bracket[0] + self.create_latex_string(node['child'][0]) + tmp_bracket[1]
 			elif node['type'] == 'sqrt':
@@ -670,6 +669,9 @@ class LatexGenerator:
 
 class BBParser:
 	def __init__(self):
+		self.Atb = {'tlx': 0, 'tly': 1, 'brx': 2, 'bry': 3, 'label': 4, 'centroidx': 5, 'centroidy': 6, 'thres_sub': 7, 'thres_sup': 8, 'child_temp': 9, 'child_main': 10}
+		self.ChildLabel = {'TL': 0, 'BL': 1, 'T': 2, 'B': 3, 'C': 4, 'SUP': 5, 'SUB': 6}
+
 		self.debugInt = 0
 		print('initializing ...')
 
@@ -693,8 +695,17 @@ class BBParser:
 
 	def debug(self):
 		# self.process('null 4 272 236 323 287 13 143 265 191 323 5 359 202 438 280 72 108 173 169 258 72')
+		self.process(
+			'null '
+			'60 48.06818181818182 137.0121849661801 63.2345830362556 180.47563006763986 '
+			'1 83.77147385123423 122.52436993236017 93.4050448396467 158.74390751690999 '
+			'89 100.64895235655666 129.76827744927013 137.81100578903155 158.74390751690999 '
+			'1 159.30111799179582 122.52436993236017 167.02824620463701 158.74390751690999 '
+			'23 182.25672081317646 122.52436993236017 202.50712421446732 158.74390751690999 '
+			'2 224.54067624506845 122.52436993236017 231.18092480223592 158.74390751690999 '
+			'2 253.6373840410234 122.52436993236017 259.4318181818182 158.74390751690999')
 		# self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
-		self.process('training/data/CROHME_2013_valid/122_em_358.png 4 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 3 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
+		# self.process('training/data/CROHME_2013_valid/122_em_358.png 4 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 3 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 		# self.process('training/data/CROHME_2013_valid/122_em_358.png 6 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 5 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 		# self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 26 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 74 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 57 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625')
 
@@ -709,9 +720,10 @@ class BBParser:
 		bbox_lst = []
 
 		# for i in range(raw_line[0]):
-		for i in range(int(len(raw_line)/6)):
-			# bbox_lst.append(raw_line[5 * i + 1: 5 * i + 6])
-			bbox_lst.append(raw_line[6*i + 2:6*(i+1)] + [raw_line[6*i]])
+		for i in range(int(len(raw_line) / 5)):
+			bbox_lst.append(raw_line[5 * i + 1: 5 * (i + 1)] + [raw_line[5 * i]])
+		# for i in range(int(len(raw_line)/6)):
+		# 	bbox_lst.append(raw_line[6*i + 2:6*(i+1)] + [raw_line[6*i]])
 
 		self.preprocess_bbox_lst(bbox_lst)
 		bst = self.build_bst(bbox_lst)
@@ -752,10 +764,15 @@ class BBParser:
 	# 	return latex_string
 
 	def build_bst(self, bbox_lst):
+		"""
+		Build BST tree from a list of bboxes
+		:param bbox_lst: each bbox has the following format : (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup, child)
+		:return:
+		"""
 		bst = []
 		if len(bbox_lst) == 0:
 			return bst
-		node_list = sorted(bbox_lst, key=itemgetter(0))
+		node_list = sorted(bbox_lst, key=itemgetter(0))  # sort bboxes by xmin
 
 		retvalue = self.extract_baseline(node_list)
 
@@ -940,40 +957,17 @@ class BBParser:
 		# format: (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup, child)
 		# child_temp: TL, BL, T, B, C, SUP, SUB
 		# child_main: SUP, SUB, UPP, LOW
-		self.Atb = {}  # bbox Attribute
-		self.Atb['tlx'] = 0
-		self.Atb['tly'] = 1
-		self.Atb['brx'] = 2
-		self.Atb['bry'] = 3
-		self.Atb['label'] = 4
-		self.Atb['centroidx'] = 5
-		self.Atb['centroidy'] = 6
-		self.Atb['thres_sub'] = 7
-		self.Atb['thres_sup'] = 8
-		self.Atb['child_temp'] = 9
-		self.Atb['child_main'] = 10
-
-		self.ChildLabel = {}
-		self.ChildLabel['TL'] = 0
-		self.ChildLabel['BL'] = 1
-		self.ChildLabel['T'] = 2
-		self.ChildLabel['B'] = 3
-		self.ChildLabel['C'] = 4
-		self.ChildLabel['SUP'] = 5
-		self.ChildLabel['SUB'] = 6
-
 		for bbox in bbox_lst:
+			print(bbox)
 			sym, clas, align = self.symbol_manager.get_symbol_from_idx(bbox[4])
-			# centroidx
-			if sym == '(':
-				bbox.append((bbox[0] + bbox[2]) / 2)
-			elif sym == ')':
+			# centroid x
+			if sym in ['(', ')']:
 				bbox.append((bbox[0] + bbox[2]) / 2)
 			else:
 				c = bbox[0] + (bbox[2] - bbox[0]) / 2.0
 				bbox.append(c)
 
-			# centroidy
+			# centroid y
 			if align == 'Centred':
 				c = bbox[1] + (bbox[3] - bbox[1]) / 2.0
 				bbox.append(c)
@@ -986,12 +980,10 @@ class BBParser:
 
 			# thres_sub
 			height = bbox[3] - bbox[1]
-
 			if clas == 'NonScripted':
 				bbox.append(bbox[6])
 				bbox.append(bbox[6])
 			# elif clas == 'Bracket':
-
 			elif clas == 'Plain_Descender':
 				bbox.append(bbox[1] + 0.5 * height + 0.5 * height * self.threshold_ratio_t)
 				bbox.append(bbox[1] + height - 0.5 * height * self.threshold_ratio_t)
@@ -999,14 +991,23 @@ class BBParser:
 				bbox.append(bbox[1] + height * self.threshold_ratio_t)
 				bbox.append(bbox[1] + height - height * self.threshold_ratio_t)
 
+			# child tmp
 			bbox.append([[], [], [], [], [], [], []])
 
-			sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(bbox[4])
-			bbox.append(sym1)
+			# sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(bbox[4])
+			# bbox.append(sym1)
+			bbox.append(sym)
 
 	# BB.append([[], [], [], []])
 
-	def overlap(self, snode_1, snode_2):  # Test whether snode_1 is a Nonscripted symbol that vertically overlaps snode_2.
+	def overlap(self, snode_1, snode_2):
+		"""
+		Test whether snode_1 is a Nonscripted symbol that vertically overlaps snode_2.
+
+		:param snode_1:
+		:param snode_2:
+		:return:
+		"""
 
 		if snode_1[0] == snode_2[0] and snode_1[1] == snode_2[1]:
 			return False
