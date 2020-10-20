@@ -77,9 +77,13 @@ def nms(dets, thresh):
         ovr = inter / (areas[i] + areas[order[1:]] - inter)
         if label_ids[i] == sqrt_id:
             inds = np.where(ovr <= 0.65)[0]
+        elif label_ids[i] in [symbol2idx['\\sin'], symbol2idx['\\cos'], symbol2idx['\\tan'], symbol2idx['\\log'], symbol2idx['\\lim']]:
+            inds = np.where(ovr <= 0.03)[0]
         else:
             inds = np.where(ovr <= thresh)[0]
 
+        if label_ids[i] == symbol2idx['-']:
+            inds = np.array([idx for idx in inds if ~(label_ids[idx] == symbol2idx['-'] and ovr[idx] != 0)]).astype(int)
         order = order[inds + 1]
 
     return keep
