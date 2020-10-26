@@ -1178,9 +1178,9 @@ class BBParser:
             idx += 1
 
         for i in del_idx_list[::-1]:
-            del snode_list[i]
+            del temp_list[i]
 
-        return snode_list, snode
+        return temp_list, snode
 
     def partition_final(self, snode_list, snode):
         # format: (tlx, tly, brx, bry, label, centroidx, centroidy, thres_sub, thres_sup)
