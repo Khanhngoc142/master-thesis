@@ -4,6 +4,9 @@ import string
 import copy
 from PIL import Image, ImageDraw, ImageFont
 
+# centroid_ratio = 1/2
+# threshold_ratio = 3/4
+
 
 class SymbolManager:
     def __init__(self):
@@ -32,12 +35,13 @@ class SymbolManager:
         non_scripted = ['add', 'sub', '=', 'rightarrow', 'leq', 'geq', 'neq', 'lt', 'gt']  # 7
         #  Bracket ( { [
         bracket = ['(', '[', '\\{']
+        close_brackets = [')', ']', '\\}']
         #  Root : sqrt
         square_root = ['sqrt']
         #  VariableRange : _Sigma, integral, _PI,
         variable_range = ['_Sigma', '_Pi', 'lim', 'integral']
         #  Plain_Ascender: 0..9, A..Z, b d f h i k l t
-        plain_ascender = ['b', 'd', 'f', 'h', 'i', 'k', 'l', 't', 'exists', 'forall', '!', '_Delta', '_Omega', '_Phi', 'div', 'beta', 'lamda', 'tan', 'log']
+        plain_ascender = ['b', 'd', 'f', 'h', 'i', 'k', 'l', 't', 'exists', 'forall', '!', '_Delta', '_Omega', '_Phi', 'div', 'beta', 'lamda', 'tan', 'log', '|']
         plain_ascender = plain_ascender + list(map(str, range(10)))
         plain_ascender = plain_ascender + list(string.ascii_uppercase)
         #  Plain_Descender: g p q y gamma, nuy, rho khi phi
@@ -50,8 +54,10 @@ class SymbolManager:
                 temp_class = 'NonScripted'
             elif entry[0] in bracket:
                 temp_class = 'Bracket'
+                alignment = 'Ascender'
             elif entry[0] in square_root:
                 temp_class = 'Root'
+                alignment = 'Ascender'
             elif entry[0] in variable_range:
                 temp_class = 'VariableRange'
             elif entry[0] in plain_ascender:
@@ -60,6 +66,8 @@ class SymbolManager:
             elif entry[0] in plain_decender:
                 temp_class = 'Plain_Descender'
                 alignment = 'Descender'
+            elif entry[0] in close_brackets:
+                temp_class = 'CloseBracket'
             entry.append(temp_class)
             entry.append(alignment)
 
@@ -699,6 +707,7 @@ class BBParser:
 
         self.latexgenerator = LatexGenerator()
         self.threshold_ratio_t = 0.9
+        self.centroid_ratio_c = 0.5
 
         # debug:
         self.handling_file = ''
@@ -714,6 +723,7 @@ class BBParser:
             self.test_candidate = z
 
     def debug(self):
+        # self.process('training/data/CROHME_2013_valid/rit_42160_4.png 92 48.06818181818182 123.9255485893417 75.52115987460816 177.13087774294672 9 71.14811912225706 147.7343260188088 92.2844827586207 148.70611285266457 69 75.27821316614421 154.5368338557994 87.18260188087774 181.98981191222572 18 82.5666144200627 121.01018808777428 83.0525078369906 137.04467084639498 8 99.0869905956113 143.60423197492162 110.262539184953 158.1810344827586 9 116.57915360501568 148.22021943573668 152.29231974921632 150.16379310344828 18 118.76567398119124 155.26567398119124 119.98040752351099 172.51489028213166 9 126.29702194357367 163.2829153605016 135.52899686520377 163.52586206896552 18 136.3793103448276 127.32680250783699 138.07993730407526 144.33307210031347 69 138.4443573667712 155.99451410658307 149.86285266457682 178.83150470219437 48 163.71081504702195 133.6434169278997 173.185736677116 158.1810344827586 69 173.185736677116 143.84717868338558 186.30485893416932 170.08542319749216 13 193.1073667711599 146.27664576802508 202.8252351097179 152.35031347962382 92 207.44122257053294 127.32680250783699 228.33463949843264 169.11363636363637 48 228.33463949843264 127.56974921630095 246.06974921630098 155.99451410658307 68 247.28448275862073 143.36128526645768 259.4318181818182 157.20924764890282')
         # self.process('null 4 272 236 323 287 13 143 265 191 323 5 359 202 438 280 72 108 173 169 258 72')
         # self.process(
         #     'null '
@@ -724,22 +734,22 @@ class BBParser:
         #     '23 182.25672081317646 122.52436993236017 202.50712421446732 158.74390751690999 '
         #     '2 224.54067624506845 122.52436993236017 231.18092480223592 158.74390751690999 '
         #     '2 253.6373840410234 122.52436993236017 259.4318181818182 158.74390751690999')  # brackets
-        self.process(
-            'tmp.txt.png '
-            '50 48.06818181818181 117.48819327601055 57.449244109329044 150.13952773104043 '
-            '13 62.89113318516736 127.64061325242594 79.2168004126823 142.7080522925442 '
-            '9 84.65868948852062 120.57965106606514 259.43181818181813 149.769014478905 '
-            '22 135.47135911035906 105.24394285537434 159.13174639661258 132.45338823456592 '
-            '22 169.96481992398586 105.24394285537434 186.39189640010758 132.45338823456592 '
-            '55 198.7088096781656 105.24394285537434 212.16820665291772 132.45338823456592 '
-            '26 105.38796878632992 154.22094453791917 120.26771035211914 181.43038991711074 '
-            '72 125.70959942795746 165.1047226895958 141.97149451786493 181.43038991711074 '
-            '61 147.4133835937032 165.1047226895958 165.4081433924821 197.7560571446257 '
-            '11 170.85003246832042 159.6628336137575 186.55568859770995 175.9885008412724 '
-            '25 195.73899020310589 154.22094453791917 215.46561052318222 181.43038991711074 '
-            '61 220.90749959902053 165.1047226895958 251.0322426974112 197.7560571446257')  # frac
+        # self.process(
+        #     'tmp.txt.png '
+        #     '50 48.06818181818181 117.48819327601055 57.449244109329044 150.13952773104043 '
+        #     '13 62.89113318516736 127.64061325242594 79.2168004126823 142.7080522925442 '
+        #     '9 84.65868948852062 120.57965106606514 259.43181818181813 149.769014478905 '
+        #     '22 135.47135911035906 105.24394285537434 159.13174639661258 132.45338823456592 '
+        #     '22 169.96481992398586 105.24394285537434 186.39189640010758 132.45338823456592 '
+        #     '55 198.7088096781656 105.24394285537434 212.16820665291772 132.45338823456592 '
+        #     '26 105.38796878632992 154.22094453791917 120.26771035211914 181.43038991711074 '
+        #     '72 125.70959942795746 165.1047226895958 141.97149451786493 181.43038991711074 '
+        #     '61 147.4133835937032 165.1047226895958 165.4081433924821 197.7560571446257 '
+        #     '11 170.85003246832042 159.6628336137575 186.55568859770995 175.9885008412724 '
+        #     '25 195.73899020310589 154.22094453791917 215.46561052318222 181.43038991711074 '
+        #     '61 220.90749959902053 165.1047226895958 251.0322426974112 197.7560571446257')  # frac
         # self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625', True)
-        # self.process('training/data/CROHME_2013_valid/122_em_358.png 4 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 3 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625', True)
+        self.process('training/data/CROHME_2013_valid/122_em_358.png 4 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 3 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625', True)
         # self.process('training/data/CROHME_2013_valid/122_em_358.png 6 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 5 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 48 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 65 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 60 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625', True)
         # self.process('training/data/CROHME_2013_valid/122_em_358.png 2 0.9997619986534119 234.9671173095703 93.77392578125 258.2026062011719 201.8711395263672 1 0.9866085648536682 152.92860412597656 103.67342376708984 171.04006958007812 204.31536865234375 26 0.9825618267059326 79.68318939208984 152.41653442382812 121.00485229492188 223.09934997558594 74 0.9349151849746704 179.47471618652344 112.53890228271484 229.4780731201172 173.55006408691406 57 0.37060970067977905 44.50164794921875 75.71089172363281 104.27759552001953 202.2056884765625', True)
 
@@ -1015,32 +1025,43 @@ class BBParser:
         # child_main: SUP, SUB, UPP, LOW
         for bbox in bbox_lst:
             sym, clas, align = self.symbol_manager.get_symbol_from_idx(bbox[4])
-            # centroid x
+
+            height = bbox[3] - bbox[1]
+
+            # centroid x  # 5
             bbox.append((bbox[0] + bbox[2]) / 2)
 
-            # centroid y
+            # centroid y  # 6
             if align == 'Centred':
-                c = bbox[1] + (bbox[3] - bbox[1]) / 2.0
-                bbox.append(c)
+                # c = bbox[1] + (bbox[3] - bbox[1]) / 2.0
+                cy = bbox[1] + height / 2
             elif align == 'Ascender':
-                c = bbox[1] + (bbox[3] - bbox[1]) / 4.0 * 3
-                bbox.append(c)
+                # c = bbox[1] + (bbox[3] - bbox[1]) / 4.0 * 3
+                cy = bbox[1] + height * self.centroid_ratio_c
             else:
-                c = bbox[1] + (bbox[3] - bbox[1]) / 4.0
-                bbox.append(c)
+                # c = bbox[1] + (bbox[3] - bbox[1]) / 4.0
+                cy = bbox[1] + height * (1 - self.centroid_ratio_c)
+            bbox.append(cy)
 
-            # thres_sub thres_sup
-            height = bbox[3] - bbox[1]
-            if clas == 'NonScripted':
-                bbox.append(bbox[6])
-                bbox.append(bbox[6])
+            # thres_sub  # 7
+            # thres_sup  # 8
+            # if clas == 'NonScripted':
+            #     bbox.append(bbox[6])
+            #     bbox.append(bbox[6])
             # elif clas == 'Bracket':
-            elif clas == 'Plain_Descender':
-                bbox.append(bbox[1] + 0.5 * height + 0.5 * height * self.threshold_ratio_t)
-                bbox.append(bbox[1] + height - 0.5 * height * self.threshold_ratio_t)
+            # elif clas == 'Plain_Descender':
+            if clas == 'Plain_Descender':
+                # bbox.append(bbox[1] + 0.5 * height + 0.5 * height * self.threshold_ratio_t)
+                # bbox.append(bbox[1] + height - 0.5 * height * self.threshold_ratio_t)
+                t_sub = bbox[1] + height / 2 + height * self.threshold_ratio_t / 2
+                t_sup = bbox[1] + height - height * self.threshold_ratio_t / 2
             else:
-                bbox.append(bbox[1] + height * self.threshold_ratio_t)
-                bbox.append(bbox[1] + height - height * self.threshold_ratio_t)
+                # bbox.append(bbox[1] + height * self.threshold_ratio_t)
+                # bbox.append(bbox[1] + height - height * self.threshold_ratio_t)
+                t_sub = bbox[1] + height * self.threshold_ratio_t
+                t_sup = bbox[1] + height - height * self.threshold_ratio_t
+            bbox.append(t_sub)
+            bbox.append(t_sup)
 
             # child tmp
             bbox.append([[], [], [], [], [], [], []])
@@ -1048,6 +1069,22 @@ class BBParser:
             # sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(bbox[4])
             # bbox.append(sym1)
             bbox.append(sym)
+
+            # thres below  # 11
+            # thres above  # 12
+            if clas == 'NonScripted':
+                thres_b = thres_a = bbox[1] + height / 2
+            elif clas in ['Bracket', 'Root']:
+                thres_b = bbox[3]
+                thres_a = bbox[1]
+            elif clas == 'Plain_Descender':
+                thres_b = bbox[1] + height / 2 + height * self.threshold_ratio_t / 2
+                thres_a = bbox[1] + height - height * self.threshold_ratio_t / 2
+            else:
+                thres_b = bbox[1] + height * self.threshold_ratio_t
+                thres_a = bbox[1] + height - height * self.threshold_ratio_t
+            bbox.append(thres_b)
+            bbox.append(thres_a)
 
             print(bbox)
 
