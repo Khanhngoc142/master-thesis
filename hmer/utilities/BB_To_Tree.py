@@ -14,6 +14,10 @@ def and_all(lst):
     return lst[0] and and_all(lst[1:])
 
 
+def is_the_same(snode_1, snode_2):
+    return and_all([snode_1[i] == snode_2[i] for i in range(5)])
+
+
 class SymbolManager:
     def __init__(self):
 
@@ -709,7 +713,8 @@ class BBParser:
         self.symbol_manager = SymbolManager()
 
         self.latexgenerator = LatexGenerator()
-        self.threshold_ratio_t = 0.9
+        # self.threshold_ratio_t = 0.9
+        self.threshold_ratio_t = 1 - 1/6
         # self.centroid_ratio_c = 0.5
         self.centroid_ratio_c = 1 - 1/4
 
@@ -1187,7 +1192,7 @@ class BBParser:
         # print(str(snode_2[7]) + ' > ' + str(snode_1[6]) )
         # print(str(snode_1[6]) + ' > ' + str(snode_2[8]) )
 
-        return (clas2 != 'NonScripted') and (snode_2[7] > snode_1[6] > snode_2[8])
+        return (not is_the_same(snode_1, snode_2)) and (clas2 != 'NonScripted') and (snode_2[7] > snode_1[6] > snode_2[8])
 
     def partition(self, snode_list, snode):
         temp_list = snode_list[:]
@@ -1195,7 +1200,7 @@ class BBParser:
         del_idx_list = []
 
         for idx, node in enumerate(temp_list):
-            if and_all([node[i] == snode[i] for i in range(5)]):  # same symbol
+            if is_the_same(node, snode):  # same symbol
                 del_idx_list.append(idx)
             elif node[5] < snode[0]:  # node_centroidX < snode_minX  # partitions into TLEFT BLEFT regions using SUPER SUBSC thresholds
                 if node[6] < snode[8]:  # node_centroidY < snode_sup # Topleft
