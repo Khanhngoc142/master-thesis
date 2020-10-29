@@ -158,6 +158,26 @@ def export_crohme_data(data_versions='2013', crohme_package=os.path.join(get_sou
         f.write('\n'.join(labels))
 
 
+def export_crohme_latex(data_versions='2013', crohme_package=os.path.join(get_source_root(), "data", "CROHME_full_v2"),
+                        datasets="train", output_dir=os.path.join("demo-outputs", "data"), limit=None):
+    output_dir = os.path.join(get_source_root(), output_dir, f"CROHME_{data_versions}_{datasets}")
+    os.makedirs(output_dir, exist_ok=True)
+    extractor = Extractor(data_versions, crohme_package)
+    labels = []
+    i = 0
+    for ink in extractor.parse_inkmls_iterator(datasets=datasets):
+        label = ink.label
+        filename = os.path.basename(ink.file_path).split(".")[0]
+        out_file = os.path.join(output_dir, filename).replace(get_source_root() + '/', '')
+        labels.append(out_file + '\t' + label)
+        i += 1
+        if limit is not None:
+            if i > limit:
+                break
+    with open(os.path.join(output_dir, "labels_latex.txt"), 'w') as f:
+        f.write('\n'.join(labels))
+
+
 def generate_extra_training_data(symbol_lib, data_versions='2013', datasets="train",
                                  output_dir=os.path.join("demo-outputs", "data"), geo_aug=False, n_loop=3000):
     output_dir = os.path.join(get_source_root(), output_dir, f"CROHME_{data_versions}_{datasets}_extra")
