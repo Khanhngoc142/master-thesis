@@ -46,8 +46,8 @@ class Extractor(object):
                 train_dir = []
                 for subdir in ["expressmatch", "extension", "HAMEX", "KAIST", "MathBrush", "MfrDB"]:
                     train_dir.append(os.path.join(train_root_dir, subdir))
-                test_dir = [os.path.join(data_dir, "TestINKMLGT")]
-                validation_dir = [os.path.join(data_dir, "testDataGT")]
+                test_dir = [os.path.join(data_dir, "TestINKML")]
+                validation_dir = [os.path.join(data_dir, "TestINKMLGT")]
 
             self._train_dirs += train_dir
             self._test_dirs += test_dir
