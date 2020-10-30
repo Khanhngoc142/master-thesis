@@ -534,7 +534,64 @@ class LatexGenerator:
     def __init__(self):
         self.greek_alphabet = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'muy', 'rho', 'nuy', 'omega', 'lamda', 'phi', 'sigma', 'theta', 'pi']
         self.ops = ['=', 'neq', 'in', 'geq', 'leq', 'add', 'sub', 'time', 'div', 'slash', '|']
-        self.whitespace_normalizer = re.compile("""\s+""")
+        self.whitespace_normalizer = re.compile(r"\s+")
+        self.symbol_mapping = {
+            'add': '+',
+            'sub': '-',
+            'ldot': '.',
+            'slash': '/',
+            'lt': '<',
+            'gt': '>',
+            'zA': 'A',
+            'zB': 'B',
+            'zC': 'C',
+            'zE': 'E',
+            'zF': 'F',
+            'zG': 'G',
+            'zH': 'H',
+            'zI': 'I',
+            'zL': 'L',
+            'zM': 'M',
+            'zN': 'N',
+            'zP': 'P',
+            'zR': 'R',
+            'zS': 'S',
+            'zT': 'T',
+            'zV': 'V',
+            'zX': 'X',
+            'zY': 'Y',
+            '_Delta': '\\Delta',
+            '_Sigma': '\\Sigma',
+            'alpha': '\\alpha',
+            'beta': '\\beta',
+            'cos': '\\cos',
+            'div': '\\div',
+            'exists': '\\exists',
+            'forall': '\\forall',
+            'gamma': '\\gamma',
+            'geq': '\\geq',
+            'in': '\\in',
+            'intft': '\\infty',
+            'integral': '\\int',
+            'lamda': '\\lamda',
+            'ldots': '\\ldots',
+            'leq': '\\leq',
+            'lim': '\\lim',
+            'log': '\\log',
+            'muy': '\\mu',
+            'neq': '\\neq',
+            'phi': '\\phi',
+            'pi': '\\pi',
+            'pm': '\\pm',
+            'prime': '\\prime',
+            'rightarrow': '\\rightarrow',
+            'sigma': '\\sigma',
+            'sin': '\\sin',
+            'sqrt': '\\sqrt',
+            'tan': '\\tan',
+            'theta': '\\theta',
+            'time': '\\times',
+        }
 
     def normalize_latex(self, text):
         return re.sub(self.whitespace_normalizer, ' ', text)
@@ -544,6 +601,11 @@ class LatexGenerator:
         output = self.normalize_latex(output)
         # print(output)
         return output
+
+    def remap_symbol(self, symbol):
+        if symbol in self.symbol_mapping:
+            return self.symbol_mapping[symbol]
+        return symbol
 
     def get_string_from_node(self, node):
         if 'type' in node:
@@ -561,38 +623,39 @@ class LatexGenerator:
 
                 node['symbol'] = node['symbol'].replace('ldot', '.')
 
-                if node['symbol'] in self.greek_alphabet:
-                    if node['symbol'] == 'muy':
-                        node['symbol'] = '\\mu'
-                    else:
-                        node['symbol'] = '\\' + node['symbol']
+                # if node['symbol'] in self.greek_alphabet:
+                #     if node['symbol'] == 'muy':
+                #         node['symbol'] = '\\mu'
+                #     else:
+                #         node['symbol'] = '\\' + node['symbol']
 
-                return ' ' + node['symbol'] + ' '
+                return ' ' + self.remap_symbol(node['symbol']) + ' '
             elif node['type'] == 'Operation':
-                if node['symbol'] == 'add':
-                    return ' + '
-                if node['symbol'] == 'time':
-                    return '\\times '
-                if node['symbol'] == 'sub':
-                    return ' - '
-                if node['symbol'] == 'slash':
-                    return ' / '
-                if node['symbol'] == '=':
-                    return ' = '
-                # if node['symbol'] == 'neq':
-                #     return ' \\neq '
-                # if node['symbol'] == 'geq':
-                #     return ' \\geq '
-                # if node['symbol'] == 'leq':
-                #     return ' \\leq '
-                # if node['symbol'] == 'in':
-                #     return ' \\in '
-                # if node['symbol'] == 'div':
-                #     return ' \\div '
-                # if node['symbol'] == 'rightarrow':
-                #     return ' \\rightarrow '
-
-                return ' \\{} '.format(node['symbol'])
+                # if node['symbol'] == 'add':
+                #     return ' + '
+                # if node['symbol'] == 'time':
+                #     return '\\times '
+                # if node['symbol'] == 'sub':
+                #     return ' - '
+                # if node['symbol'] == 'slash':
+                #     return ' / '
+                # if node['symbol'] == '=':
+                #     return ' = '
+                # # if node['symbol'] == 'neq':
+                # #     return ' \\neq '
+                # # if node['symbol'] == 'geq':
+                # #     return ' \\geq '
+                # # if node['symbol'] == 'leq':
+                # #     return ' \\leq '
+                # # if node['symbol'] == 'in':
+                # #     return ' \\in '
+                # # if node['symbol'] == 'div':
+                # #     return ' \\div '
+                # # if node['symbol'] == 'rightarrow':
+                # #     return ' \\rightarrow '
+                #
+                # return ' \\{} '.format(node['symbol'])
+                return ' {} '.format(self.remap_symbol(node['symbol']))
 
             elif node['type'].startswith('bracket'):
                 tmp_bracket = ['(']
@@ -621,7 +684,7 @@ class LatexGenerator:
                 sub = self.create_latex_string(node['child'][1])
 
                 # SPECIAL #############
-                if 'symbol' in node['child'][1][0] and node['child'][1][0]['symbol'] == '.':
+                if 'symbol' in node['child'][1][0] and node['child'][1][0]['symbol'] in list('.,'):
                     return base + sub
                 ##################################
 
