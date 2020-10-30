@@ -72,6 +72,8 @@ def plt_draw_bbox(bbox, ax=None, scale=None, linewidth=2, color='r'):
     if ax is None:
         ax = plt.gca()
     bbox = np.array(bbox).astype(np.float32)
+    bbox[0, :] = np.floor(bbox[0, :])
+    bbox[1, :] = np.ceil(bbox[1, :])
     root_point = bbox[0]
     size = (bbox[1] - bbox[0])
     if scale is not None:
@@ -103,10 +105,16 @@ def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, fi
     outer_grid = gridspec.GridSpec(2, 1, wspace=0, hspace=0.1)
 
     # image
-    ax = plt.Subplot(fig, gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=outer_grid[1])[0])
+    ax = plt.Subplot(fig, gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=outer_grid[1])[0])
     plt_config_ax(ax, spines=True)
     ax.imshow(img)
     fig.add_subplot(ax)
+
+    ax = plt.Subplot(fig, gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=outer_grid[1])[1])
+    plt_config_ax(ax, spines=True)
+    ax.imshow(img)
+    fig.add_subplot(ax)
+    # plt_draw_bbox([[0, 0], [10, 10]])  # debug
 
     inner_grid = gridspec.GridSpecFromSubplotSpec(nrows, ncols, subplot_spec=outer_grid[0], hspace=0.25)
     pad = 3
@@ -114,6 +122,7 @@ def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, fi
         box_ax = plt.Subplot(fig, inner_grid[i])
         if i < len(boxes):
             xmin, ymin, xmax, ymax = boxes[i]
+            plt_draw_bbox([[xmin, ymin], [xmax, ymax]], ax)
             xmin = int(floor(xmin)) - pad
             ymin = int(floor(ymin)) - pad
             xmax = int(ceil(xmax)) + pad
