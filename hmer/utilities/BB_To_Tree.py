@@ -1,6 +1,7 @@
 from pprint import pprint
 from operator import itemgetter
 import string
+import re
 import copy
 from PIL import Image, ImageDraw, ImageFont
 
@@ -532,9 +533,15 @@ class LBST:
 class LatexGenerator:
     def __init__(self):
         self.greek_alphabet = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'muy', 'rho', 'nuy', 'omega', 'lamda', 'phi', 'sigma', 'theta', 'pi']
+        self.ops = ['=', 'neq', 'in', 'geq', 'leq', 'add', 'sub', 'time', 'div', 'slash', '|']
+        self.whitespace_normalizer = re.compile("""\s+""")
+
+    def normalize_latex(self, text):
+        return re.sub(self.whitespace_normalizer, ' ', text)
 
     def process(self, lbst_tree):
         output = self.create_latex_string(lbst_tree)
+        output = self.normalize_latex(output)
         # print(output)
         return output
 
@@ -570,6 +577,8 @@ class LatexGenerator:
                     return ' - '
                 if node['symbol'] == 'slash':
                     return ' / '
+                if node['symbol'] == '=':
+                    return ' = '
                 # if node['symbol'] == 'neq':
                 #     return ' \\neq '
                 # if node['symbol'] == 'geq':
@@ -601,6 +610,9 @@ class LatexGenerator:
                 base = self.create_latex_string(node['child'][0])
                 sup = self.create_latex_string(node['child'][1])
 
+                if len(node['child'][1]) == 1 and node['child'][1][0]['symbol'] in self.ops:
+                    return ' {} {} '.format(base, sup)
+
                 return base + '^{ ' + sup + ' }'
 
             elif node['type'] == 'sub':
@@ -612,6 +624,9 @@ class LatexGenerator:
                 if 'symbol' in node['child'][1][0] and node['child'][1][0]['symbol'] == '.':
                     return base + sub
                 ##################################
+
+                if len(node['child'][1]) == 1 and node['child'][1][0]['symbol'] in self.ops:
+                    return ' {} {} '.format(base, sub)
 
                 return base + '_{ ' + sub + ' }'
 
@@ -773,6 +788,8 @@ class BBParser:
         #              is_pred=True)  # + 2x^3 got turned into 2 + x^2
         self.process('training/data/CROHME_2013_test/120_em_292.png 69 0.9998735189437866 154.2259063720703 136.94482421875 176.4447784423828 184.4025421142578 69 0.8484979271888733 76.90184020996094 133.935302734375 95.38138580322266 181.2236785888672 1 0.8126317858695984 48.111873626708984 128.99856567382812 57.35300064086914 167.46273803710938 1 0.8119179606437683 188.93771362304688 126.50880432128906 197.8476104736328 140.04830932617188 45 0.740942656993866 203.24667358398438 130.66099548339844 212.12249755859375 139.64515686035156 9 0.615315318107605 113.33219146728516 156.14601135253906 128.6387939453125 158.04248046875 2 0.5556000471115112 241.2340545654297 130.28443908691406 259.4927062988281 179.61062622070312 12 0.22773809731006622 221.69398498535156 118.66785430908203 231.26564025878906 138.462890625',
                      is_pred=True)  # order of expressions got mixed up  # slash not output slash DONE: missing slash handling case
+        # self.process('training/data/CROHME_2013_test/116_em_182.png 13 0.9990929365158081 175.58163452148438 175.10997009277344 203.18087768554688 192.28585815429688 17 0.994049072265625 229.06515502929688 145.33267211914062 258.8629455566406 187.7946014404297 76 0.7618021965026855 107.58128356933594 136.1793670654297 138.27476501464844 186.83091735839844 87 0.6787432432174683 43.17418670654297 112.7171401977539 94.5862045288086 193.67054748535156',
+        #              is_pred=True)  # sub and sup only has 1 operation symbol, move them to the baseline
 
     def process(self, input_line, is_pred=False):  # input is raw string
         raw_line = input_line.strip().split()
