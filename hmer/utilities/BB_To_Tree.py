@@ -964,6 +964,7 @@ class BBParser:
         del rnode_list[idx]
 
         baseline_symbols = self.hor([s_start], rnode_list)
+        baseline_symbols = sorted(baseline_symbols, key=lambda node: node[0])
 
         updated_baseline = self.collect_region(baseline_symbols)
 
