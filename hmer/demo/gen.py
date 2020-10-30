@@ -1,6 +1,6 @@
 import os
 import matplotlib.pyplot as plt
-from extractor.crohme_parser import library, inkml
+from extractor.crohme_parser import library, inkml, export
 from utilities.plt_draw import plt_draw_traces, plt_setup
 from utilities.fs import get_source_root, load_object, save_object
 import random
@@ -64,6 +64,8 @@ def demo_custom_equation(lib, eq, num):
         ax.invert_yaxis()
         ax.set_aspect('equal', adjustable='box')
         gen_eq = lib.generate_equation_traces(eq)
+        str = export.export_equation(gen_eq, eq, 'tmp.txt')
+        print(str)
         plt_draw_traces([trace for trace_group in gen_eq for trace in trace_group], ax=ax)
 
     return fig, axes
@@ -111,7 +113,7 @@ if __name__ == "__main__":
     # demo_eq = ['x','+','\\sqrt', ['\\sqrt', list('12+x')], *list('+y+z')]
     # demo_eq = [*list('x+y='), '\\frac', list('a+b'), list('c-d'), *list('+Ax+By')]
     # demo_eq = gen_sin_cos(pd_symbol_weight)
-    demo_eq = gen_basic_linear()
-    for i in range(5):
+    demo_eq = gen_frac()
+    for i in range(1):
         demo_custom_equation(demo_lib, demo_eq, 3)
     plt.show()

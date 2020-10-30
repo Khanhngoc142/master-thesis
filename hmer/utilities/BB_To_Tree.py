@@ -864,6 +864,7 @@ class BBParser:
                      is_pred=True)
 
     def process(self, input_line, is_pred=False):  # input is raw string
+        print(input_line)
         raw_line = input_line.strip().split()
 
         self.handling_file = raw_line[0]
@@ -1466,5 +1467,5 @@ class BBParser:
         return snode
 
 
-obj = BBParser()
-obj.debug()
+# obj = BBParser()
+# obj.debug()
