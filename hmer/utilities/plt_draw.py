@@ -99,6 +99,13 @@ def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, fi
     num_boxes = len(boxes)
     img_path = get_path(img_path)
     img = cv2.imread(img_path)
+
+    if classes is not None:
+        assert len(classes) == len(boxes)
+
+        if score is None:
+            score = [0.0] * len(classes)
+
     img = img[:, :, (2, 1, 0)]  # to rgb
     nrows = int(ceil(num_boxes/ncols))
     fig = plt.figure(figsize=(ncols * figsize, nrows * 2 * figsize))
@@ -132,7 +139,7 @@ def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, fi
             plt.setp(box_ax.spines.values(), color='red')
             box_ax.imshow(box)
             if classes is not None:
-                box_ax.set_title("Class {} with conf: {}".format(idx2symbols[classes[i]], score[i]), pad=0)
+                box_ax.set_title("Class {} with conf: {:.2f}".format(idx2symbols[classes[i]], score[i]), pad=0)
         else:
             plt_config_ax(box_ax)
 
@@ -140,3 +147,35 @@ def visualize_img_w_boxes(img_path, boxes, classes=None, score=None, ncols=3, fi
 
     # plt.tight_layout()
     plt.show()
+
+
+def visualize_info_line(line, is_pred=True):
+    line = line.replace("test", "valid").strip().split()
+    img_path = get_path(line[0])
+    line = line[1:]
+    line = list(map(lambda s: float(s), line))
+    bbox_lst = []
+
+    if not is_pred:
+        for i in range(int(len(line) / 5)):
+            bbox_lst.append(line[5 * i + 1: 5 * (i + 1)] + [line[5 * i]])
+    else:
+        for i in range(int(len(line) / 6)):
+            bbox_lst.append(line[6 * i + 2:6 * (i + 1)] + [line[6 * i]] + [line[6*i + 1]])
+
+    bbox_lst = np.array(bbox_lst)
+    classes = bbox_lst[:, 4]
+    if is_pred:
+        conf = bbox_lst[:, 5]
+    else:
+        conf = np.array([1.0] * len(classes))
+    bbox_lst = bbox_lst[:, :4]
+
+    sort_idx = np.argsort(bbox_lst[:, 0])
+
+    classes = classes[sort_idx]
+    conf = conf[sort_idx]
+    bbox_lst = bbox_lst[sort_idx]
+
+    visualize_img_w_boxes(img_path, bbox_lst, classes=classes, score=conf)
+
