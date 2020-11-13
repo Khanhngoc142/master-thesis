@@ -1,9 +1,12 @@
+import os
 from pprint import pprint
 from operator import itemgetter
 import string
 import re
 import copy
 from PIL import Image, ImageDraw, ImageFont
+
+from utilities.fs import get_path
 
 # centroid_ratio = 1/2
 # threshold_ratio = 3/4
@@ -48,9 +51,9 @@ class SymbolManager:
         #  VariableRange : _Sigma, integral, _PI,
         variable_range = ['_Sigma', '_Pi', 'lim', 'integral']
         #  Plain_Ascender: 0..9, A..Z, b d f h i k l t
-        plain_ascender = ['b', 'd', 'f', 'h', 'i', 'k', 'l', 't', 'exists', 'forall', '!', '_Delta', '_Omega', '_Phi', 'div', 'beta', 'lamda', 'tan', 'log', '|']
+        plain_ascender = ['b', 'd', 'f', 'h', 'i', 'k', 'l', 't', 'exists', 'forall', '!', '_Omega', '_Phi', 'div', 'beta', 'lamda', 'tan', 'log', '|'] # + ['_Delta']
         plain_ascender = plain_ascender + list(map(str, range(10)))
-        plain_ascender = plain_ascender + list(string.ascii_uppercase)
+        plain_ascender = plain_ascender + ['z' + c for c in string.ascii_uppercase]
         #  Plain_Descender: g p q y gamma, nuy, rho khi phi
         plain_decender = ['g', 'p', 'q', 'y', 'gamma', 'muy', 'rho', '']
         #  plain_Centered: The rest
@@ -861,16 +864,60 @@ class BBParser:
         # self.process('training/data/CROHME_2013_test/126_em_452.png 78 0.9693878293037415 182.47311401367188 139.68511962890625 195.7707061767578 151.83660888671875 9 0.7711061239242554 108.63601684570312 151.76434326171875 120.88216400146484 153.4708709716797 21 0.7227655053138733 112.40859985351562 157.72947692871094 117.86988830566406 172.62371826171875 50 0.7165670394897461 60.096885681152344 136.12844848632812 74.17976379394531 162.2864532470703 2 0.6344535946846008 254.66123962402344 134.8683624267578 259.3565673828125 152.8754119873047 18 0.6123047471046448 49.10184097290039 136.29541015625 50.61549377441406 157.66500854492188 1 0.6024547815322876 207.59326171875 139.4646759033203 211.9193878173828 152.97837829589844 8 0.5877379179000854 147.87937927246094 144.8399200439453 154.8970184326172 152.3130340576172 46 0.5390371084213257 241.1861114501953 142.8160400390625 249.03553771972656 152.9816131591797 71 0.449038028717041 182.95672607421875 130.19798278808594 194.6830596923828 131.64068603515625 19 0.43299564719200134 249.4916229248047 139.87486267089844 255.19338989257812 144.11953735351562 18 0.3054986298084259 197.38381958007812 154.84327697753906 201.12815856933594 160.50924682617188 19 0.29400524497032166 158.06524658203125 156.2835693359375 169.78125 167.06752014160156 18 0.2931514382362366 165.66915893554688 134.85281372070312 168.62814331054688 144.69459533691406 7 0.2545483112335205 83.58173370361328 132.0305938720703 84.69103240966797 162.3255615234375 18 0.2109699547290802 111.48885345458984 135.73681640625 116.01036071777344 148.2714080810547 45 0.19904004037380219 128.67977905273438 144.7340087890625 135.83193969726562 152.2533721923828 9 0.197427436709404 112.25048065185547 155.1300506591797 123.16184997558594 158.79672241210938 9 0.19128163158893585 157.5983428955078 150.14956665039062 172.0959014892578 151.68565368652344 13 0.17722700536251068 91.38285064697266 148.76187133789062 103.14335632324219 154.65086364746094 45 0.16522355377674103 217.48512268066406 146.500244140625 224.22813415527344 150.43582153320312 18 0.13869279623031616 51.31479263305664 136.6708526611328 52.16791915893555 156.00437927246094 19 0.12797385454177856 224.34844970703125 141.14927673339844 228.41897583007812 144.18698120117188 1 0.12605124711990356 78.81231689453125 132.64276123046875 80.8746337890625 162.94036865234375 58 0.10050936043262482 185.806396484375 127.941650390625 191.9010772705078 130.19073486328125',
         #              is_pred=True)
         self.process('training/data/CROHME_2013_test/103_em_11.png 41 0.9975438714027405 126.19380950927734 133.00997924804688 159.75938415527344 165.61032104492188 41 0.9809845685958862 48.623165130615234 136.06275939941406 88.4838638305664 170.27423095703125 41 0.9235038161277771 228.74021911621094 136.7493133544922 259.58294677734375 165.93711853027344 87 0.8866235613822937 206.44430541992188 140.19898986816406 225.938232421875 168.3173065185547 13 0.8424795269966125 97.74073028564453 159.53335571289062 112.04067993164062 167.73492431640625 17 0.7547426223754883 151.75357055664062 159.32232666015625 158.56796264648438 172.37185668945312 8 0.4718116521835327 179.81175231933594 154.65159606933594 189.7322998046875 166.93125915527344',
-                     is_pred=True)
+                     is_pred=True)  # SOLVED: move delta from ascender to centered
+
+        ##############
+        # Delta GROUND TRUTH
+        ##############
+        with open(get_path('training/data/valid_Delta_labels.txt'), 'r') as fin:
+            lines = fin.readlines()
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import matplotlib.image as mpimg
+
+        ncols = 3
+        nrows = int(np.ceil(len(lines) / ncols))
+
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(20, 20))
+        axes = np.reshape(axes, (-1,))
+
+        for i, ax in enumerate(axes):
+            ax.xaxis.set_visible(False)
+            ax.yaxis.set_visible(False)
+            # for spine_type in ['left', 'right', 'top', 'bottom']:
+            #     ax.spines[spine_type].set_visible(False)
+
+            if i >= len(lines):
+                for spine_type in ['left', 'right', 'top', 'bottom']:
+                    ax.spines[spine_type].set_visible(False)
+            else:
+                for spine_type in ['top', ]:
+                    ax.spines[spine_type].set_visible(False)
+
+        for i, line in enumerate(lines):
+            ax = axes[i]
+
+            if '122_em_347' in line:
+                print("SKIP")
+                ax.set_title("SKIP 122_em_347")
+                continue
+            pred_latex = self.process(line, is_pred=False)
+            img = mpimg.imread(get_path(line.split()[0]))
+            ax.imshow(img)
+            ax.set_title(pred_latex)
+
+        plt.show()
 
     def process(self, input_line, is_pred=False):  # input is raw string
-        print(input_line)
         raw_line = input_line.strip().split()
 
         self.handling_file = raw_line[0]
         raw_line = raw_line[1:]
 
-        raw_line = list(map(lambda s: int(float(s)), raw_line))
+        print(os.path.basename(self.handling_file))
+
+        raw_line = list(map(lambda s: float(s), raw_line))
 
         bbox_lst = []
 
@@ -955,14 +1002,14 @@ class BBParser:
         s_start = self.starting_baseline_symbol(rnode_list)
 
         # infer s_start index
-        idx = 0
-        for i in rnode_list:
-            if i[0] == s_start[0] and i[1] == s_start[1] and i[4] == s_start[4]:
-                break
-            idx += 1
-
-        # remove s_start from rnode
-        del rnode_list[idx]
+        # idx = 0
+        # for i in rnode_list:
+        #     if i[0] == s_start[0] and i[1] == s_start[1] and i[4] == s_start[4]:
+        #         break
+        #     idx += 1
+        #
+        # # remove s_start from rnode
+        # del rnode_list[idx]
 
         baseline_symbols = self.hor([s_start], rnode_list)
         baseline_symbols = sorted(baseline_symbols, key=lambda node: node[0])
@@ -1124,13 +1171,13 @@ class BBParser:
 
     def is_regular_hor(self, snode1, snode2):
         # sym1, clas1, alig1 = self.symbol_manager.get_symbol_from_idx(snode1[self.Atb['label']])
-        self.symbol_manager.get_symbol_from_idx(snode1[self.Atb['label']])
         sym2, clas2, alig2 = self.symbol_manager.get_symbol_from_idx(snode2[self.Atb['label']])
 
         cond_a = self.is_adjacent(snode2, snode1)
 
         cond_b = snode1[1] > snode2[1] and snode1[3] < snode2[3]  # 1 in 2 horizontally
-        cond_c = (sym2 == '(' or sym2 == ')') and snode2[1] < snode1[6] < snode2[3]
+        # cond_c = (sym2 == '(' or sym2 == ')') and snode2[1] < snode1[6] < snode2[3]
+        cond_c = sym2 in list('()[]') + ['\\{', '\\}'] and snode2[1] < snode1[6] < snode2[3]
 
         return cond_a or cond_b or cond_c
 
@@ -1139,6 +1186,7 @@ class BBParser:
         # child_temp: TL, BL, T, B, C, SUP, SUB
         # child_main: SUP, SUB, UPP, LOW
         for bbox in bbox_lst:
+            bbox[4] = int(bbox[4])
             sym, clas, align = self.symbol_manager.get_symbol_from_idx(bbox[4])
 
             height = bbox[3] - bbox[1]
@@ -1467,5 +1515,5 @@ class BBParser:
         return snode
 
 
-# obj = BBParser()
-# obj.debug()
+obj = BBParser()
+obj.debug()
