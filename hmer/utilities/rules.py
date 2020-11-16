@@ -6,6 +6,7 @@ class RuleApplier(object):
     def __init__(self):
         self.rules = [
             CaseNormalizer(),
+            One2Prime(),
         ]
 
     def __call__(self, lbst_tree):
@@ -72,10 +73,52 @@ class CaseNormalizer(Rule):
     def __call__(self, lbst_tree):
         # summarize
         summarize = self.trace_symbol(lbst_tree)
-        summarize = summarize / np.sum(summarize) - self.threshold
-        max_case = np.argmax(summarize)
-        max_rate = summarize[max_case]
-        if max_rate > 0:
+        rate = summarize / np.sum(summarize) - self.threshold
+        max_case = np.argmax(rate)
+        max_rate = rate[max_case]
+        min_count = np.min(summarize)
+        if max_rate > 0 and min_count > 0:
             print('+ RULE APPLIED: "CASE NORMALIZER"')
             return self.normalize(lbst_tree, bool(max_case))
         return lbst_tree
+
+
+class One2Prime(Rule):
+    def normal_scan(self, node):
+        if isinstance(node, list):
+            for child in node:
+                self.normal_scan(child)
+            return node
+        elif isinstance(node, dict):
+            if 'type' in node and node['type'] == 'sup':
+                self.normal_scan(node['child'][0])
+                self.sup_scan(node['child'][1])
+                return node
+            if 'child' in node:
+                for child in node['child']:
+                    self.normal_scan(child)
+            return node
+        else:
+            raise ValueError("type {} of {} not supported".format(type(node), node))
+
+    def sup_scan(self, node):
+        if isinstance(node, list):
+            # for child in node:
+            #     self.sup_scan(child)
+            if len(node) > 0:
+                self.sup_scan(node[0])
+                for child in node[1:]:
+                    self.normal_scan(child)
+            return node
+        elif isinstance(node, dict):
+            if ('symbol' in node and node['symbol'] == '1') or ('type' in node and node['type'] == '1'):
+                node['symbol'] = 'prime'
+            if 'child' in node:
+                for child in node['child']:
+                    self.normal_scan(child)
+            return node
+        else:
+            raise ValueError("type {} of {} not supported".format(type(node), node))
+
+    def __call__(self, lbst_tree):
+        return self.normal_scan(lbst_tree)
