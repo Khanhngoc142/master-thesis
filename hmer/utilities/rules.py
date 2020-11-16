@@ -72,13 +72,10 @@ class CaseNormalizer(Rule):
     def __call__(self, lbst_tree):
         # summarize
         summarize = self.trace_symbol(lbst_tree)
-        summarize = summarize / np.sum(summarize) -  self.threshold
+        summarize = summarize / np.sum(summarize) - self.threshold
         max_case = np.argmax(summarize)
         max_rate = summarize[max_case]
         if max_rate > 0:
+            print('+ RULE APPLIED: "CASE NORMALIZER"')
             return self.normalize(lbst_tree, bool(max_case))
         return lbst_tree
-
-
-
-
