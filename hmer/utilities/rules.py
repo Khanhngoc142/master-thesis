@@ -27,6 +27,9 @@ class CaseNormalizer(Rule):
         self.lowercase = [chr(c) for c in range(ord('a'), ord('z') + 1)]
         self.uppercase = ['z' + c.upper() for c in self.lowercase] + [c.upper() for c in self.lowercase]
         self.threshold = threshold
+        similar_letters = ['c', 'f', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+        similar_letters = similar_letters + [letter.upper() for letter in similar_letters] + ['z' + letter.upper() for letter in similar_letters]
+        self.similar_letters = similar_letters
 
     def trace_symbol(self, node):
         if isinstance(node, str):
@@ -53,10 +56,10 @@ class CaseNormalizer(Rule):
 
     def normalize(self, node, upper):
         if isinstance(node, str):
-            if node in self.uppercase and upper == False:
+            if node in self.uppercase and upper is False and node in self.similar_letters:
                 return node.lstrip('z').lower()
-            elif node in self.lowercase and upper == True:
-                return 'z' + node.upper()
+            elif node in self.lowercase and upper is True and node in self.similar_letters:
+                return node.upper()
             else:
                 return node
         if isinstance(node, dict):
