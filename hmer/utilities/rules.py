@@ -7,6 +7,7 @@ class RuleApplier(object):
         self.rules = [
             CaseNormalizer(),
             One2Prime(),
+            O2Zero(),
         ]
 
     def __call__(self, lbst_tree):
@@ -27,9 +28,10 @@ class CaseNormalizer(Rule):
         self.lowercase = [chr(c) for c in range(ord('a'), ord('z') + 1)]
         self.uppercase = ['z' + c.upper() for c in self.lowercase] + [c.upper() for c in self.lowercase]
         self.threshold = threshold
-        similar_letters = ['c', 'f', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+        similar_letters = ['c', 'o', 'p', 's', 'u', 'v', 'w', 'x', 'y', 'z']
         similar_letters = similar_letters + [letter.upper() for letter in similar_letters] + ['z' + letter.upper() for letter in similar_letters]
         self.similar_letters = similar_letters
+        # self.similar_letters = []
 
     def trace_symbol(self, node):
         if isinstance(node, str):
@@ -114,8 +116,57 @@ class One2Prime(Rule):
                     self.normal_scan(child)
             return node
         elif isinstance(node, dict):
-            if ('symbol' in node and node['symbol'] == '1') or ('type' in node and node['type'] == '1'):
+            if 'symbol' in node and node['symbol'] == '1':
+                print('+ RULE APPLIED: "1 TO prime"')
                 node['symbol'] = 'prime'
+            if 'type' in node and node['type'] == '1':
+                print('+ RULE APPLIED: "1 TO prime"')
+                node['type'] = 'prime'
+            if 'child' in node:
+                for child in node['child']:
+                    self.normal_scan(child)
+            return node
+        else:
+            raise ValueError("type {} of {} not supported".format(type(node), node))
+
+    def __call__(self, lbst_tree):
+        return self.normal_scan(lbst_tree)
+
+
+class O2Zero(Rule):
+    def normal_scan(self, node):
+        if isinstance(node, list):
+            for child in node:
+                self.normal_scan(child)
+            return node
+        elif isinstance(node, dict):
+            if 'type' in node and node['type'] == 'sub':
+                self.normal_scan(node['child'][0])
+                self.sub_scan(node['child'][1])
+                return node
+            if 'child' in node:
+                for child in node['child']:
+                    self.normal_scan(child)
+            return node
+        else:
+            raise ValueError("type {} of {} not supported".format(type(node), node))
+
+    def sub_scan(self, node):
+        if isinstance(node, list):
+            # for child in node:
+            #     self.sup_scan(child)
+            if len(node) > 0:
+                self.sub_scan(node[0])
+                for child in node[1:]:
+                    self.normal_scan(child)
+            return node
+        elif isinstance(node, dict):
+            if 'symbol' in node and node['symbol'] in ['o', 'O']:
+                print('+ RULE APPLIED: "o TO 0"')
+                node['symbol'] = '0'
+            if 'type' in node and node['type'] in ['o', 'O']:
+                print('+ RULE APPLIED: "o TO 0"')
+                node['type'] = '0'
             if 'child' in node:
                 for child in node['child']:
                     self.normal_scan(child)
