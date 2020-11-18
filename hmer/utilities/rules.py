@@ -8,6 +8,7 @@ class RuleApplier(object):
             CaseNormalizer(),
             One2Prime(),
             O2Zero(),
+            OneCorrecter(),
         ]
 
     def __call__(self, lbst_tree):
@@ -176,3 +177,45 @@ class O2Zero(Rule):
 
     def __call__(self, lbst_tree):
         return self.normal_scan(lbst_tree)
+
+
+class OneCorrecter(Rule):
+    """
+    if there's any | next to (before or after) an op => | to 1
+    """
+    def modify(self, symbol):
+        if isinstance(symbol, dict):
+            if 'type' in symbol and symbol['type'] in ['sup', 'sub']:
+                self.modify(symbol['child'][0])
+            elif 'symbol' in symbol and symbol['symbol'] == '|':
+                symbol['symbol'] = '1'
+            elif 'type' in symbol and symbol['type'] == '|':
+                symbol['type'] = '1'
+        elif isinstance(symbol, list):
+            if len(symbol) > 0:
+                self.modify(symbol[0])
+        else:
+            raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(symbol)))
+
+    def __call__(self, lbst_tree):
+        if not isinstance(lbst_tree, list):
+            raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(lbst_tree)))
+
+        i = 0
+        while i < len(lbst_tree):
+            curr_symbol = lbst_tree[i]
+            if isinstance(curr_symbol, list):
+                self(curr_symbol)
+            elif isinstance(curr_symbol, dict):
+                if 'type' in curr_symbol and curr_symbol['type'] == 'Operation':
+                    if i + 1 < len(lbst_tree):
+                        self.modify(lbst_tree[i + 1])
+                    if i - 1 >= 0:
+                        self.modify([lbst_tree[i - 1]])
+                if 'child' in curr_symbol:
+                    for child in curr_symbol['child']:
+                        self(child)
+            else:
+                raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(curr_symbol)))
+            i += 1
+        return lbst_tree
