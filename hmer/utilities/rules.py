@@ -8,7 +8,8 @@ class RuleApplier(object):
             CaseNormalizer(),
             One2Prime(),
             O2Zero(),
-            OneCorrecter(),
+            OneCorrecterTwoSides(),
+            OneCorrecterAfter(),
         ]
 
     def __call__(self, lbst_tree):
@@ -79,7 +80,10 @@ class CaseNormalizer(Rule):
     def __call__(self, lbst_tree):
         # summarize
         summarize = self.trace_symbol(lbst_tree)
-        rate = summarize / np.sum(summarize) - self.threshold
+        sum_summarize = np.sum(summarize)
+        if sum_summarize == 0:
+            return lbst_tree
+        rate = summarize / sum_summarize - self.threshold
         max_case = np.argmax(rate)
         max_rate = rate[max_case]
         min_count = np.min(summarize)
@@ -179,17 +183,24 @@ class O2Zero(Rule):
         return self.normal_scan(lbst_tree)
 
 
-class OneCorrecter(Rule):
+class OneCorrecterTwoSides(Rule):
     """
     if there's any | next to (before or after) an op => | to 1
     """
+    def __init__(self):
+        self.target_symbols = ['|']
+        self.rule_name = '1 CORRECTOR 2 SIDES'
+
     def modify(self, symbol):
         if isinstance(symbol, dict):
             if 'type' in symbol and symbol['type'] in ['sup', 'sub']:
                 self.modify(symbol['child'][0])
-            elif 'symbol' in symbol and symbol['symbol'] == '|':
+            elif 'symbol' in symbol and symbol['symbol'].strip() in self.target_symbols:
+                print('+ RULE APPLIED: "{}"'.format(self.rule_name))
                 symbol['symbol'] = '1'
-            elif 'type' in symbol and symbol['type'] == '|':
+                symbol['type'] = 'literal'
+            elif 'type' in symbol and symbol['type'].strip() in self.target_symbols:
+                print('+ RULE APPLIED: "{}"'.format(self.rule_name))
                 symbol['type'] = '1'
         elif isinstance(symbol, list):
             if len(symbol) > 0:
@@ -212,6 +223,37 @@ class OneCorrecter(Rule):
                         self.modify(lbst_tree[i + 1])
                     if i - 1 >= 0:
                         self.modify([lbst_tree[i - 1]])
+                if 'child' in curr_symbol:
+                    for child in curr_symbol['child']:
+                        self(child)
+            else:
+                raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(curr_symbol)))
+            i += 1
+        return lbst_tree
+
+
+class OneCorrecterAfter(OneCorrecterTwoSides):
+    """
+    if there's any | next to (before or after) an op => | to 1
+    """
+    def __init__(self):
+        super().__init__()
+        self.target_symbols = ['!', 'slash', '/', 'div', '\\div']
+        self.rule_name = '1 CORRECTOR AFTER'
+
+    def __call__(self, lbst_tree):
+        if not isinstance(lbst_tree, list):
+            raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(lbst_tree)))
+
+        i = 0
+        while i < len(lbst_tree):
+            curr_symbol = lbst_tree[i]
+            if isinstance(curr_symbol, list):
+                self(curr_symbol)
+            elif isinstance(curr_symbol, dict):
+                if 'type' in curr_symbol and curr_symbol['type'] == 'Operation':
+                    if i + 1 < len(lbst_tree):
+                        self.modify(lbst_tree[i + 1])
                 if 'child' in curr_symbol:
                     for child in curr_symbol['child']:
                         self(child)
