@@ -304,6 +304,21 @@ class Time2X(Rule):
             self.verbose()
             node['symbol'] = self.out_symbol
             node['type'] = 'literal'
+        if 'type' in node and node['type'] in ['sub', 'sup']:
+            self.modify(node['child'][0][0])
+
+    def modify_if_time(self, node):
+        if isinstance(node, dict):
+            if 'type' in node:
+                if node['type'] in ['sub', 'sup']:
+                    self.modify_if_time(node['child'][0])
+                elif node['type'] == 'Operation' and node['symbol'] in self.target_symbols:
+                    self.verbose()
+                    node['symbol'] = self.out_symbol
+                    node['type'] = 'literal'
+        elif isinstance(node, list):
+            if len(node) > 0:
+                self.modify_if_time(node[0])
 
     def __call__(self, lbst_tree):
         if isinstance(lbst_tree, list):
@@ -312,19 +327,27 @@ class Time2X(Rule):
                     for child in lbst_tree:
                         self(child)
                 elif isinstance(lbst_tree[0], dict):
-                    if len(lbst_tree) > 0:
-                        for i in [0, -1]:
-                            self.modify(lbst_tree[i])
-                    for i, child in enumerate(lbst_tree[1:-1]):
+                    # if len(lbst_tree) > 0:
+                    #     for i in [0, -1]:
+                    #         self.modify(lbst_tree[i])
+                    # for i, child in enumerate(lbst_tree[1:]):
+                    for i, child in enumerate(lbst_tree):
+                        # pre_symbol = lbst_tree[i]
+                        pre_symbol = lbst_tree[i - 1]
                         if 'type' in child and child['type'] in self.target_symbols:
                             self.verbose()
                             child['type'] = self.out_symbol
-                        if 'type' in child and child['type'] == 'Operation' and child['symbol'] in self.target_symbols:
-                            pre_symbol = lbst_tree[i]
-                            if 'type' in pre_symbol and pre_symbol['type'] == 'Operation':
-                                self.verbose()
-                                child['symbol'] = self.out_symbol
-                                child['type'] = 'literal'
+
+                        if 'type' in child and child['type'] == 'Operation' and child['symbol'] in self.target_symbols and 'type' in pre_symbol and pre_symbol['type'] == 'Operation':
+                            self.verbose()
+                            child['symbol'] = self.out_symbol
+                            child['type'] = 'literal'
+
+                        if 'type' in child and child['type'] in ['sub', 'sup']:
+                            self.modify_if_time(child)
+                        if 'child' in child:
+                            for child_child in child['child']:
+                                self(child_child)
                 else:
                     self.type_not_supported(lbst_tree[0])
         else:
