@@ -104,6 +104,8 @@ class CaseNormalizer(Rule):
         max_case = np.argmax(rate)
         max_rate = rate[max_case]
         min_count = np.min(summarize)
+        if min_count == 0:
+            return lbst_tree
         if max_rate > 0 and min_count > 0:
             self.verbose()
             return self.normalize(lbst_tree, bool(max_case))
