@@ -5,6 +5,7 @@ import numpy as np
 class RuleApplier(object):
     def __init__(self):
         self.rules = [
+            Time2X(),
             CaseNormalizer(),
             One2Prime(),
             O2Zero(),
@@ -20,6 +21,16 @@ class RuleApplier(object):
 
 
 class Rule(metaclass=abc.ABCMeta):
+    def __init__(self):
+        self.verbose_pattern = '+ RULE APPLIED: "{}"'
+        self.rule_name = ""
+
+    def verbose(self):
+        print(self.verbose_pattern.format(self.rule_name))
+
+    def type_not_supported(self, node):
+        raise ValueError("DEBUG: {}: type {} not supported".format(self.rule_name, type(node)))
+
     @abc.abstractmethod
     def __call__(self, lbst_tree):
         pass
@@ -27,6 +38,8 @@ class Rule(metaclass=abc.ABCMeta):
 
 class CaseNormalizer(Rule):
     def __init__(self, threshold=0.5):
+        super().__init__()
+        self.rule_name = "CASE NORMALIZE"
         self.lowercase = [chr(c) for c in range(ord('a'), ord('z') + 1)]
         self.uppercase = ['z' + c.upper() for c in self.lowercase] + [c.upper() for c in self.lowercase]
         self.threshold = threshold
@@ -56,7 +69,7 @@ class CaseNormalizer(Rule):
             for child in node:
                 base += self.trace_symbol(child)
         else:
-            raise ValueError("node type {} not supported".format(node))
+            self.type_not_supported(node)
 
         return base
 
@@ -92,7 +105,7 @@ class CaseNormalizer(Rule):
         max_rate = rate[max_case]
         min_count = np.min(summarize)
         if max_rate > 0 and min_count > 0:
-            print('+ RULE APPLIED: "CASE NORMALIZER"')
+            self.verbose()
             return self.normalize(lbst_tree, bool(max_case))
         return lbst_tree
 
@@ -113,7 +126,7 @@ class One2Prime(Rule):
                     self.normal_scan(child)
             return node
         else:
-            raise ValueError("type {} of {} not supported".format(type(node), node))
+            self.type_not_supported(node)
 
     def sup_scan(self, node):
         if isinstance(node, list):
@@ -126,23 +139,27 @@ class One2Prime(Rule):
             return node
         elif isinstance(node, dict):
             if 'symbol' in node and node['symbol'] == '1':
-                print('+ RULE APPLIED: "1 TO prime"')
+                self.verbose()
                 node['symbol'] = 'prime'
             if 'type' in node and node['type'] == '1':
-                print('+ RULE APPLIED: "1 TO prime"')
+                self.verbose()
                 node['type'] = 'prime'
             if 'child' in node:
                 for child in node['child']:
                     self.normal_scan(child)
             return node
         else:
-            raise ValueError("type {} of {} not supported".format(type(node), node))
+            self.type_not_supported(node)
 
     def __call__(self, lbst_tree):
         return self.normal_scan(lbst_tree)
 
 
 class O2Zero(Rule):
+    def __init__(self):
+        super().__init__()
+        self.rule_name = "o TO 0"
+
     def normal_scan(self, node):
         if isinstance(node, list):
             for child in node:
@@ -158,7 +175,7 @@ class O2Zero(Rule):
                     self.normal_scan(child)
             return node
         else:
-            raise ValueError("type {} of {} not supported".format(type(node), node))
+            self.type_not_supported(node)
 
     def sub_scan(self, node):
         if isinstance(node, list):
@@ -171,10 +188,10 @@ class O2Zero(Rule):
             return node
         elif isinstance(node, dict):
             if 'symbol' in node and node['symbol'] in ['o', 'O']:
-                print('+ RULE APPLIED: "o TO 0"')
+                self.verbose()
                 node['symbol'] = '0'
             if 'type' in node and node['type'] in ['o', 'O']:
-                print('+ RULE APPLIED: "o TO 0"')
+                self.verbose()
                 node['type'] = '0'
             if 'child' in node:
                 for child in node['child']:
@@ -192,6 +209,7 @@ class OneCorrecterTwoSides(Rule):
     if there's any | next to (before or after) an op => | to 1
     """
     def __init__(self):
+        super().__init__()
         self.target_symbols = ['|']
         self.rule_name = '1 CORRECTOR 2 SIDES'
 
@@ -200,21 +218,21 @@ class OneCorrecterTwoSides(Rule):
             if 'type' in symbol and symbol['type'] in ['sup', 'sub']:
                 self.modify(symbol['child'][0])
             elif 'symbol' in symbol and symbol['symbol'].strip() in self.target_symbols:
-                print('+ RULE APPLIED: "{}"'.format(self.rule_name))
+                self.verbose()
                 symbol['symbol'] = '1'
                 symbol['type'] = 'literal'
             elif 'type' in symbol and symbol['type'].strip() in self.target_symbols:
-                print('+ RULE APPLIED: "{}"'.format(self.rule_name))
+                self.verbose()
                 symbol['type'] = '1'
         elif isinstance(symbol, list):
             if len(symbol) > 0:
                 self.modify(symbol[0])
         else:
-            raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(symbol)))
+            self.type_not_supported(symbol)
 
     def __call__(self, lbst_tree):
         if not isinstance(lbst_tree, list):
-            raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(lbst_tree)))
+            self.type_not_supported(lbst_tree)
 
         i = 0
         while i < len(lbst_tree):
@@ -231,7 +249,7 @@ class OneCorrecterTwoSides(Rule):
                     for child in curr_symbol['child']:
                         self(child)
             else:
-                raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(curr_symbol)))
+                self.type_not_supported(curr_symbol)
             i += 1
         return lbst_tree
 
@@ -247,7 +265,7 @@ class OneCorrecterAfter(OneCorrecterTwoSides):
 
     def __call__(self, lbst_tree):
         if not isinstance(lbst_tree, list):
-            raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(lbst_tree)))
+            self.type_not_supported(lbst_tree)
 
         i = 0
         while i < len(lbst_tree):
@@ -262,15 +280,28 @@ class OneCorrecterAfter(OneCorrecterTwoSides):
                     for child in curr_symbol['child']:
                         self(child)
             else:
-                raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(curr_symbol)))
+                self.type_not_supported(curr_symbol)
             i += 1
         return lbst_tree
 
 
 class Time2X(Rule):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self.rule_name = "TIME TO X"
+        self.target_symbols = ['time', '\\times', 'times', '\\time']
+        self.out_symbol = 'x'
+        # self.out_symbol = 'zX'
+
+    def modify(self, node):
+        assert isinstance(node, dict)
+        if 'type' in node and node['type'] in self.target_symbols:
+            self.verbose()
+            node['type'] = self.out_symbol
+        if 'type' in node and node['type'] == 'Operation' and 'symbol' in node and node['symbol'] in self.target_symbols:
+            self.verbose()
+            node['symbol'] = self.out_symbol
+            node['type'] = 'literal'
 
     def __call__(self, lbst_tree):
         if isinstance(lbst_tree, list):
@@ -279,10 +310,22 @@ class Time2X(Rule):
                     for child in lbst_tree:
                         self(child)
                 elif isinstance(lbst_tree[0], dict):
-                    pass
+                    if len(lbst_tree) > 0:
+                        for i in [0, -1]:
+                            self.modify(lbst_tree[i])
+                    for i, child in enumerate(lbst_tree[1:-1]):
+                        if 'type' in child and child['type'] in self.target_symbols:
+                            self.verbose()
+                            child['type'] = self.out_symbol
+                        if 'type' in child and child['type'] == 'Operation' and child['symbol'] in self.target_symbols:
+                            pre_symbol = lbst_tree[i]
+                            if 'type' in pre_symbol and pre_symbol['type'] == 'Operation':
+                                self.verbose()
+                                child['symbol'] = self.out_symbol
+                                child['type'] = 'literal'
                 else:
-                    raise ValueError("type {} not supported")
-        elif isinstance(lbst_tree, dict):
-            if 'child' in lbst_tree:
-                for child in lbst_tree['child']:
-                    self(child)
+                    self.type_not_supported(lbst_tree[0])
+        else:
+            self.type_not_supported(lbst_tree)
+
+        return lbst_tree
