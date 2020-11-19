@@ -982,7 +982,8 @@ class BBParser:
         latex_string = self.latexgenerator.process(lbst_tree)
 
         print(latex_string)
-        visualize_info_line(input_line, is_pred)
+        # visualize_info_line(input_line, is_pred)
+
         return latex_string
 
     # BASE PROCESS
