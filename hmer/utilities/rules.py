@@ -6,11 +6,11 @@ class RuleApplier(object):
     def __init__(self):
         self.rules = [
             Time2X(),
-            CaseNormalizer(),
             One2Prime(),
             O2Zero(),
             OneCorrecterTwoSides(),
             OneCorrecterAfter(),
+            CaseNormalizer(),
         ]
 
     def __call__(self, lbst_tree):
