@@ -50,6 +50,8 @@ class CaseNormalizer(Rule):
             if 'child' in node:
                 for child in node['child']:
                     base += self.trace_symbol(child)
+            if 'type' in node:
+                base += self.trace_symbol(node['type'])
         elif isinstance(node, list):
             for child in node:
                 base += self.trace_symbol(child)
@@ -69,6 +71,8 @@ class CaseNormalizer(Rule):
         if isinstance(node, dict):
             if 'symbol' in node:
                 node['symbol'] = self.normalize(node['symbol'], upper)
+            if 'type' in node:
+                node['type'] = self.normalize(node['type'], upper)
             if 'child' in node:
                 for child in node['child']:
                     _ = self.normalize(child, upper)
@@ -238,7 +242,7 @@ class OneCorrecterAfter(OneCorrecterTwoSides):
     """
     def __init__(self):
         super().__init__()
-        self.target_symbols = ['!', 'slash', '/', 'div', '\\div']
+        self.target_symbols = ['!', 'slash', '/']
         self.rule_name = '1 CORRECTOR AFTER'
 
     def __call__(self, lbst_tree):
@@ -261,3 +265,24 @@ class OneCorrecterAfter(OneCorrecterTwoSides):
                 raise ValueError("DEBUG: OneCorrector: type {} not supported".format(type(curr_symbol)))
             i += 1
         return lbst_tree
+
+
+class Time2X(Rule):
+    def __init__(self) -> None:
+        super().__init__()
+        self.rule_name = "TIME TO X"
+
+    def __call__(self, lbst_tree):
+        if isinstance(lbst_tree, list):
+            if len(lbst_tree) > 0:
+                if isinstance(lbst_tree[0], list):
+                    for child in lbst_tree:
+                        self(child)
+                elif isinstance(lbst_tree[0], dict):
+                    pass
+                else:
+                    raise ValueError("type {} not supported")
+        elif isinstance(lbst_tree, dict):
+            if 'child' in lbst_tree:
+                for child in lbst_tree['child']:
+                    self(child)
