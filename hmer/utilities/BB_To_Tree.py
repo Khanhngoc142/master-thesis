@@ -33,7 +33,7 @@ class SymbolManager:
         # (sym, index, class, Alignment)
         self.dictionary = []
 
-        with open('./new_label.txt') as f:
+        with open('/home/ubuntu/workspace/mine/master-thesis.git/hmer/utilities/new_label.txt') as f:
             sym_list = f.readlines()
             for sym in sym_list:
                 temp = sym.strip().split()
@@ -989,7 +989,7 @@ class BBParser:
         latex_string = self.latexgenerator.process(lbst_tree)
 
         print(latex_string)
-        visualize_info_line(input_line, is_pred)
+        # visualize_info_line(input_line, is_pred)
 
         return latex_string
 
