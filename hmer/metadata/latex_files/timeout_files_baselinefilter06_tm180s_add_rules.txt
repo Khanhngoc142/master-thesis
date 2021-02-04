@@ -1,0 +1,2 @@
+training/data/CROHME_2013_test/116_em_164
+training/data/CROHME_2013_test/123_em_367

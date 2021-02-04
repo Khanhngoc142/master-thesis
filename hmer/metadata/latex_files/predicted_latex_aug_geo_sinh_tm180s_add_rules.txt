@@ -1,0 +1,671 @@
+training/data/CROHME_2013_test/103_em_0	 p = a ^{ n } + + a x 1 _{ + + a a }
+training/data/CROHME_2013_test/103_em_1	 e = c ^{ i }( 1 )
+training/data/CROHME_2013_test/103_em_10	 u ( x ) = \frac{ 1 }{( x , , x )}
+training/data/CROHME_2013_test/103_em_11	 T = T_{ 0 } + \Delta T 
+training/data/CROHME_2013_test/103_em_12	( z )
+training/data/CROHME_2013_test/103_em_13	 m = \frac{ A k R }{ g }
+training/data/CROHME_2013_test/103_em_14	 u m = u p y ^{ n \frac{}{ - } p }
+training/data/CROHME_2013_test/103_em_15	 y _{ = 36 \pi }\frac{ v ^{ 2 }}{ s ^{ 3 }}
+training/data/CROHME_2013_test/103_em_16	 p p n _{ 1 , , } ) 
+training/data/CROHME_2013_test/103_em_17	 1 = E T _{ 0 } ) 
+training/data/CROHME_2013_test/103_em_18	 B _{ 1 } = S _{ 1 }( A _{ 1 })
+training/data/CROHME_2013_test/103_em_19	 4 \times ^{ p }
+training/data/CROHME_2013_test/103_em_2	 c ( A ) = E - y ( _{ f } - f ()
+training/data/CROHME_2013_test/103_em_20	 E _{ 1 , , } E _{ k }
+training/data/CROHME_2013_test/103_em_21	 r = M 
+training/data/CROHME_2013_test/103_em_22	 B ( t ) - B ( s )
+training/data/CROHME_2013_test/103_em_23	\Delta x = x ^{ \prime } - x 
+training/data/CROHME_2013_test/103_em_24	 y ^{ = 5 x + t }
+training/data/CROHME_2013_test/103_em_25	 C M m ^{ R ^{ 2 } }\int
+training/data/CROHME_2013_test/103_em_26	 T _{ 8 } u s ) 
+training/data/CROHME_2013_test/103_em_27	\frac{ m + m ^{ \prime }}{ n + n } \gt \frac{ a }{ b }
+training/data/CROHME_2013_test/103_em_28	 = v + 1 2 
+training/data/CROHME_2013_test/103_em_29	 \mu _{ e }\frac{ N }{ L ^{ 2 }} = R ^{ - 1 }
+training/data/CROHME_2013_test/103_em_3	(\frac{ E }{} ! y )
+training/data/CROHME_2013_test/103_em_5	 H R = \frac{ P n }{ p _{ 2 _{ 2 } } r }
+training/data/CROHME_2013_test/103_em_7	\int^{ + \infty }_{ 1 }\frac{ 1 }{ r ^{ 2 }} d t 
+training/data/CROHME_2013_test/103_em_8	\frac{ 1 }{\sqrt{ a + y ^{ 2 }}} = k 
+training/data/CROHME_2013_test/103_em_9	 d ( x , , y ) = p ( x - y )
+training/data/CROHME_2013_test/104_em_30	 d g _{ a }^{ = \frac{ 1 }{} d d b }
+training/data/CROHME_2013_test/104_em_31	\int d x _{ = x } c 
+training/data/CROHME_2013_test/104_em_32	 S ^{ \prime } P = 2 
+training/data/CROHME_2013_test/104_em_33	 a ( v 2 _{ a })
+training/data/CROHME_2013_test/104_em_34	 | _{ ! } x - \mu | \lt \frac{ a }{ 4 }
+training/data/CROHME_2013_test/104_em_35	 q ^{ \lt - 1 }
+training/data/CROHME_2013_test/104_em_36	 | x - \frac{ a }{ b } 1 \leq \frac{ 1 }{ 5 } b ^{ 2 }
+training/data/CROHME_2013_test/104_em_37	 I _{ A } \leq I _{ B } \leq I 
+training/data/CROHME_2013_test/104_em_38	 u ( t ) - v ( t )
+training/data/CROHME_2013_test/104_em_39	 s _{ m x } = p \frac{ \alpha }{ 1 - \alpha }
+training/data/CROHME_2013_test/104_em_40	\gamma_{ 1 } = \frac{ h _{ 3 }}{ a ^{ 3 }}
+training/data/CROHME_2013_test/104_em_42	 T _{ 50 }
+training/data/CROHME_2013_test/104_em_43	 T x _{ 1 = } x _{ 1 + 1 }
+training/data/CROHME_2013_test/104_em_44	 M . ( 1 , , y )
+training/data/CROHME_2013_test/104_em_45	 p ( x ) p () = R ( x )
+training/data/CROHME_2013_test/104_em_47	 u \in S 
+training/data/CROHME_2013_test/104_em_48	 p ( b / c )
+training/data/CROHME_2013_test/104_em_49	(v_{ 1 } v _{ 1 _{ n } })
+training/data/CROHME_2013_test/104_em_50	T_{ 0 } = \sqrt{ 2 _{ g } H }
+training/data/CROHME_2013_test/104_em_51	 s _{ n 1 } = s _{ n } s _{ n - 1 }
+training/data/CROHME_2013_test/104_em_52	 s = 1 
+training/data/CROHME_2013_test/104_em_53	 L _{ a }
+training/data/CROHME_2013_test/104_em_54	 f x p ( x ) \} 
+training/data/CROHME_2013_test/104_em_55	 G _{ 2 k }
+training/data/CROHME_2013_test/104_em_56	 = 2 _{ - 2 } = \frac{ - }{ 0 } - 8 \frac{ ( }{} 1 \times 3 \cos ) 
+training/data/CROHME_2013_test/104_em_57	 ! ( a )
+training/data/CROHME_2013_test/104_em_58	 \sigma ( 0 ) = 01 
+training/data/CROHME_2013_test/104_em_59	 s _{ n = } x _{ 1 } + x _{ 2 + } x _{ n }
+training/data/CROHME_2013_test/105_em_60	 c ( - ) + c ( \beta ) = 0 
+training/data/CROHME_2013_test/105_em_61	 p _{ c } = \frac{ c }{ 45 } + (\frac{ p }{ 4 }) \times 16 
+training/data/CROHME_2013_test/105_em_62	 f ^{ \prime }( x ) = 2 a x + b 
+training/data/CROHME_2013_test/105_em_63	\frac{ 1 }{ 1 }\int^{ 4 }_{ 2 _{ 2 }} 2 ^{ - 3 \pi_{ \pi } d = 4 () ) ) }
+training/data/CROHME_2013_test/105_em_64	 1 + a () ) ^{ 3 } + a a () ) p ^{ 3 }\ldots
+training/data/CROHME_2013_test/105_em_65	\sqrt{ 2 } = \frac{ P }{ q }
+training/data/CROHME_2013_test/105_em_66	\int^{ a }_{ 0 } ( x d x = \int^{}_{ a } b _{ f ) d x }
+training/data/CROHME_2013_test/105_em_68	 \cos d ( B ) = 2 ^{ \cos ( () }
+training/data/CROHME_2013_test/105_em_69	 p _{ 1 }^{ = p }
+training/data/CROHME_2013_test/105_em_70	 T ( g ) = 0 
+training/data/CROHME_2013_test/105_em_71	 \mu n = E [ x n ] 
+training/data/CROHME_2013_test/105_em_72	 \sigma ( A _{ i })
+training/data/CROHME_2013_test/105_em_74	 \alpha = 2 \frac{ \{ ( u )}{\sqrt{ L }}
+training/data/CROHME_2013_test/105_em_75	 441 ( 1 - + 7 ) y ^{ 2 } 4 ^{ \prime - 522 }
+training/data/CROHME_2013_test/105_em_76	 4 ^{ \frac{ 2 }{} 3 _{ 3 } + + 2 _{ - + 2 ^{ + + a } }^{ 2 } = 0 }
+training/data/CROHME_2013_test/105_em_77	 v _{ i } - v _{ 0 }
+training/data/CROHME_2013_test/105_em_78	 5 _{ P _{ t } } \lt 0 
+training/data/CROHME_2013_test/105_em_79	 A = \int a _{ 0 , }\ldots . ^{ a } 111 \} 
+training/data/CROHME_2013_test/105_em_80	 S ^{ 4 m + 1 }
+training/data/CROHME_2013_test/105_em_81	 c \frac{k_{ p } n _{ + \cos_{ q } }\frac{}{ A } k }{ G _{ A }^{ n }}
+training/data/CROHME_2013_test/105_em_82	T_{ N } = 100 
+training/data/CROHME_2013_test/105_em_83	 p ( x )
+training/data/CROHME_2013_test/105_em_84	 H _{ 2 } H . ^{ \prime } M 
+training/data/CROHME_2013_test/105_em_85	 t _{ 1 } = \frac{ L }{ c + v p }
+training/data/CROHME_2013_test/105_em_86	 A + . _{ . _{ ... } . } + 0 ^{ I n }
+training/data/CROHME_2013_test/105_em_87	 f = \frac{\sqrt{ 5 }}{ R c }
+training/data/CROHME_2013_test/105_em_88	 M ( 22 )
+training/data/CROHME_2013_test/105_em_89	 f = p \times ( - a - - 2 ) + 0 _{ t }
+training/data/CROHME_2013_test/106_em_100	 1 M 
+training/data/CROHME_2013_test/106_em_101	 1 g ^{ = N _{ A } u }
+training/data/CROHME_2013_test/106_em_102	 H _{ 4 }^{ ( a ) } = 0 x 3 d 2 _{ 2 } 10 
+training/data/CROHME_2013_test/106_em_103	( s , 2 m )
+training/data/CROHME_2013_test/106_em_104	 2 = ( 2 | 2 ^{ 10 }
+training/data/CROHME_2013_test/106_em_105	 V f p ) = N k T 
+training/data/CROHME_2013_test/106_em_106	\frac{ 1 }{ 2 \pi }\int^{ + 4 }_{ 3 \infty } g s ) t ^{ 2 } = \pi ( t ) ) 
+training/data/CROHME_2013_test/106_em_108	 n w w 
+training/data/CROHME_2013_test/106_em_109	 P = \frac{ 2 ( N - N t )}{ 2 N }
+training/data/CROHME_2013_test/106_em_110	 C v _{ 1 }
+training/data/CROHME_2013_test/106_em_111	 k ( p + q ^{ = p 9 - 1 })
+training/data/CROHME_2013_test/106_em_112	 L ( v ) L ( u 1 )
+training/data/CROHME_2013_test/106_em_113	 a ^{ \prime } = \frac{ a }{ 2 }
+training/data/CROHME_2013_test/106_em_114	 ( (\frac{ + k \frac{}{ - } ) ( n + k 2 ) ( n n + 1 }{ 1 ) 2 }) u 
+training/data/CROHME_2013_test/106_em_115	 k = R _{ f }
+training/data/CROHME_2013_test/106_em_116	( 4 ) ) + () = = ( 31 ) ) _{ n } ( x _{ n }^{ - ( x ) }
+training/data/CROHME_2013_test/106_em_117	 \log 2 ( 4 )
+training/data/CROHME_2013_test/106_em_118	 S = \frac{ 1 }{ 2 } 7 _{ 1 } t 
+training/data/CROHME_2013_test/106_em_119	 t _{ x } t 
+training/data/CROHME_2013_test/106_em_90	 a = \frac{ 2 }{ R } 2 
+training/data/CROHME_2013_test/106_em_91	 y ^{ y ^{ 11 - x \times x \geq ^{ \prime } 0 } }
+training/data/CROHME_2013_test/106_em_93	 A b ^{ 2 } + 1 ^{ 2 } = \frac{ 1 }{ 2 } 8 c ^{ 2 } + 2 A \prime ^{ 2 }
+training/data/CROHME_2013_test/106_em_94	 4 \pi ^{ 2 } a R 
+training/data/CROHME_2013_test/106_em_95	 f ( t ) = b ^{ h t }
+training/data/CROHME_2013_test/106_em_96	 I _{ 1 } = I _{ m + }\frac{ v _{ 2 }}{ L _{ 11 }} t 
+training/data/CROHME_2013_test/106_em_97	 p ^{ q } 1 ^{ m 22_{ 2 } } ( \frac{ u }{\frac{}{\sqrt{ n }} ) ) } m ^{ 2 } c ^{ 2 }
+training/data/CROHME_2013_test/106_em_99	P_{ 0 } ( \cos ^{ \theta = 1 }
+training/data/CROHME_2013_test/114_em_125	 f ( \sigma + t )
+training/data/CROHME_2013_test/115_em_127	 A 1 r e = ( 64 / 81 ) \times d ^{ 2 }
+training/data/CROHME_2013_test/115_em_128	 L L _{ s }( z )
+training/data/CROHME_2013_test/115_em_129	 u ( b )
+training/data/CROHME_2013_test/115_em_130	 N = ( n 1 \times 10 ^{ 6 }
+training/data/CROHME_2013_test/115_em_131	 v ^{ 2 } e \gamma 
+training/data/CROHME_2013_test/115_em_132	 L _{ 0 L , 1 }
+training/data/CROHME_2013_test/115_em_133	 f = \sqrt{ F } / ( n T )
+training/data/CROHME_2013_test/115_em_134	\Delta H ^{ 0 }
+training/data/CROHME_2013_test/115_em_135	 E = \frac{ 1 }{ 2 } k T 
+training/data/CROHME_2013_test/115_em_136	\frac{ d A = }{ d t } \{ A , ^{ = 0 } \} 
+training/data/CROHME_2013_test/115_em_137	 0 = \frac{ 1 }{ 2 }
+training/data/CROHME_2013_test/115_em_138	 T n (( x )) = T m ( x )
+training/data/CROHME_2013_test/115_em_139	 H _{ 3 }( R )
+training/data/CROHME_2013_test/115_em_140	 v p ( n )
+training/data/CROHME_2013_test/115_em_142	 T _{ 0 } x ) = 1 
+training/data/CROHME_2013_test/115_em_143	 V = \frac{ n R }{ p }
+training/data/CROHME_2013_test/115_em_144	( B \sqrt _{ B })
+training/data/CROHME_2013_test/115_em_145	 f ( H )
+training/data/CROHME_2013_test/115_em_146	 7 + 9 
+training/data/CROHME_2013_test/115_em_147	 n = \frac{ ( \theta }{ \sin ( \theta }\frac{ ) }{ r ^{ \prime }}
+training/data/CROHME_2013_test/115_em_148	\Delta S _{ 12 }
+training/data/CROHME_2013_test/115_em_149	 q = \Sigma 2 _{ = 1 }(\sum^{ n }_{ i = }l_{ 1 }2_{ i })
+training/data/CROHME_2013_test/115_em_150	 e + 1 \ldots , ^{ e } r 
+training/data/CROHME_2013_test/115_em_151	 \sqrt _{ a s }
+training/data/CROHME_2013_test/115_em_152	 u d _{ v } = d ( 4 ) - v d u 
+training/data/CROHME_2013_test/115_em_153	 g () = 2 u ( z )
+training/data/CROHME_2013_test/115_em_154	 b ^{ \prime }\sum^{}_{ y } \mu + y ^{ \prime y }
+training/data/CROHME_2013_test/115_em_155	 s = n + \alpha 
+training/data/CROHME_2013_test/115_em_156	 u _{ n } \rightarrow M 
+training/data/CROHME_2013_test/116_em_158	 \tan _{ \gamma ^{ = \lim H m \phi } }
+training/data/CROHME_2013_test/116_em_159	 \pm ^{ - 1 }
+training/data/CROHME_2013_test/116_em_160	 M = ( \alpha . \beta p )
+training/data/CROHME_2013_test/116_em_161	\frac{ 2 }{} + - \frac{ 2 }{} + \frac{ - }{ 2 } ) 
+training/data/CROHME_2013_test/116_em_162	 L ( u ) = \frac{\frac{ n }{}}{ 2 } ( u t 2 - ( u )
+training/data/CROHME_2013_test/116_em_163	 H _{ 2 } = x ^{ 3 } - b X ^{ 3 } + 13 
+training/data/CROHME_2013_test/116_em_164	 g () ) ( (( x ) + f ()) = 1 ^{ 4 }( x )
+training/data/CROHME_2013_test/116_em_165	 f ( x x ) = n ( 1 + x )^{ n - 1 } - n 
+training/data/CROHME_2013_test/116_em_166	\lim_{ x \rightarrow a ^{ f }}( x ) = l 
+training/data/CROHME_2013_test/116_em_167	 2 ^{ 2 ^{ N } }
+training/data/CROHME_2013_test/116_em_168	 M _{ 2 }( n ) = \frac{ 1 }{ 2 } n ( n ^{ k } + 1 )
+training/data/CROHME_2013_test/116_em_169	 n ^{ l } y _{ , ^{ m } }
+training/data/CROHME_2013_test/116_em_170	 E _{ = p ^{ c } }
+training/data/CROHME_2013_test/116_em_171	 n () = I _{ 3 } \sqrt _{ \cos \alpha _{ s } }
+training/data/CROHME_2013_test/116_em_172	\frac{}{\frac{}{ E }} \theta _{ 2 }
+training/data/CROHME_2013_test/116_em_173	 1 ^{ \prime - 1 + + + + ) + + a } y ^{ 2 }( - ) ) ) ) - 4 _{ y ^{ 114 _{ 4 } } }
+training/data/CROHME_2013_test/116_em_174	 v d p = - n p _{ v } h 
+training/data/CROHME_2013_test/116_em_175	 \gt p _{ \prime }\frac{ a _{ 9 }}{ 1 - q }
+training/data/CROHME_2013_test/116_em_176	\lim_{ 1 \rightarrow \infty } t _{ + ( } ) = x ( ( t )
+training/data/CROHME_2013_test/116_em_177	 R _{ g } \lt q ^{ - \lt l _{ 0 } }
+training/data/CROHME_2013_test/116_em_178	 x y ) = x ^{ \prime } y ] 
+training/data/CROHME_2013_test/116_em_179	( x ) = r ( x \frac{}{ - } y ) ) = - 2 
+training/data/CROHME_2013_test/116_em_180	\frac{ p }{ \gamma } + \frac{ v 2 }{ 2 _{ y }} - \frac{ b }{ \gamma }
+training/data/CROHME_2013_test/116_em_181	 5 _{ 10 , w }
+training/data/CROHME_2013_test/116_em_182	\Delta \theta = 0 
+training/data/CROHME_2013_test/116_em_183	 E ( p )
+training/data/CROHME_2013_test/116_em_184	 E = F _{ 2 } \times f = \frac{ 1 }{ 2 } m ^{ 2 }
+training/data/CROHME_2013_test/116_em_185	 y ^{ 2 = - \sqrt{ q } }
+training/data/CROHME_2013_test/116_em_186	 0 _{ F }( R )
+training/data/CROHME_2013_test/117_em_187	\frac{ v _{ 0 }}{ v } = - \frac{ \alpha }{ 1 - \alpha }
+training/data/CROHME_2013_test/117_em_188	 V _{ 2 } 1 = \frac{ V s }{ v } 2 
+training/data/CROHME_2013_test/117_em_189	 f ( u _{ 1 }) = u _{ 2 }
+training/data/CROHME_2013_test/117_em_190	 \mu _{ 1 }^{ = d } 1 
+training/data/CROHME_2013_test/117_em_191	 q = w + x ( + + y ^{ + 2 k }
+training/data/CROHME_2013_test/117_em_192	 a = \frac{ 8 R }{\sqrt{ 3 }}
+training/data/CROHME_2013_test/117_em_193	 u _{ n } + 1 = f ( u n )
+training/data/CROHME_2013_test/117_em_194	 S = _{ 1 } 0 
+training/data/CROHME_2013_test/117_em_195	 x R ^{ 2 }\frac{ b _{ \frac{ b }{} }}{ a , 2 - a _{ c } b }
+training/data/CROHME_2013_test/117_em_196	 \phi _{ A } = \frac{ M L }{ 3 E I }
+training/data/CROHME_2013_test/117_em_197	 x = \sqrt{ a | } \times 1 
+training/data/CROHME_2013_test/117_em_198	 N n = 03 ( r G )^{ 05 }
+training/data/CROHME_2013_test/117_em_199	v_{ 1 } = e ^{ \frac{ - 2 ! \pi }{ 9 } }
+training/data/CROHME_2013_test/117_em_200	 1 + z = \frac{ 1 }{\sqrt{ 1 - 2 n }}
+training/data/CROHME_2013_test/117_em_201	 \in N ( A )
+training/data/CROHME_2013_test/117_em_202	\Delta_{ r } G + ^{ 0 }
+training/data/CROHME_2013_test/117_em_203	 P ^{ V = N k _{ B } T }
+training/data/CROHME_2013_test/117_em_204	 \sigma = \sqrt{ \sigma ^{ 2 }}
+training/data/CROHME_2013_test/117_em_205	 p g c d ( n , p ) = 1 
+training/data/CROHME_2013_test/117_em_207	 5 ( f )\frac{}{ R } \sin f _{ 2 R } \sin 2 \frac{ \pi f }{ 2 R }
+training/data/CROHME_2013_test/117_em_208	 | u _{ n _{ 0 } } - a | \lt \frac{ 1 }{ n }
+training/data/CROHME_2013_test/117_em_209	 \sqrt = \frac{ R }{ 3 }
+training/data/CROHME_2013_test/117_em_210	 f (( x )) = - n \frac{ 1 }{ n 1 } 1 ^{ 2 ^{ + ( } x 11 ^{ \frac{ 2 }{} } }
+training/data/CROHME_2013_test/117_em_211	 \sqrt _{ 2 } = v _{ 2 }^{ 2 }
+training/data/CROHME_2013_test/117_em_212	 M = \frac{ r }{ 4 }
+training/data/CROHME_2013_test/117_em_213	 r - u 
+training/data/CROHME_2013_test/117_em_214	\int^{ b }_{ a } e ^{ M f () } d x 
+training/data/CROHME_2013_test/117_em_215	 s ( t )
+training/data/CROHME_2013_test/117_em_216	 f ( x )\sum^{ \infty }_{ k = 1 }\frac{ \sin ( 22 x )}{\sqrt{ 2 }}
+training/data/CROHME_2013_test/118_em_217	 v = f ( p d 1 + )
+training/data/CROHME_2013_test/118_em_218	 C d H _{ ( }
+training/data/CROHME_2013_test/118_em_219	 B ( X , M )
+training/data/CROHME_2013_test/118_em_220	 A = \pi R a R b 
+training/data/CROHME_2013_test/118_em_221	 25 p _{ z }
+training/data/CROHME_2013_test/118_em_222	 E = \sqrt{ p ^{ 2 _{ + m ^{ 2 } } }} 4 
+training/data/CROHME_2013_test/118_em_224	 c + 1 ( t ) = ( ( ( (())
+training/data/CROHME_2013_test/118_em_225	\frac{ u - 3 }{ 2 } + 4 \gt 5 u 
+training/data/CROHME_2013_test/118_em_226	 R e d 
+training/data/CROHME_2013_test/118_em_227	 L = 3335 \frac{ - }{} 2 , 91 T 
+training/data/CROHME_2013_test/118_em_228	 r _{ c } = a +^{ 2 }\frac{ s }{ b - - c }
+training/data/CROHME_2013_test/118_em_229	 f ( N ) = 0 \} 
+training/data/CROHME_2013_test/118_em_230	 1 = p _{ q }^{ e ^{ \frac{ p }{} } }
+training/data/CROHME_2013_test/118_em_231	 A ( 0 , R , \infty )
+training/data/CROHME_2013_test/118_em_232	 r ^{ \prime ^{ \prime } \prime } B + y - ( 2 y - \beta )^{ n }
+training/data/CROHME_2013_test/118_em_233	 \pi 0 ( C )
+training/data/CROHME_2013_test/118_em_234	 d v = y ^{ 2 d x 2 y ^{ + + y ^{ z } } }
+training/data/CROHME_2013_test/118_em_235	 c ( w )
+training/data/CROHME_2013_test/118_em_236	 L ( l ( L )
+training/data/CROHME_2013_test/118_em_237	 r - r _{ 2 }
+training/data/CROHME_2013_test/118_em_238	 I = 10 
+training/data/CROHME_2013_test/118_em_239	 ( ^{ \prime }( G ) = G 
+training/data/CROHME_2013_test/118_em_240	 I I _{ d _{ 1 } } k _{ d } \sin \theta 
+training/data/CROHME_2013_test/118_em_241	 ! H _{ 2 h }
+training/data/CROHME_2013_test/118_em_242	 \sin _{ v } \theta _{ ._{ . } } ( t 
+training/data/CROHME_2013_test/118_em_244	 | 2 \frac{ - }{} 1 \leq 1 1 + ( ( y | 
+training/data/CROHME_2013_test/118_em_245	 S \times R ^{ n - 1 }
+training/data/CROHME_2013_test/118_em_246	 I _{ 1 _{ m a x } }
+training/data/CROHME_2013_test/120_em_282	 R ^{ \prime _{ \prime } } - \frac{ 1 }{ 2 } g ^{ \prime } R = 0 
+training/data/CROHME_2013_test/120_em_283	 a _{ 11 } = n _{ 11 }+^{ M } n _{ 2 }^{ a }
+training/data/CROHME_2013_test/120_em_284	 u = R _{ i }
+training/data/CROHME_2013_test/120_em_285	 u = x 
+training/data/CROHME_2013_test/120_em_286	 x = \frac{ m _{ \tan }}{ m _{ r 4 }} c 
+training/data/CROHME_2013_test/120_em_287	 7 m f 
+training/data/CROHME_2013_test/120_em_288	 f ( z ) = a ( z - z ) ) + b + 062 ) 
+training/data/CROHME_2013_test/120_em_289	\frac{ r - 1 }{ \mu }
+training/data/CROHME_2013_test/120_em_290	( + 1 )
+training/data/CROHME_2013_test/120_em_291	 e ^{ a ( - 1 + 2 w } = w \frac{ 3 \sqrt }{ x } a 
+training/data/CROHME_2013_test/120_em_292	( y - y ^{ ( a / })
+training/data/CROHME_2013_test/120_em_293	 f = u + + ( 1 + \frac{ 1 }{}( a - - ))
+training/data/CROHME_2013_test/120_em_296	 B - \beta ! 
+training/data/CROHME_2013_test/120_em_297	 f ( x , , x _{ n }) = \frac{ e - 2 }{\sqrt{ x 2 d _{ k }}}\int
+training/data/CROHME_2013_test/120_em_298	 F (( T ))
+training/data/CROHME_2013_test/120_em_299	( a b - - b b 1 d - ) = 0 
+training/data/CROHME_2013_test/120_em_300	( 2 )
+training/data/CROHME_2013_test/121_em_302	 - ( T _{ 0 } - T _{ X _{ 0 } })
+training/data/CROHME_2013_test/121_em_303	 I _{ m _{ 0 y } }
+training/data/CROHME_2013_test/121_em_304	\sum^{ \infty }_{ k = }\frac{ b ^{ k }}{ k + a }
+training/data/CROHME_2013_test/121_em_305	 k ^{ 2 } = u a ^{ n } + v 
+training/data/CROHME_2013_test/121_em_306	 u _{ n } = o (v_{ n })
+training/data/CROHME_2013_test/121_em_307	 C _{ r } \gt 0 
+training/data/CROHME_2013_test/121_em_308	 C ( 0 , R )
+training/data/CROHME_2013_test/121_em_309	 s _{ 2 } = n s _{ 1 }
+training/data/CROHME_2013_test/121_em_310	 ( 9 + ( ( 5 + 5222 _{ 77 _{ 2 } 42 } 2 
+training/data/CROHME_2013_test/121_em_311	\sum^{}_{ i } w , ^{ v }
+training/data/CROHME_2013_test/121_em_312	 x _{ 2 } + v _{ i }^{ \Delta }
+training/data/CROHME_2013_test/121_em_313	\Delta = f ( y ) \times ( y )
+training/data/CROHME_2013_test/121_em_314	 E , F 
+training/data/CROHME_2013_test/121_em_315	\frac{ 3 _{ a }}{ s _{ r }}
+training/data/CROHME_2013_test/121_em_316	 u _{ n 2 } = u _{ n } + y n + 1 
+training/data/CROHME_2013_test/121_em_318	\frac{ P }{ 640 }
+training/data/CROHME_2013_test/121_em_319	 x y - - y _{ 24 - }^{ 2 y ^{ - 2 } } ) 
+training/data/CROHME_2013_test/121_em_320	v_{ 1 } = \frac{ v }{ v } = \frac{}{ r }
+training/data/CROHME_2013_test/121_em_321	 e = ^{ 2 \pi b y ^{ / N } } 1 
+training/data/CROHME_2013_test/121_em_322	 y ^{ = m _{ 1 } - m }
+training/data/CROHME_2013_test/121_em_323	 \beta ^{ \prime }( s )
+training/data/CROHME_2013_test/121_em_324	 M \times N 
+training/data/CROHME_2013_test/121_em_325	 y ^{ d x + d } y ^{ = 0 }
+training/data/CROHME_2013_test/121_em_326	 \beta ( 1 / s )
+training/data/CROHME_2013_test/121_em_327	 e ( e ^{ 27530 \times ( 17 _{ 9 } 6 - () }
+training/data/CROHME_2013_test/121_em_328	 u _{ \lt } L d_{ d }
+training/data/CROHME_2013_test/121_em_329	 H _{ c _{ - 1 } }
+training/data/CROHME_2013_test/121_em_330	 s = \frac{ 1 }{\frac{ 1 }{ E } - \frac{ 1 }{ p }}
+training/data/CROHME_2013_test/121_em_331	 5 ) = ( 2 + ) - 2 ) ) 2 \div () = \frac{ 1 }{ n } ) 
+training/data/CROHME_2013_test/122_em_332	 | t (\frac{ p }{ 9 }) | 
+training/data/CROHME_2013_test/122_em_333	 \mu p = - _{ 4 }( - _{ v })
+training/data/CROHME_2013_test/122_em_334	I_{ c } = f (v_{ c } e )
+training/data/CROHME_2013_test/122_em_335	 \mu _{ 0 }
+training/data/CROHME_2013_test/122_em_336	\frac{ m v ^{ 2 }}{ 2 }
+training/data/CROHME_2013_test/122_em_337	 M ( z )
+training/data/CROHME_2013_test/122_em_338	 P ^{ 5 A } \gt P ^{ A E }
+training/data/CROHME_2013_test/122_em_339	 n = \frac{ L }{ 2 }\frac{ t }{\sqrt{ c _{ 0 }}}
+training/data/CROHME_2013_test/122_em_340	 u \neq v 
+training/data/CROHME_2013_test/122_em_341	\frac{ E }{} o 
+training/data/CROHME_2013_test/122_em_342	 f = x ^{ 5 } - 15 \times + 4 x^{ 2 } - 15 
+training/data/CROHME_2013_test/122_em_343	 \mu ^{ p a }
+training/data/CROHME_2013_test/122_em_344	 w = w ( r , t )
+training/data/CROHME_2013_test/122_em_345	 G ( x f ( k , M )) = M 
+training/data/CROHME_2013_test/122_em_346	 | a - \frac{ p }{ 9 } \geq \frac{ c }{ q }
+training/data/CROHME_2013_test/122_em_347	 = x ( + ) 2 x ) = c 2 t 
+training/data/CROHME_2013_test/122_em_348	\sqrt{ y } = p a ^{ 2 } \gamma _{ y }
+training/data/CROHME_2013_test/122_em_349	 p ^{ = 2 \times 1 - q }
+training/data/CROHME_2013_test/122_em_350	 L = 2 ^{ 44 } = n ,_{ , } 9 \sin 
+training/data/CROHME_2013_test/122_em_351	 \theta ( 9 )
+training/data/CROHME_2013_test/122_em_352	 ( = [ 0 , 1 ] 
+training/data/CROHME_2013_test/122_em_353	\sum^{ m }_{ i = 1 } N = n \sum^{ m }_{ = = = f } = 1 
+training/data/CROHME_2013_test/122_em_354	 x = v + _{ 4 } v 
+training/data/CROHME_2013_test/122_em_355	 d B ( v ) = d B ( v )
+training/data/CROHME_2013_test/122_em_356	 f ^{ \prime }( x )
+training/data/CROHME_2013_test/122_em_357	 y ^{ b _{ s } }
+training/data/CROHME_2013_test/122_em_358	 d ( u )
+training/data/CROHME_2013_test/122_em_359	 p x ) = ( ( = x 31 
+training/data/CROHME_2013_test/122_em_360	 R = k x , x n ] 
+training/data/CROHME_2013_test/122_em_361	 M ( r )
+training/data/CROHME_2013_test/123_em_362	 M N = N _{ M }
+training/data/CROHME_2013_test/123_em_363	 l _{ 1 = 2 _{ 1 } } - \frac{ M }{ m }
+training/data/CROHME_2013_test/123_em_364	 S = 31 , 3 ^{ 2 } \} 
+training/data/CROHME_2013_test/123_em_365	 N _{ V M }
+training/data/CROHME_2013_test/123_em_366	 H S _{ 2 }
+training/data/CROHME_2013_test/123_em_367	(( 2 - 2 )) - 2 ) - ) ) ( 1 - - 2 ) = 0 
+training/data/CROHME_2013_test/123_em_368	() ) x ^{ ) }\frac{ x }{ 2 } ) ( + + ) x + \frac{ u + ) ) ( + }{ 2 } y ) 
+training/data/CROHME_2013_test/123_em_369	 H = \frac{ 1 f d ) }{ c }
+training/data/CROHME_2013_test/123_em_370	 v = \int^{ 2 }_{ 0 } 2 _{ 5 } d _{ x }
+training/data/CROHME_2013_test/123_em_371	 ( p _{ \gamma - 1 }^{ \frac{ \gamma n R }{} } = 
+training/data/CROHME_2013_test/123_em_373	 s = s _{ 20 f 2 } + 
+training/data/CROHME_2013_test/123_em_374	 10 ^{ - p ^{ H _{ i } } }
+training/data/CROHME_2013_test/123_em_375	 E _{ 1 } = E / ( 16 \pi 2 )
+training/data/CROHME_2013_test/123_em_376	 N n - 1 
+training/data/CROHME_2013_test/123_em_378	 v m = G \times ^{ v }
+training/data/CROHME_2013_test/123_em_379	 T ( t ) = \frac{ a ( t )}{ 1 \alpha ( t )} | 
+training/data/CROHME_2013_test/123_em_380	 R _{ 3 \times 3 }^{ \pi }
+training/data/CROHME_2013_test/123_em_381	 s n = x 1 + ^{ x } 2 + + x n 
+training/data/CROHME_2013_test/123_em_382	 p \rightarrow a t / T 
+training/data/CROHME_2013_test/123_em_383	 c = N \times ( c - ) \times C 
+training/data/CROHME_2013_test/123_em_384	 y = G _{ 0 } ( x 0 ) = \frac{ 1 }{ 4 }
+training/data/CROHME_2013_test/123_em_385	 \gamma = \frac{ 4 \pi ^{ 2 } m ^{ v }}{ \cos S 2 _{ T } 2 }
+training/data/CROHME_2013_test/123_em_386	\Delta F \lt 0 
+training/data/CROHME_2013_test/123_em_387	\lim_{ x \rightarrow + \infty ^{ f }}( x ) = l 
+training/data/CROHME_2013_test/123_em_388	 x ( 1 \frac{}{ - }\frac{ c }{ 2 })( 1 \frac{}{ p }) \lt 1 
+training/data/CROHME_2013_test/123_em_389	 z ^{ 2 + } w ^{ 2 }
+training/data/CROHME_2013_test/123_em_390	 T = 1 
+training/data/CROHME_2013_test/123_em_391	 p ^{ k - 1 }
+training/data/CROHME_2013_test/124_em_392	( A N - 1 A 0 ) = N 
+training/data/CROHME_2013_test/124_em_394	\Delta t _{ 2 }
+training/data/CROHME_2013_test/124_em_395	 m \frac{ x }{ 2 - } = g . E + _{ 2 f }( 84 )
+training/data/CROHME_2013_test/124_em_396	 E = a_{c^{ b }}
+training/data/CROHME_2013_test/124_em_397	 d ( A ( \theta ) = 1 x A - a )
+training/data/CROHME_2013_test/124_em_398	 L = \int^{}_{ 0 }\sqrt{ 1 + a 2 _{ x d }} x 
+training/data/CROHME_2013_test/124_em_399	 f ( M )
+training/data/CROHME_2013_test/124_em_400	 1 ( x ) 1 \leq p ( x )
+training/data/CROHME_2013_test/124_em_401	 H C N _{ n n n }
+training/data/CROHME_2013_test/124_em_402	 N = 3 
+training/data/CROHME_2013_test/124_em_403	 u _{ x }^{ 2 } = k | | ^{ 80 } e ^{ 2 } \pi f = z 
+training/data/CROHME_2013_test/124_em_404	n_{ n }+_{ + } n ^{ \lt }\frac{\frac{ a }{}}{ b }
+training/data/CROHME_2013_test/124_em_405	( p + 9 ) \times ( p + q )
+training/data/CROHME_2013_test/124_em_406	 E _{ 2 } E j = 0 
+training/data/CROHME_2013_test/124_em_407	 f = \frac{ 1 }{ T }
+training/data/CROHME_2013_test/124_em_408	 B ( L ( 5 )) , B (( S ))
+training/data/CROHME_2013_test/124_em_409	 \sigma = \frac{ F }{ s }
+training/data/CROHME_2013_test/124_em_410	 [ _{ 12 } E 2 ) F _{ 1 } f _{ 2 }
+training/data/CROHME_2013_test/124_em_411	 V _{ r } = V _{ 2 }
+training/data/CROHME_2013_test/124_em_412	 p _{ k = 0 }^{ = \Sigma a h x ^{ k } }
+training/data/CROHME_2013_test/124_em_413	 s = 1 , 2610 m^{ 5 } d 2 \frac{ - }{} 1 
+training/data/CROHME_2013_test/124_em_414	 t _{ 0 } = \frac{\frac{ 2 _{ 1 }}{}}{ 3 ( 1 + w ) + 0 }
+training/data/CROHME_2013_test/124_em_415	 \sigma = 1 
+training/data/CROHME_2013_test/124_em_416	 H ( x , y ) \geq H ( x )
+training/data/CROHME_2013_test/124_em_417	\frac{\Delta V }{ u _{ 0 }}
+training/data/CROHME_2013_test/124_em_418	 S = 0 
+training/data/CROHME_2013_test/124_em_419	 a . ^{ a c }
+training/data/CROHME_2013_test/124_em_420	 F = M M _{ n } + M M M U 
+training/data/CROHME_2013_test/124_em_421	( S M )
+training/data/CROHME_2013_test/125_em_422	 q ( x ) = p ( x + )
+training/data/CROHME_2013_test/125_em_423	( p , 9 ) \gt ( p , q 1 )
+training/data/CROHME_2013_test/125_em_424	 v A = \sum^{}_{ i } v A ( F )
+training/data/CROHME_2013_test/125_em_427	( M _{ i }^{ \gamma })
+training/data/CROHME_2013_test/125_em_428	 G = _{ n } 2 M _{ u u _{ v }^{ M } }
+training/data/CROHME_2013_test/125_em_429	( M _{ 1 } M _{ 3 })
+training/data/CROHME_2013_test/125_em_430	 L (x^{ n }) = 2 ^{ n }
+training/data/CROHME_2013_test/125_em_431	 L _{ \mu ^{ = L } 1 }
+training/data/CROHME_2013_test/125_em_432	 E ^{ 2 } - p ^{ 2 _{ 2 _{ = n } } 2 _{ c } 4 _{ = 0 } }
+training/data/CROHME_2013_test/125_em_433	( v _{ ) } r )
+training/data/CROHME_2013_test/125_em_434	 L E , F ) 
+training/data/CROHME_2013_test/125_em_435	 q ^{ c _{ E } }
+training/data/CROHME_2013_test/125_em_436	 V _{ L _{ G } }
+training/data/CROHME_2013_test/125_em_437	 I d _{ A }
+training/data/CROHME_2013_test/125_em_438	 \alpha 2 _{ = \frac{}{ 13 } \cos - }^{ x } n ^{ \pi } ) + \sin \frac{ - }{} ) 
+training/data/CROHME_2013_test/125_em_439	 c S ^{ 2 }
+training/data/CROHME_2013_test/125_em_440	 L = a 
+training/data/CROHME_2013_test/125_em_441	 u = g \frac{ t }{ v }
+training/data/CROHME_2013_test/125_em_442	 1 \int v ^{ 2 }
+training/data/CROHME_2013_test/125_em_444	 d E = u I \times d t 
+training/data/CROHME_2013_test/125_em_445	 P = P_{ 0 }\frac{ S _{ 1 }}{ S _{ 0 }}
+training/data/CROHME_2013_test/125_em_446	 T _{ T _{ , ^{ \ldots } , } T _{ - 2 ) } } 1 
+training/data/CROHME_2013_test/125_em_447	 I = a . A 
+training/data/CROHME_2013_test/125_em_448	 M \rightarrow N 
+training/data/CROHME_2013_test/125_em_449	\Delta_{ r } H 
+training/data/CROHME_2013_test/125_em_450	 U \in E _{ , ^{ V } } \in E , \in E 
+training/data/CROHME_2013_test/125_em_451	 \pm w ( c , t )
+training/data/CROHME_2013_test/126_em_452	 11 f ( 1 = \frac{ 1 }{\frac{}{ 4 }} a + \frac{ 1 }{ 2 }\sum^{\infty^{ n }}_{ 1 }( a ^{ 2 } b 2 )
+training/data/CROHME_2013_test/126_em_453	\Delta d = c \Delta t 
+training/data/CROHME_2013_test/126_em_454	 G = 10 \log (\frac{ v }{ v _{ c }})^{ 2 } d B 
+training/data/CROHME_2013_test/126_em_455	( P A )
+training/data/CROHME_2013_test/126_em_456	 N - G 
+training/data/CROHME_2013_test/126_em_457	 d s = d d ^{ 2 } + r 20 + ^{ 2 } d z ^{ 2 }
+training/data/CROHME_2013_test/126_em_458	 G L _{ m }
+training/data/CROHME_2013_test/126_em_459	 u _{ N } + 1 , v _{ N } + 1 
+training/data/CROHME_2013_test/126_em_460	( E _{ 0 })
+training/data/CROHME_2013_test/126_em_461	 - x _{ t } d t 
+training/data/CROHME_2013_test/126_em_462	 u u ^{ \prime } + w ^{ \prime } + w = 0 
+training/data/CROHME_2013_test/126_em_463	 2 ^{ p / q }
+training/data/CROHME_2013_test/126_em_464	 a = p / q 
+training/data/CROHME_2013_test/126_em_465	 a , b , c , a , b , ^{ \prime } c ^{ \prime }
+training/data/CROHME_2013_test/126_em_467	 d f ( x )
+training/data/CROHME_2013_test/126_em_468	 S ( A ) = A ^{ \prime }
+training/data/CROHME_2013_test/126_em_469	 a _{ 1 } x a x _{ 12 } + = L 
+training/data/CROHME_2013_test/126_em_470	 a n ( f , s )
+training/data/CROHME_2013_test/126_em_471	F_{ n }( x ) = \frac{ 1 }{ n + 1 } n + c t 
+training/data/CROHME_2013_test/126_em_472	( k _{ 2 , 2 })
+training/data/CROHME_2013_test/126_em_473	 d ( u u , ) = \sum^{ \infty }_{ = 0 } 2 \frac{ n }{} n _{ 1 }\frac{( - u )}{ + p ( \frac{}{ u }} ) 
+training/data/CROHME_2013_test/126_em_474	 p ( v 2 _{ y })
+training/data/CROHME_2013_test/126_em_475	 V = C \sqrt{ R S }
+training/data/CROHME_2013_test/126_em_476	 6 , H 
+training/data/CROHME_2013_test/126_em_477	 \sqrt _{ n }
+training/data/CROHME_2013_test/126_em_478	 R _{ 1 } \gt 0 
+training/data/CROHME_2013_test/126_em_479	 s p t 
+training/data/CROHME_2013_test/126_em_480	 0 = ( , 1_{ , } 1 / ( - ) - ( y 7 ( + ( 14 - )
+training/data/CROHME_2013_test/126_em_481	 \sqrt _{ 2 } - r = R 
+training/data/CROHME_2013_test/127_em_482	 2 + 2 - ^{ 4 - }\frac{ k }{ 2 } + ( 1 )
+training/data/CROHME_2013_test/127_em_483	 R _{ A } = \pi b_{ L }
+training/data/CROHME_2013_test/127_em_484	\frac{ 8 \pi r }{ q ( r )}
+training/data/CROHME_2013_test/127_em_485	 91 \prime 1 
+training/data/CROHME_2013_test/127_em_486	 s _{ n } = 12 _{ 5 _{ 11 } } - 185 _{ n _{ - 2 } }
+training/data/CROHME_2013_test/127_em_487	 I () = I \sqrt{ 2 } \cos ( U | 1 + \phi )
+training/data/CROHME_2013_test/127_em_488	 A = n B ^{ 2 } \cos \frac{ x }{( 2 )} \sin (\frac{ x }{ 2 })
+training/data/CROHME_2013_test/127_em_489	 d x^{ u }
+training/data/CROHME_2013_test/127_em_490	 s _{ i }^{ 2 } = 1 
+training/data/CROHME_2013_test/127_em_491	 x _{ 1 , } u _{ 2 ) } , ^{ u } y 
+training/data/CROHME_2013_test/127_em_492	 p = ( a x + v 2 - ) 8 c 
+training/data/CROHME_2013_test/127_em_493	 t = x \frac{ \pi }{ g }\frac{ + \sqrt{( m + ) + 9 a }}{ g }
+training/data/CROHME_2013_test/127_em_494	 2 i ( x ) \lt \pi ()
+training/data/CROHME_2013_test/127_em_495	 x ( k _{ s } L )
+training/data/CROHME_2013_test/127_em_496	 \phi ( w ) = u _{ 1 }^{ T } w 
+training/data/CROHME_2013_test/127_em_497	 v a () = \frac{\frac{ 2 i ( x - }{}\frac{}{ - } x ) }{ 02 ( + 1 )}
+training/data/CROHME_2013_test/127_em_498	 H _{ n 1 T }
+training/data/CROHME_2013_test/127_em_499	 c = R ( b )
+training/data/CROHME_2013_test/127_em_500	 T , m 
+training/data/CROHME_2013_test/127_em_501	 d _{ t }
+training/data/CROHME_2013_test/127_em_502	 E _{ p } = \frac{ 1 }{ 2 } k n^{ 2 } - F x 
+training/data/CROHME_2013_test/127_em_503	\int^{ b }_{ a } x _{ t } d B _{ t }
+training/data/CROHME_2013_test/127_em_505	 L () = \sum^{ n }_{ 1 } f (\frac{ - }{}) , f ( ()
+training/data/CROHME_2013_test/127_em_506	L^{ 2 }( I k )
+training/data/CROHME_2013_test/127_em_507	 v , u _{ 1 , } u _{ 2 }
+training/data/CROHME_2013_test/127_em_508	 25 + 1 
+training/data/CROHME_2013_test/127_em_509	 g ( t ) = G ( \theta \frac{ - }{} G 
+training/data/CROHME_2013_test/127_em_510	 5 \frac{ = 1 }{\frac{\frac{ 1 }{}}{}\frac{ 1 }{ E }}
+training/data/CROHME_2013_test/127_em_511	 g ^{ 2 }() = \frac{ 1 }{ b }
+training/data/CROHME_2013_test/128_em_512	 \sigma \in [ e ! , 6 ] 
+training/data/CROHME_2013_test/128_em_513	 E E / _{ F }
+training/data/CROHME_2013_test/128_em_514	 r = \frac{ 1 p - b | }{ 2 \sin ( \theta )}
+training/data/CROHME_2013_test/128_em_515	 11 x + y 1 = 1 \times ^{ 2 } ( + ( y | ^{ 2 }
+training/data/CROHME_2013_test/128_em_516	 9 v n 
+training/data/CROHME_2013_test/128_em_517	 P ( E )
+training/data/CROHME_2013_test/128_em_518	 \} H , A 
+training/data/CROHME_2013_test/128_em_519	 M ( R )
+training/data/CROHME_2013_test/128_em_520	 f w (G_{ 2 })
+training/data/CROHME_2013_test/128_em_521	 T N = \frac{ n }{ b } \cos 0 
+training/data/CROHME_2013_test/128_em_522	 2 \frac{ h }{ 2 }
+training/data/CROHME_2013_test/128_em_523	( 5 , T )
+training/data/CROHME_2013_test/128_em_524	 9 _{ , _{ 1 }^{ 0 } }
+training/data/CROHME_2013_test/128_em_525	 d x ( - d ) = ( - d d )
+training/data/CROHME_2013_test/128_em_526	 v ( x )
+training/data/CROHME_2013_test/128_em_527	\frac{ t 5 }{ V }
+training/data/CROHME_2013_test/128_em_528	 y = f ( x ) g ( y )
+training/data/CROHME_2013_test/128_em_529	 T _{ 0 y } = 1 0 
+training/data/CROHME_2013_test/128_em_530	\frac{ 1 }{ p } - \frac{ 1 }{ p } - c = 0 
+training/data/CROHME_2013_test/128_em_531	 E = E - F G 
+training/data/CROHME_2013_test/128_em_532	 E = d g 
+training/data/CROHME_2013_test/128_em_536	 f ( v t ) = w 
+training/data/CROHME_2013_test/128_em_537	 d _{ E E I C }
+training/data/CROHME_2013_test/128_em_538	 0 + 0 = T _{ t }
+training/data/CROHME_2013_test/128_em_539	f_{ 2 }( M ) = 0 
+training/data/CROHME_2013_test/128_em_541	 N ^{ 5 } y ^{ n }
+training/data/CROHME_2013_test/129_em_542	 3 \sqrt{ a }
+training/data/CROHME_2013_test/129_em_543	\sum^{ 10 }_{ 1 = 0 } x _{ i }
+training/data/CROHME_2013_test/129_em_544	\sqrt{ x _{ y }}
+training/data/CROHME_2013_test/ritm_420_0	 54 _{ 889 } = 5 ^{ 6 } + 4 ^{ 6 } + 2 _{ + 3 + 4 } 6 
+training/data/CROHME_2013_test/ritm_421_0	 \cos x + \sqrt{ 1 } \sin x 
+training/data/CROHME_2013_test/ritm_422_0	 x ^{ +^{ 3 } } + ) \times 94 _{ + + \times y } 2 _{ + \times \times } 2 _{ + + \times 9 }
+training/data/CROHME_2013_test/ritm_423_0	 \lamda e ^{ - 1 e }
+training/data/CROHME_2013_test/ritm_423_1	\frac{ \tan \frac{ - b }{ 2 }}{ \tan \frac{ a + b }{ 2 }} = \frac{ \tan \frac{ 2 \frac{ - }{} \beta }{ 2 }}{ \tan \frac{ + \beta }{ 2 }}
+training/data/CROHME_2013_test/ritm_423_2	\frac{ \alpha + \beta }{ 2 }
+training/data/CROHME_2013_test/ritm_425_0	 \cos 5 = = ( \cos ^{ 5 } x - 22 a ^{ 3 } + 5 
+training/data/CROHME_2013_test/ritm_426_0	x^{ 3 } + x 2 \sqrt{ 17 } - _{ + x }\frac{ 1 }{\sqrt{ 7 }}
+training/data/CROHME_2013_test/ritm_427_0	 0 _{ 4 } b b + \sin - \sin b \cos \gamma 
+training/data/CROHME_2013_test/ritm_427_1	 \Sigma x _{ h }
+training/data/CROHME_2013_test/ritm_429_0	\lim_{ x \rightarrow \rightarrow } ( \sqrt{ x ^{ 2 } + 4 + } - - \sqrt{\frac{ 2 }{} x | ) }
+training/data/CROHME_2013_test/rit_420b_0	 + = + = 0 
+training/data/CROHME_2013_test/rit_420_0	 5 ( f )
+training/data/CROHME_2013_test/rit_420_1	!^{ . } i ^{ , } \lt 0 
+training/data/CROHME_2013_test/rit_420_2	 M ( 0 )
+training/data/CROHME_2013_test/rit_420_3	 q ^{ q ^{ 9 ^{ 9 ^{ 9 ^{ q } } } } }
+training/data/CROHME_2013_test/rit_42100_0	 b _{ 4 }
+training/data/CROHME_2013_test/rit_42100_1	 \cos X - \sqrt \sin X 
+training/data/CROHME_2013_test/rit_42100_2	\frac{\sqrt{ 4 }}{ 2 }
+training/data/CROHME_2013_test/rit_42100_3	\frac{ 2 \pm \sqrt{ 2 }}{ 4 }
+training/data/CROHME_2013_test/rit_42100_4	 3 \gamma ^{ 3 }
+training/data/CROHME_2013_test/rit_42105_0	 a + 6 \sqrt{ 2 }
+training/data/CROHME_2013_test/rit_42105_1	\frac{ 1 }{ 4 } a a + 6 b 
+training/data/CROHME_2013_test/rit_42105_2	 x + ^{ 5 } x + a 
+training/data/CROHME_2013_test/rit_42105_3	\frac{ a }{ 1 _{ 4 }}
+training/data/CROHME_2013_test/rit_42105_4	 \times ^{ x }\frac{ a }{ b } + y 
+training/data/CROHME_2013_test/rit_4210_0	 \sin 9 - \cos 9 
+training/data/CROHME_2013_test/rit_4210_1	\frac{ p h }{ b + 2 h }
+training/data/CROHME_2013_test/rit_4210_2	 b \times h 
+training/data/CROHME_2013_test/rit_4210_3	+_{ I }0_{ 0 }
+training/data/CROHME_2013_test/rit_4210_4	\frac{ 9 }{ 7 }
+training/data/CROHME_2013_test/rit_42110_0	 - \frac{}{ \sqrt } 1 
+training/data/CROHME_2013_test/rit_42110_1	\int^{ b }_{ a } x + 1 9 y 
+training/data/CROHME_2013_test/rit_42110_2	\sqrt{ 1 t }
+training/data/CROHME_2013_test/rit_42110_3	 \Sigma z ^{ \prime }
+training/data/CROHME_2013_test/rit_42110_4	 + u 1 _{ 05 z }^{ z = \frac{ z }{} }
+training/data/CROHME_2013_test/rit_42115_0	 z _{ 1 } + z _{ 2 } + z _{ 3 }
+training/data/CROHME_2013_test/rit_42115_1	\lim_{ \rightarrow \infty } x _{ n }
+training/data/CROHME_2013_test/rit_42115_2	 X ! ^{ Y } \times Y ! \times 
+training/data/CROHME_2013_test/rit_42115_3	 p ! 5 
+training/data/CROHME_2013_test/rit_42115_4	\frac{ 1 }{ z }
+training/data/CROHME_2013_test/rit_42120_0	 \cos ^{ 2 }\theta_{ 1 }
+training/data/CROHME_2013_test/rit_42120_1	\frac{ 1 }{ \cos ^{ 2 } x }
+training/data/CROHME_2013_test/rit_42120_2	\lim_{ x \rightarrow + } + _{ \infty ^{ \log } a ^{ x = } } \infty 
+training/data/CROHME_2013_test/rit_42120_3	 \sin 2 x = 2 \sin \times 45 x 
+training/data/CROHME_2013_test/rit_42120_4	\lim_{ x \rightarrow + \infty }\frac{ e ^{ x }}{ x }
+training/data/CROHME_2013_test/rit_42125_0	\frac{ - 1 }{\sin^{ 2 } x }
+training/data/CROHME_2013_test/rit_42125_1	 1 + \tan ^{ 2 } x 
+training/data/CROHME_2013_test/rit_42125_2	 z \rightarrow z ^{ n }
+training/data/CROHME_2013_test/rit_42125_3	\frac{ z ^{ 3 } - 2 z + 1 }{\frac{}{ z ^{ 5 } + } 3 z - } 1 
+training/data/CROHME_2013_test/rit_42125_4	\lim_{ x \rightarrow + } \log _{ \infty } x = \infty 
+training/data/CROHME_2013_test/rit_42130_0	\frac{ 5 }{ 3 }
+training/data/CROHME_2013_test/rit_42130_1	\lim_{ x \rightarrow 3 } x ^{ 2 } = 9 
+training/data/CROHME_2013_test/rit_42130_2	\frac{ 5 \pi }{\frac{}{ 7 }}
+training/data/CROHME_2013_test/rit_42130_3	\lim_{ x \rightarrow + \infty ^{ \sqrt{ x } }} = + \infty 
+training/data/CROHME_2013_test/rit_42130_4	\int^{ b }_{ a } x + z d z 
+training/data/CROHME_2013_test/rit_42135_0	 X \rightarrow_{ \gt } 0 
+training/data/CROHME_2013_test/rit_42135_1	 7 x A y ( x R y )
+training/data/CROHME_2013_test/rit_42135_2	 L = \int^{ \infty }_{ 0 } L _{ n } d y 
+training/data/CROHME_2013_test/rit_42140_0	 H a \in F 
+training/data/CROHME_2013_test/rit_42140_1	 \pi _{ \beta }^{ 22 }
+training/data/CROHME_2013_test/rit_42140_2	 a \neq b _{ f c }
+training/data/CROHME_2013_test/rit_42140_3	 \pi - \theta 
+training/data/CROHME_2013_test/rit_42140_4	 B z a 
+training/data/CROHME_2013_test/rit_42145_0	 \Sigma a _{ n }
+training/data/CROHME_2013_test/rit_42145_1	 \cos ^{ n } \theta 
+training/data/CROHME_2013_test/rit_42145_2	 + \frac{ \pi }{ 3 }
+training/data/CROHME_2013_test/rit_42145_3	 n \neq 6 
+training/data/CROHME_2013_test/rit_42145_4	 \Sigma C _{ n }
+training/data/CROHME_2013_test/rit_42150_0	 3 ^{ 3 ^{ 3 } } + 3 
+training/data/CROHME_2013_test/rit_42150_1	 12 ( 4 / 3 ) + ( 44 ) 3 
+training/data/CROHME_2013_test/rit_42150_2	 \theta + \frac{ \pi }{ 2 }
+training/data/CROHME_2013_test/rit_42150_3	\frac{ \pi }{ 7 }
+training/data/CROHME_2013_test/rit_42150_4	x^{ 3 } - 3 \sqrt{ 3 } - 3 \times + \sqrt 
+training/data/CROHME_2013_test/rit_42155_0	x^{ 3 } - 3 x - \sqrt{ 3 }
+training/data/CROHME_2013_test/rit_42155_1	 x ^{ 2 } + y ^{ 2 }
+training/data/CROHME_2013_test/rit_42155_2	 B 2 n 
+training/data/CROHME_2013_test/rit_42155_3	x^{ 3 } + 1 
+training/data/CROHME_2013_test/rit_4215_0	 X + h 
+training/data/CROHME_2013_test/rit_4215_1	\frac{ b h }{ 2 }
+training/data/CROHME_2013_test/rit_4215_2	 2 _{ h }
+training/data/CROHME_2013_test/rit_4215_3	\frac{ 9 }{ 5 }
+training/data/CROHME_2013_test/rit_4215_4	 \log 1 _{ \log } n 
+training/data/CROHME_2013_test/rit_42160_0	 \lim 56 \pi ^{ 5 } 22 \sin ^{ 2 } + 5 x 
+training/data/CROHME_2013_test/rit_42160_1	\int^{ b }_{ a } t + y ^{ d } y 
+training/data/CROHME_2013_test/rit_42160_2	 + \frac{}{ \sqrt } 1 
+training/data/CROHME_2013_test/rit_42160_3	\frac{ 2 }{\frac{ 1 }{ x } + \frac{ 1 }{ y }}
+training/data/CROHME_2013_test/rit_42160_4	\int\frac{}{ y } + 1 \frac{ 1 }{ - 2 } y ^{ = \int d x }
+training/data/CROHME_2013_test/rit_42165_0	x^{ 2 } + y ^{ 2 _{ + z } 2 }
+training/data/CROHME_2013_test/rit_42165_1	 \cos \cos a \cos b + \sin a n b 
+training/data/CROHME_2013_test/rit_42165_2	 \sin ( x + ) = a b b + u n b 
+training/data/CROHME_2013_test/rit_42170_0	 x ^{ 4 }\frac{ - }{} 4 y - ^{ 3 } 14 y 2 _{ - x + } 1 
+training/data/CROHME_2013_test/rit_42170_1	 x - 4 x ^{ 2 } + 2 \sqrt{ 2 }
+training/data/CROHME_2013_test/rit_42170_2	 \sin ( y = h y ^{ 6 \times y }
+training/data/CROHME_2013_test/rit_42170_3	\frac{ \log 2 ^{ x }}{ \log 2 ^{ c + }}\frac{\frac{ \log _{ 2 } x }{}}{ \log 2 / }
+training/data/CROHME_2013_test/rit_42170_4	\sum^{}_{ n \geq a } d _{ + + 11 } 11 \pi + L ^{ n }
+training/data/CROHME_2013_test/rit_42175_0	\sum^{}_{ k } 2 ^{ - k }
+training/data/CROHME_2013_test/rit_42175_1	\sum^{}_{ n \geq 0 } n 2 ^{ n } z ^{ n }
+training/data/CROHME_2013_test/rit_42175_2	\sum^{}_{ n \geq 0 } x ^{ \prime } n 
+training/data/CROHME_2013_test/rit_42175_3	 \Sigma x ^{ n }
+training/data/CROHME_2013_test/rit_42180_0	\int d \pi 
+training/data/CROHME_2013_test/rit_42180_1	\int^{ 2 }_{ 1 } + d x 
+training/data/CROHME_2013_test/rit_42180_2	\int^{ 5 }_{ 2 } x d x 
+training/data/CROHME_2013_test/rit_42180_3	\int^{}_{ n }\frac{ 1 }{\sqrt{ a x ^{ 2 } + b x + } c } d x 
+training/data/CROHME_2013_test/rit_42185_0	\lim_{ x \rightarrow 0 }\frac{ \cos ( 2 )\frac{ - 1 }{}}{ x 3 + _{ 5 \times } 2 }
+training/data/CROHME_2013_test/rit_42185_1	\lim_{\frac{}{ x }} x _{ d x }
+training/data/CROHME_2013_test/rit_42185_2	\lim_{ + ^{ x } \mu } b = b 
+training/data/CROHME_2013_test/rit_42185_3	 o ^{ \prime ! }
+training/data/CROHME_2013_test/rit_42190_0	\int^{ \prime \prime 11 }_{ 0 _{ 0 }} 1 + \frac{ 1 }{ x ^{ 2 } y } 2 ^{ d \times d } y 
+training/data/CROHME_2013_test/rit_42190_1	 F 2 + Y = 4 Y + 11 T Y ^{ 2 } + 2 ) ) 
+training/data/CROHME_2013_test/rit_42190_2	 \phi 3 _{ + 3 } 2 _{ + 186 + 5 + 1 }
+training/data/CROHME_2013_test/rit_42190_3	\sqrt{ 1 + L^{ 1 }} + \sqrt{ 1 - \frac{\frac{ T }{}}{ L }}
+training/data/CROHME_2013_test/rit_42190_4	\frac{}{ \sqrt } 1 x \frac{}{ \sqrt } 1 
+training/data/CROHME_2013_test/rit_42195_0	 \forall x \exists y ^{ x + y ^{ = 0 } }
+training/data/CROHME_2013_test/rit_4220_0	 a + h 
+training/data/CROHME_2013_test/rit_4220_1	 9 \times 9 
+training/data/CROHME_2013_test/rit_4220_2	\sqrt{ 3 h }
+training/data/CROHME_2013_test/rit_4220_3	9_{ 4 }
+training/data/CROHME_2013_test/rit_4220_4	 - \frac{ 12 + ^{ 2 } h }{ 4 _{ 3 } = }\frac{ z }{ 30 ^{ h } 2 ^{ h }} 1 
+training/data/CROHME_2013_test/rit_4225_0	 5 \div 3 \neq 3 \div 5 
+training/data/CROHME_2013_test/rit_4225_1	 u \frac{}{i_{ . }} b 
+training/data/CROHME_2013_test/rit_4225_2	 83 
+training/data/CROHME_2013_test/rit_4225_3	\frac{ 56 }{ 8 }
+training/data/CROHME_2013_test/rit_4225_4	 7 ^{ 7 ^{ 7 } }
+training/data/CROHME_2013_test/rit_4230_0	\frac{ 7 }{ 6 }
+training/data/CROHME_2013_test/rit_4230_1	 \sin x \times ( X 
+training/data/CROHME_2013_test/rit_4230_2	\frac{ 3 }{ 7 }
+training/data/CROHME_2013_test/rit_4230_3	\frac{ 6 }{ 3 }
+training/data/CROHME_2013_test/rit_4230_4	 \tan x = \sin_{ 10 }x_{ x }
+training/data/CROHME_2013_test/rit_4235_0	\frac{ 7 }{ 5 }
+training/data/CROHME_2013_test/rit_4235_1	 - \sin_{ ! } X 
+training/data/CROHME_2013_test/rit_4235_2	 6 \frac{ 3 }{ 4 }
+training/data/CROHME_2013_test/rit_4235_3	\frac{ 5 }{ 6 }
+training/data/CROHME_2013_test/rit_4235_4	\frac{\sqrt{ 3 }}{ 3 }
+training/data/CROHME_2013_test/rit_4240_0	 5775333 
+training/data/CROHME_2013_test/rit_4240_1	 \tan \theta = \lt \sin_{ 5 }\theta_{ \theta }
+training/data/CROHME_2013_test/rit_4240_2	 \sin 2 \theta 
+training/data/CROHME_2013_test/rit_4240_3	 4 \sqrt{ 3 }
+training/data/CROHME_2013_test/rit_4240_4	\frac{\sqrt{ z }}{ 4 }
+training/data/CROHME_2013_test/rit_4245_0	 b _{ p }
+training/data/CROHME_2013_test/rit_4245_1	 \tan _{ 2 }^{ \theta }
+training/data/CROHME_2013_test/rit_4245_2	 6 + 3 _{ 3 }
+training/data/CROHME_2013_test/rit_4245_3	 7 \sqrt{ 7 } - 33 
+training/data/CROHME_2013_test/rit_4245_4	 2 \sin x + a x 
+training/data/CROHME_2013_test/rit_4250_0	 \log _{ a } x 
+training/data/CROHME_2013_test/rit_4250_1	 b ^{ x }
+training/data/CROHME_2013_test/rit_4250_2	\sqrt{ 28 }
+training/data/CROHME_2013_test/rit_4250_3	\sqrt{ 18 }
+training/data/CROHME_2013_test/rit_4250_4	 0 g _{ 2 } X 
+training/data/CROHME_2013_test/rit_4255_0	 1 _{ \log }a_{ a }
+training/data/CROHME_2013_test/rit_4255_1	\sqrt{ x + } g ^{ \leq x + \sqrt{ y } }
+training/data/CROHME_2013_test/rit_4255_2	 x \rightarrow b 
+training/data/CROHME_2013_test/rit_4255_3	\sqrt{ x _{ d } z }
+training/data/CROHME_2013_test/rit_4255_4	 b \lt X 
+training/data/CROHME_2013_test/rit_425_0	 9 . ^{ 9 }
+training/data/CROHME_2013_test/rit_425_1	\frac{ h - \gamma }{ h }
+training/data/CROHME_2013_test/rit_425_2	\frac{ 3 }{ 5 } h 
+training/data/CROHME_2013_test/rit_425_3	 h \rightarrow x 
+training/data/CROHME_2013_test/rit_425_4	 h \rightarrow \infty 
+training/data/CROHME_2013_test/rit_4260_0	\sqrt{ a + b }
+training/data/CROHME_2013_test/rit_4260_1	\frac{ 8 \sqrt{ 2 }}{ 3 }
+training/data/CROHME_2013_test/rit_4260_2	 x + 4 
+training/data/CROHME_2013_test/rit_4260_3	 x ^{ y } + \frac{}{ y } x 
+training/data/CROHME_2013_test/rit_4260_4	\frac{}{ \theta }
+training/data/CROHME_2013_test/rit_4265_0	 4 ^{ 4 ^{ 4 } } + 3 
+training/data/CROHME_2013_test/rit_4265_1	 x ^{ + y }
+training/data/CROHME_2013_test/rit_4265_2	\frac{ x }{ x }
+training/data/CROHME_2013_test/rit_4265_3	 x + b g 
+training/data/CROHME_2013_test/rit_4270_0	 x \leq y 
+training/data/CROHME_2013_test/rit_4270_1	 a x + + b 
+training/data/CROHME_2013_test/rit_4270_2	\frac{ \alpha }{ b }
+training/data/CROHME_2013_test/rit_4270_3	\frac{ b }{ x }
+training/data/CROHME_2013_test/rit_4275_0	 a b + b a 
+training/data/CROHME_2013_test/rit_4275_1	 s _{ a }^{ b } \phi 
+training/data/CROHME_2013_test/rit_4275_2	\frac{ 3 }{ 4 }
+training/data/CROHME_2013_test/rit_4275_3	 2 \frac{ x - 8 }{ 4 x - 8 }
+training/data/CROHME_2013_test/rit_4275_4	\frac{ u \sqrt{ 3 }}{ 4 }
+training/data/CROHME_2013_test/rit_4280_0	\frac{ q }{ 48 }
+training/data/CROHME_2013_test/rit_4280_1	 x ^{ 3 } + a \times + b 
+training/data/CROHME_2013_test/rit_4280_2	\sqrt{ 2 }
+training/data/CROHME_2013_test/rit_4280_3	 a = b 
+training/data/CROHME_2013_test/rit_4280_4	\sqrt{ x ^{ 2 } + b \times } + 4 
+training/data/CROHME_2013_test/rit_4285_0	 ( 05 X + 1 
+training/data/CROHME_2013_test/rit_4285_1	 a \pm \pi = \sqrt{ a ^{ + b a b }}
+training/data/CROHME_2013_test/rit_4285_2	 \Sigma b _{ n }
+training/data/CROHME_2013_test/rit_4285_3	 b \leq_{ - } a 
+training/data/CROHME_2013_test/rit_4285_4	 u \leq 6 
+training/data/CROHME_2013_test/rit_4290_0	 x ^{ 3 } + \gamma ^{ 3 }
+training/data/CROHME_2013_test/rit_4290_1	 u \leq x \leq b 
+training/data/CROHME_2013_test/rit_4290_2	\sqrt{ 1 + x ^{ \prime }}
+training/data/CROHME_2013_test/rit_4290_3	\frac{ n ^{ 4 }}{ 8 }
+training/data/CROHME_2013_test/rit_4290_4	\sqrt{ 3 + 2 }
+training/data/CROHME_2013_test/rit_4295_0	 523 + 487 
+training/data/CROHME_2013_test/rit_4295_1	\sqrt{ 5 + 2 \sqrt{ b }}
+training/data/CROHME_2013_test/rit_4295_2	 x ^{ 4 } - 8 + 2 x ^{ 2 } + X X + 1 
+training/data/CROHME_2013_test/rit_4295_3	 x ^{ 4 } + 8 + ^{ 3 } 2 x ^{ 2 } - 8 x + 1 
+training/data/CROHME_2013_test/rit_4295_4	 \alpha \sqrt{ 3 }
