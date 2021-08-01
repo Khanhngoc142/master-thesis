@@ -12,44 +12,6 @@ from utilities.data_processing import symbols, symbol2idx
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 
-parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
-parser.add_argument('--trained_model', default=os.path.join(get_source_root(),
-                                                            'model/weights/ssd300_14_besteval.pth'),
-                    type=str, help='Trained state_dict file path to open')
-parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'testing/eval_by_map/aug_geo__/'), type=str,
-                    help='Dir to save results')
-parser.add_argument('--visual_threshold', default=0.5, type=float,
-                    help='Final confidence threshold')
-parser.add_argument('--cuda', default=True, type=bool,
-                    help='Use cuda to train model')
-parser.add_argument('--dataset', default='CROHME_2013')
-parser.add_argument('--dataset_root', default="data/",
-                    help='Dataset root directory path')
-parser.add_argument('-f', default=None, type=str, help="Dummy arg so we can load in Jupyter Notebooks")
-args = parser.parse_args()
-
-if args.cuda and torch.cuda.is_available():
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
-else:
-    torch.set_default_tensor_type('torch.FloatTensor')
-
-if not os.path.exists(args.save_folder):
-    os.makedirs(args.save_folder, exist_ok=True)
-
-cfg = {
-    'num_classes': len(symbols) + 1,
-    'lr_steps': (280000, 360000, 400000),
-    'feature_maps': [38, 19, 10, 5, 3, 1],
-    'min_dim': 300,
-    'steps': [8, 16, 32, 64, 100, 300],
-    'min_sizes': [21, 45, 99, 153, 207, 261],
-    'max_sizes': [45, 99, 153, 207, 261, 315],
-    'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
-    'variance': [0.1, 0.2],
-    'clip': True,
-    'name': 'CROHME',
-}
-
 
 def nms(dets, thresh):
     x1 = dets[:, 0]
@@ -190,4 +152,43 @@ def test():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
+    parser.add_argument('--trained_model', default=os.path.join(get_source_root(),
+                                                                'model/weights/ssd300_14_besteval.pth'),
+                        type=str, help='Trained state_dict file path to open')
+    parser.add_argument('--save_folder', default=os.path.join(get_source_root(), 'testing/eval_by_map/aug_geo__/'),
+                        type=str,
+                        help='Dir to save results')
+    parser.add_argument('--visual_threshold', default=0.5, type=float,
+                        help='Final confidence threshold')
+    parser.add_argument('--cuda', default=True, type=bool,
+                        help='Use cuda to train model')
+    parser.add_argument('--dataset', default='CROHME_2013')
+    parser.add_argument('--dataset_root', default="data/",
+                        help='Dataset root directory path')
+    parser.add_argument('-f', default=None, type=str, help="Dummy arg so we can load in Jupyter Notebooks")
+    args = parser.parse_args()
+
+    if args.cuda and torch.cuda.is_available():
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    else:
+        torch.set_default_tensor_type('torch.FloatTensor')
+
+    if not os.path.exists(args.save_folder):
+        os.makedirs(args.save_folder, exist_ok=True)
+
+    cfg = {
+        'num_classes': len(symbols) + 1,
+        'lr_steps': (280000, 360000, 400000),
+        'feature_maps': [38, 19, 10, 5, 3, 1],
+        'min_dim': 300,
+        'steps': [8, 16, 32, 64, 100, 300],
+        'min_sizes': [21, 45, 99, 153, 207, 261],
+        'max_sizes': [45, 99, 153, 207, 261, 315],
+        'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
+        'variance': [0.1, 0.2],
+        'clip': True,
+        'name': 'CROHME',
+    }
+
     test()

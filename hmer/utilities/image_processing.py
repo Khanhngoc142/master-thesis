@@ -1,6 +1,9 @@
 import numpy as np
 
 
+IMG_NORM_MEAN = (104, 117, 123)
+
+
 def get_equation_bbox(equation):
     """
     Get bounding box of equation

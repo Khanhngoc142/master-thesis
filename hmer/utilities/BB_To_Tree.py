@@ -1565,5 +1565,6 @@ class BBParser:
         return snode
 
 
-obj = BBParser()
-obj.debug()
+if __name__ == "__main__":
+    obj = BBParser()
+    obj.debug()
