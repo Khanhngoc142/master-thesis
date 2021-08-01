@@ -1,19 +1,16 @@
-# load image
-# segment using ssd
-# structural analysis using draculae
-
 import argparse
-
+import os
 import cv2
 import numpy as np
 import torch
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageTk
 
 from model.ssdpytorch.ssd import build_ssd
 from testing.test_ssd import nms
 from utilities import BB_To_Tree
 from utilities.data_processing import symbols
 from utilities.image_processing import IMG_NORM_MEAN
+import PySimpleGUI as sg
 
 
 def load_image(path):
@@ -104,7 +101,7 @@ def latex_generator(line, is_pred=True):
 
 
 # noinspection SpellCheckingInspection
-def main(model, image, cuda, show_original_image):
+def get_result(model, image, cuda):
     cuda = cuda and torch.cuda.is_available()
 
     if cuda:
@@ -117,8 +114,6 @@ def main(model, image, cuda, show_original_image):
     # Prepare input
     print("Prepare input.")
     img = load_image(image)
-    if show_original_image:
-        display_img(img)
     x = prepare_img(img)
     if cuda:
         x = x.cuda()
@@ -198,17 +193,51 @@ def load_model(model_path, cuda):
     return net
 
 
-def build_args():
-    parser = argparse.ArgumentParser(description="Final Demo")
-    parser.add_argument("model", type=str, help='SSD model used')
-    parser.add_argument("image", type=str, help='Image\'s path')
-    parser.add_argument("--cuda", default=False, help='Use cuda', action='store_true')
-    # parser.add_argument("--show-original-image", default=False, action='store_true')
-    args = parser.parse_args()
-    return args
+def main():
+    layout = [
+        [
+            sg.Text("Image File"),
+            sg.In(size=(25, 1), enable_events=True, key="-FILE-"),
+            sg.FileBrowse(),
+        ],
+        [
+            sg.Column([
+                [sg.Text("Original Image", size=(40, 1))],
+                [sg.Text(size=(40, 1), key="-TOUT1-")],
+                [sg.Image(key="-IMAGE1-", size=(300, 300))],
+            ], vertical_alignment="top"),
+            sg.VSeperator(),
+            sg.Column([
+                [sg.Text("Result:", size=(40, 1))],
+                [sg.Text(size=(40, 1), key="-TOUT2-")],
+                [sg.Image(key="-IMAGE2-", size=(300, 300))],
+            ], vertical_alignment="top"),
+        ]
+    ]
+
+    ssd_model = load_model(
+        "/home/hoangnqk/Workplace/git/master-thesis/hmer/model/weights/model_datav1/CROHME_2013_aug_extra2_data-20201019-221615/ssd300_24_best_eval.pth",
+        cuda=False)
+    window = sg.Window("Final DEMO", layout)
+
+    while True:
+        event, values = window.read()
+        if event == "Exit" or event == sg.WIN_CLOSED:
+            break
+
+        if event == "-FILE-":
+            try:
+                filename = values["-FILE-"]
+                window["-TOUT1-"].update(os.path.basename(filename))
+                window["-IMAGE1-"].update(filename=filename)
+                seg_img, ltx_str = get_result(ssd_model, filename, cuda=False)
+                window["-IMAGE2-"].update(data=ImageTk.PhotoImage(seg_img))
+                window["-TOUT2-"].update(ltx_str)
+            except:
+                pass
+
+    window.close()
 
 
 if __name__ == "__main__":
-    cmd_args = build_args()
-    ssd_model = load_model(cmd_args.model, cmd_args.cuda)
-    main(ssd_model, cmd_args.image, cmd_args.cuda, False)
+    main()
